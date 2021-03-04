@@ -2458,8 +2458,8 @@ public class meptl {
 							// analyse attribut et contenu des enfants du troisième niveau
 							page = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, page, "ana:page", nod3Sujet.getNomElt());
 						
-							//***************
-							//cinquieme niveau
+							//****************
+							//cinquième niveau
 							for(int m = 0 ; m < nod3Sujet.getNodes().size();m++) {
 								node nod4Sujet = nod3Sujet.getNodes().get(m);
 								String nameNode4 = nod4Sujet.getNomElt();
@@ -2645,7 +2645,7 @@ public class meptl {
 	}
   	
   	/**
-  	 * Analyse toutes les attributs des styles de paragraphes.<br/>
+  	 * Analyse tous les attributs des styles de paragraphes.<br/>
 	 * Formatage direct des style de paragraphe. Les attribut doivenet contenir le code ‼.<br/>
 	 * <br/>
 	 * @param nodeStudent : le node de l'étudiant.
