@@ -1665,20 +1665,13 @@ public class meptl {
 				
 				// trouve le node de l'étudiant
 				node paragraphStudent = a.retourneFirstNodeByNameAttributValue(nodStudentParagraph, "style:style", "style:name", nomDuParagraph);
-				// ajoute les valeurs par héritage
-				if(paragraphStudent!=null) {
-					if(paragraphStudent.getAttributs().get("style:parent-style-name")!=null) {
-						String nameStyleParent = paragraphStudent.getAttributs().get("style:parent-style-name");
-						if(nodStudentParagraph.retourneFirstNodeByNameAndAttributValue("style:style", "style:name", nameStyleParent)!=null) {
-							paragraphStudent = ajouteValeurLesValeursDuStyleParagraphParent(nodStudentParagraph.retourneFirstNodeByNameAndAttributValue("style:style", "style:name", nameStyleParent), paragraphStudent);
-						}
-					}
-				}
-				// ajoute les valeurs par défauts
-				if(nodStudentParagraph.retourneEnfantsByNameExist("style:default-style")) {
-					paragraphStudent = ajouteValeurParDefautAuStyleParagraph(nodStudentParagraph.retourneFirstEnfantsByName("style:default-style"), paragraphStudent);
-				}
 				
+				// ajoute les valeurs par héritage
+				if(paragraphStudent!=null) paragraphStudent = ajouteValeurLesValeursDuStyleParagraphParent(nodStudentParagraph, paragraphStudent);
+				
+				// ajoute les valeurs par défauts
+				if(paragraphStudent!=null)	paragraphStudent = ajouteValeurParDefautAuStyleParagraph(nodStudentParagraph, paragraphStudent);
+			
 				// analyse les attributs du node
 				paragraph = analyseLesAttributEtContenuDuNode(paragraphStudent, paragraphSujet, paragraph, "ana:paragraph",paragraphSujet.getNomElt());
 	
@@ -2340,6 +2333,13 @@ public class meptl {
 							String StyleParagrapheStudent = nodStudent.getAttributs().get("text:style-name");
 							StyleParagraphStudent = nodStudentParagraphs.retourneFirstNodeByNameAndAttributValue("style:style", "style:name", StyleParagrapheStudent);
 						}
+						// ajoute les valeurs par héritage.
+						//StyleParagraphSujet = ajouteValeurLesValeursDuStyleParagraphParent(nodSujetParagraphs , StyleParagraphSujet);
+						StyleParagraphStudent = ajouteValeurLesValeursDuStyleParagraphParent(nodStudentParagraphs , StyleParagraphStudent);
+						
+						//ajoute les valeurs par défaut.
+						
+						
 						// analyse attribut et contenu des enfants du premier niveau
 						page = analyseLesAttributAnalyseStyle(StyleParagraphStudent, StyleParagraphSujet, page, "ana:page","style:style");
 					}
@@ -2655,26 +2655,75 @@ public class meptl {
 	 * @param nameElt : le nom de l'élément (node) analysé.
 	 * @return le node <b>retour</b> avec tous les nodes enfants <b>nameItem</b> contenant les différentes analyse. 
   	 */
-	private static node analyseLesAttributAnalyseStyle(node nodeStudent, node sujet, node retour, String nameItem, String nameElt) {
-		Enumeration<String> key = sujet.getAttributs().keys();
+	private static node analyseLesAttributAnalyseStyle(node nodeStyleParagraphStudent, node nodeStyleParagraphSujet, node retour, String nameItem, String nameElt) {
+		Enumeration<String> key = nodeStyleParagraphSujet.getAttributs().keys();
 		while(key.hasMoreElements()) {
 			String k = key.nextElement();
-			if(sujet.getAttributs().get(k).contains("‼") || sujet.getAttributs().get(k).contains("‽")){
-				if(nodeStudent!=null) {
-					String valueAttributStudent = nodeStudent.getAttributs().get(k);
-					String valueAttributSujet = sujet.getAttributs().get(k).replace("‼", "‽");
+			if(nodeStyleParagraphSujet.getAttributs().get(k).contains("‼") || nodeStyleParagraphSujet.getAttributs().get(k).contains("‽")){
+				if(nodeStyleParagraphStudent!=null) {
+					String valueAttributStudent = nodeStyleParagraphStudent.getAttributs().get(k);
+					String valueAttributSujet = nodeStyleParagraphSujet.getAttributs().get(k).replace("‼", "‽");
 
 					node item = retourneNoteAvecResultatsAnalyse(nameItem,k, valueAttributStudent, valueAttributSujet,nameElt);
 					retour.getNodes().add(item);
 				}else {
 					String valueAttributStudent = "null";
-					String valueAttributSujet = sujet.getAttributs().get(k).replace("‼", "‽");
+					String valueAttributSujet = nodeStyleParagraphSujet.getAttributs().get(k).replace("‼", "‽");
 						
 					node item = retourneNoteAvecResultatsAnalyse(nameItem, k, valueAttributStudent, valueAttributSujet,nameElt);
 					retour.getNodes().add(item);
 				}
 			}
 		}
+		
+		if(nodeStyleParagraphSujet.retourneEnfantsByNameExist("style:paragraph-properties") && nodeStyleParagraphStudent.retourneEnfantsByNameExist("style:paragraph-properties") ) {
+			node propertiesSujet = nodeStyleParagraphSujet.retourneFirstEnfantsByName("style:paragraph-properties");
+			node propertiesStudent = nodeStyleParagraphStudent.retourneFirstEnfantsByName("style:paragraph-properties");
+			key = propertiesSujet.getAttributs().keys();
+			while(key.hasMoreElements()) {
+				String k = key.nextElement();
+				if(propertiesSujet.getAttributs().get(k).contains("‼") || propertiesSujet.getAttributs().get(k).contains("‽")){
+					if(propertiesStudent!=null) {
+						String valueAttributStudent = propertiesStudent.getAttributs().get(k);
+						String valueAttributSujet = propertiesSujet.getAttributs().get(k).replace("‼", "‽");
+
+						node item = retourneNoteAvecResultatsAnalyse(nameItem,k, valueAttributStudent, valueAttributSujet,"style:paragraph-properties");
+						retour.getNodes().add(item);
+					}else {
+						String valueAttributStudent = "null";
+						String valueAttributSujet = propertiesSujet.getAttributs().get(k).replace("‼", "‽");
+							
+						node item = retourneNoteAvecResultatsAnalyse(nameItem, k, valueAttributStudent, valueAttributSujet,"style:paragraph-properties");
+						retour.getNodes().add(item);
+					}
+				}
+			}
+		}
+		
+		if(nodeStyleParagraphSujet.retourneEnfantsByNameExist("style:text-properties") && nodeStyleParagraphStudent.retourneEnfantsByNameExist("style:text-properties") ) {
+			node propertiesSujet = nodeStyleParagraphSujet.retourneFirstEnfantsByName("style:text-properties");
+			node propertiesStudent = nodeStyleParagraphStudent.retourneFirstEnfantsByName("style:text-properties");
+			key = propertiesSujet.getAttributs().keys();
+			while(key.hasMoreElements()) {
+				String k = key.nextElement();
+				if(propertiesSujet.getAttributs().get(k).contains("‼") || propertiesSujet.getAttributs().get(k).contains("‽")){
+					if(propertiesStudent!=null) {
+						String valueAttributStudent = propertiesStudent.getAttributs().get(k);
+						String valueAttributSujet = propertiesSujet.getAttributs().get(k).replace("‼", "‽");
+
+						node item = retourneNoteAvecResultatsAnalyse(nameItem,k, valueAttributStudent, valueAttributSujet,"style:text-properties");
+						retour.getNodes().add(item);
+					}else {
+						String valueAttributStudent = "null";
+						String valueAttributSujet = propertiesSujet.getAttributs().get(k).replace("‼", "‽");
+							
+						node item = retourneNoteAvecResultatsAnalyse(nameItem, k, valueAttributStudent, valueAttributSujet,"style:text-properties");
+						retour.getNodes().add(item);
+					}
+				}
+			}
+		}
+
 		
 	
 		return retour;
@@ -2919,11 +2968,14 @@ public class meptl {
 		 fichier.write(HTML.H2("Synthèse"));
 		
 		 fichier.write(HTML.TableEnteteTableurSynthese());
+		 String IdError = ""; // permet de récupérer les id des menu ou la proportioncorrect est NaN. (à cause de l'attribut analyseStyle=true)
 		 for(int k = 0 ; k < nodana.getNodes().size();k++) {
 			 if(nodana.getNodes().get(k).getAttributs().get("addmenu")!=null) if(nodana.getNodes().get(k).getAttributs().get("addmenu").equals("true")) {
-			    	//fichier.write(HTML.SautLigneOnduleBleu( nodana.getNodes().get(k).getAttributs().get("titre") + " - Coef. pondérateur : " + nodana.getNodes().get(k).getAttributs().get("poids")));
-			    	fichier.write(HTML.TablePointsSyntheseStyle(nodana.getNodes().get(k).getAttributs().get("titre"),Double.valueOf(nodana.getNodes().get(k).getAttributs().get("proportioncorrect")),nodana.getNodes().get(k).getAttributs().get("pointtotal") + " pt",nodana.getNodes().get(k).getAttributs().get("pointgagner") + " pt", nodana.getNodes().get(k).getAttributs().get("poids"),nodana.getNodes().get(k).getAttributs().get("id")));
-			    	//fichier.write(HTML.SautLigne());
+			    if(!nodana.getNodes().get(k).getAttributs().get("proportioncorrect").equals("NaN")) {
+			    	 fichier.write(HTML.TablePointsSyntheseStyle(nodana.getNodes().get(k).getAttributs().get("titre"),Double.valueOf(nodana.getNodes().get(k).getAttributs().get("proportioncorrect")),nodana.getNodes().get(k).getAttributs().get("pointtotal") + " pt",nodana.getNodes().get(k).getAttributs().get("pointgagner") + " pt", nodana.getNodes().get(k).getAttributs().get("poids"),nodana.getNodes().get(k).getAttributs().get("id")));
+			    }else {
+			    	IdError = IdError + nodana.getNodes().get(k).getAttributs().get("id");
+			    }
 			 }
 		  }
 		
@@ -2935,7 +2987,9 @@ public class meptl {
 		 
 		 //style de paragraphe
 		 if(nodana.retourneFirstEnfantsByName("paragraphs")!=null) if(nodana.retourneFirstEnfantsByName("paragraphs").isClose()) {
-			 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("paragraphs")));
+			 if(!IdError.contains(nodana.retourneFirstEnfantsByName("paragraphs").getAttributs().get("id"))){
+				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("paragraphs"))); 
+			 }
 		 }
 		 
 		 //pages
@@ -3504,7 +3558,13 @@ public class meptl {
 	 * @param styleParagraph : le node dont il faut ajouter les valerus par défauts.
 	 * @return le node styleParagraph.
 	 */
-	private static node ajouteValeurParDefautAuStyleParagraph(node LesStyleDefaut, node styleParagraph) {
+	private static node ajouteValeurParDefautAuStyleParagraph(node ensembleDesParagraphes , node styleParagraph) {
+		
+		node LesStyleDefaut = null;
+		
+		if(ensembleDesParagraphes.retourneEnfantsByNameExist("style:default-style")) {
+			LesStyleDefaut = ensembleDesParagraphes.retourneFirstEnfantsByName("style:default-style");
+		}
 		
 		if(LesStyleDefaut!=null && styleParagraph!=null) {
 			
@@ -3559,7 +3619,16 @@ public class meptl {
 	 * @param styleParagraph
 	 * @return
 	 */
-	private static node ajouteValeurLesValeursDuStyleParagraphParent(node parent, node styleParagraph) {
+	private static node ajouteValeurLesValeursDuStyleParagraphParent(node ensembleDesParagraphes , node styleParagraph) {
+		
+		node parent = null;
+		if(styleParagraph.getAttributs().get("style:parent-style-name")!=null) {
+			String nameStyleParent = styleParagraph.getAttributs().get("style:parent-style-name");
+			if(ensembleDesParagraphes.retourneFirstNodeByNameAndAttributValue("style:style", "style:name", nameStyleParent)!=null) {
+				parent = ensembleDesParagraphes.retourneFirstNodeByNameAndAttributValue("style:style", "style:name", nameStyleParent);
+			}
+		}
+		
 		
 		if(parent!=null) {
 			

@@ -80,6 +80,7 @@ public class outils {
 		if(code.equals("style:paragraph-properties fo:padding-right")) code="Remplissage (espacement) à droite";
 		if(code.equals("style:paragraph-properties fo:padding-bottom")) code="Remplissage (espacement) en bas";
 		if(code.equals("style:text-properties style:text-underline-type")) code="Style du trait de soulignage";
+		if(code.equals("style:paragraph-properties style:tab-stop-distance")) code="Distance du stop de la tabulation";
 		
 		
 		//style de page
@@ -142,6 +143,7 @@ public class outils {
 		if(code.equals("style:text-properties fo:color")) code="Couleur de la police";
 		if(code.equals("text:h text:style-name")) code="Nom du style du paragraphe Titre";
 		if(code.equals("text:change-start Contenu textuel")) code="Insertion du texte";
+		//if(code.equals("style:style fo:text-align")) code="Alignement du paragraphe";
 		
 		
 		
