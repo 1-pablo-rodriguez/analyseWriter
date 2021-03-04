@@ -53,7 +53,7 @@ public class meptl {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, CloneNotSupportedException {
 		System.getProperty("file.encoding","UTF-8");
 		node nodeCSV = null; //Permet de convertir le fichier contenant la liste des étudiants en node
-		Version = Run.UserStatus.TEACHER; 
+		Version = Run.UserStatus.TEACHER; // version pour les enseignants
 
 
 		
