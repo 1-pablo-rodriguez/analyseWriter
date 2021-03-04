@@ -81,6 +81,7 @@ public class outils {
 		if(code.equals("style:paragraph-properties fo:padding-bottom")) code="Remplissage (espacement) en bas";
 		if(code.equals("style:text-properties style:text-underline-type")) code="Style du trait de soulignage";
 		if(code.equals("style:paragraph-properties style:tab-stop-distance")) code="Distance du stop de la tabulation";
+		if(code.equals("style:text-properties fo:font-weight")) code="Style texte GRAS";
 		
 		
 		//style de page
