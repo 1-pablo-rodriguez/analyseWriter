@@ -31,7 +31,7 @@ import cXML.node;
 
 
 /**
- * test de commit
+ * 
  * @author pablo rodriguez
  *
  */
