@@ -2,9 +2,9 @@
 
 Look this video (French) : https://artoistv.univ-artois.fr/video/3064-presentation-analysewriter/
 
-AnalyzeWriter, what is it?
+## AnalyseWriter, what is it?
 
-analyzeWriter is a free application released under the GNU GPL3 license. It is a console application. This application allows you to analyze and evaluate word processing files in ODF 1.2 format. (native format of LibreOffice and OpenOffice Writer).
+analyseWriter is a free application released under the GNU GPL3 license. It is a console application. This application allows you to analyze and evaluate word processing files in ODF 1.2 format. (native format of LibreOffice and OpenOffice Writer).
 
 analyzeWriter allows:
 
