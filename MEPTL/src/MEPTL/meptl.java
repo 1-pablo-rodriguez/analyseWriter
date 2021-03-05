@@ -132,7 +132,7 @@ public class meptl {
 				node init = InitialisationAvantAnalyse(nodeSujet);
 				if(!Boolean.valueOf(init.getAttributs().get("erreur"))) {
 					node ana = analyse(nodStudent, nodeSujet, i, a);
-					a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false); //écriture du node analyse de l'étudiant
+					//a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false); //écriture du node analyse de l'étudiant
 					if(!commandes.sansFeeback) feedback(ana);
 					if(commandes.ecritNoteCSV) ensembleanalyse.addNode(ana);
 					messageSystem(ana);
