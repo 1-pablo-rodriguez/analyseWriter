@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cXML.Run.UserStatus;
+
 
 
 
@@ -15,7 +17,7 @@ import java.util.regex.Pattern;
  */
 public class commandes {
 
-	static String nameSujet = "exemple1.xml";  //sujet par défaut
+	static String nameSujet = "";  //sujet par défaut
 	public static boolean analyse = true; //analyse des fichier étudiants
 	public static boolean ecritCode = false; // ecriture du code du sujet
 	public static boolean ecritSujet = false; // ecriture 2 du code du sujet
@@ -27,6 +29,7 @@ public class commandes {
 	public static boolean badCommand = false ; //erreur dans les commandes
 	public static boolean noNote =false;
 	public static boolean noLogo =false;
+	static cXML.Run.UserStatus Profil = cXML.Run.UserStatus.TEACHER ; //Le profil TEACHER permet de lire dans les dossiers contenus dans le répertoire courant de l'application. Le profil STUDENT permet de lire au niveau du répertoire courant de l'application. 
 	public static boolean fourniDossierDestination = false; //répertoire de destination des feedbacks et CSV;
 	public static String nameCSV = ""; //le nom du fichier contenant la liste des étudiants
 	public static String path ="";
@@ -84,6 +87,7 @@ public class commandes {
 				if(args[i].equals("-write")) {
 					if(args.length>1) {System.out.println("\n\n***\nLa commande -write doit être unique.\n***");System.exit(0);}
 					ecritCode=true;
+					Profil = UserStatus.STUDENT;
 				}
 				if(args[i].equals("-sujet")) {
 					if(!analyse) {badCommand=true;System.out.println("Vous devez taper la commande -use analysefile.xml devant la commande -sujet");}

@@ -25,6 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import cXML.Run;
+import cXML.Run.UserStatus;
 import cXML.node;
 
 
@@ -35,7 +36,6 @@ import cXML.node;
  */
 public class meptl {
 	
-	static cXML.Run.UserStatus Version = cXML.Run.UserStatus.TEACHER ;
 	static DecimalFormat df = new DecimalFormat("###.##");
 	static String patch ="";
 	static double progression = 1.0;
@@ -51,19 +51,16 @@ public class meptl {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, CloneNotSupportedException {
 		System.getProperty("file.encoding","UTF-8");
 		node nodeCSV = null; //Permet de convertir le fichier contenant la liste des étudiants en node
-		Version = Run.UserStatus.TEACHER; // version pour les enseignants
-
-
-		
+				
 		patch = System.getProperty("user.dir");
-		patch = "C:/Users/pabr6/Downloads/teste/";
+//		patch = "C:/Users/pabr6/Downloads/teste/";
 //		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
 		//analyse les commandes passées
-//		new commandes(args,patch);
+		new commandes(args,patch);
 		
 		
-		Run a = new Run(patch,Version);
+		Run a = new Run(patch,commandes.Profil);
 
 		
 		//chargement du sujet dans un node
@@ -116,7 +113,7 @@ public class meptl {
 			// Si pas d'analyse alors le nom doit contenir le caractère $ dans le nom du dossier.
 			if(commandes.fourniDossierDestination)if(a.getLectDossiers().getEC().getListeNomDossier().get(i).equals(commandes.pathDestination)) continue;
 			
-			if(commandes.ecritCode) System.out.println(a.getLectDossiers().getEC().getListeNomDossier().get(i));
+			//Chargement du format (content) et transformation en node pour l'application
 			node nod = a.XMLContent(a.getLectDossiers().getEC().getListeContentWriter().get(i));
 			node nodStudent = LectureFichierEtudiantSousFormeDeNode(nod,a,i);
 			//a.ecritureNodeEnXML(nodStudent, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false); //écriture du node de l'étudiant
@@ -615,7 +612,12 @@ public class meptl {
 		node fichier = new node();
 		fichier.setNomElt("fichier");
 		fichier.getAttributs().put("filename", a.getLectDossiers().getEC().getListeFichierodt().get(i));
+		if(commandes.Profil.equals(UserStatus.STUDENT)) {
+			a.getLectDossiers().getEC().getListeNomDossier().add(i, a.getLectDossiers().getEC().getListeFichierodt().get(i).substring(0, a.getLectDossiers().getEC().getListeFichierodt().get(i).lastIndexOf(".")));
+		}
 		fichier.getAttributs().put("dossier", a.getLectDossiers().getEC().getListeNomDossier().get(i));
+	
+		
 		
 		fichier.getAttributs().put("producteur", nodmeta.retourneFirstEnfantsByName("meta:generator").getContenu());
 		fichier.getAttributs().put("dureeEdition", nodmeta.retourneFirstEnfantsByName("meta:editing-duration").getContenu());
