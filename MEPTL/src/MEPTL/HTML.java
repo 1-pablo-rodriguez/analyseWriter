@@ -30,15 +30,19 @@ public class HTML {
 		
 		// Titre 2
 		public static String H2(String txt) {
-			//txt = "<font size=\"5\" style=\"font-size: 18pt\"><u>" + txt + "</u></font><br>\r";
 			txt="<H2>"+ txt +"</H2>";
 			return txt;
 		}
 		
 		// Titre 2
 		public static String H2(String txt, String id) {
-			//txt = "<font size=\"5\" style=\"font-size: 18pt\"><u>" + txt + "</u></font><br>\r";
 			txt="<H2 id=\"" + id + "\">"+ txt +"</H2>";
+			return txt;
+		}
+		
+		// Titre 3
+		public static String H3(String txt) {
+			txt="<H3>"+ txt +"</H3>";
 			return txt;
 		}
 		
@@ -54,6 +58,15 @@ public class HTML {
 		 */
 		public static String Paragraph_classp1(String txt) {
 			return("<p class=\"p1\">" + txt + "</p>");
+		}
+		
+		/**
+		 * Style HTML pour paragraphe style class p11
+		 * @param txt
+		 * @return
+		 */
+		public static String Paragraph_classCommentaire(String txt) {
+			return("<p class=\"commentaire\">" + txt + "</p>");
 		}
 			
 		/**
