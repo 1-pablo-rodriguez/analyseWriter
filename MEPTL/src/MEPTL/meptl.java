@@ -2797,8 +2797,8 @@ public class meptl {
  		
  		//nom du fichier feedback
  		String metaS = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet");
- 		if(metaS==null) metaS = "inconnu";
- 		if(metaS.isEmpty()) metaS = "inconnu";
+ 		if(metaS.equals("?")) metaS = "metaSujet-inconnu";
+ 		if(metaS.isEmpty()) metaS = "metaSujet-inconnu";
  		String cheminFeedBack = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier") + "-DateLong" + aujourdhui.getTime()+"-"+metaS;
   		if(!commandes.noNote) {
   			cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";

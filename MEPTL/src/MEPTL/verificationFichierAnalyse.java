@@ -76,6 +76,27 @@ public class verificationFichierAnalyse {
   			}
   		}
   		
+  		// le node fichier doit contenir l'attribut metaSujet et une valeur autre que le point d'interrogation ou vide
+  		if(attribut.get("metaSujet")==null) {
+  			System.out.println();
+  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \"fichier\".");
+  			System.out.println("Le node \"fichier\" doit contenir l'attribut \"metaSujet\".");
+  			System.out.println("Ce node a été supprimé ou a été renommé.");
+  			System.out.println("Ce node doit contenir obligatoirement une valeur.");
+  			System.out.println();
+  			erreur=true;
+  		}else {
+  			if(attribut.get("evaluer").equals("?") || attribut.get("evaluer").isEmpty() ) {
+  				System.out.println();
+  	  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \"fichier\".");
+  	  			System.out.println("Le node \"metaSujet\" doit contenir une valeur autre que \"?\" et pas vide.");
+  	  			System.out.println("Dans les propriétés personnalisées du fichier, veuillez créer la propriété \"Sujet\" et saisir un texte comme valeur.");
+  	  			System.out.println();
+  	  			erreur=true;
+  			}
+  		}
+  		
+  		
 	}
 	
 	
