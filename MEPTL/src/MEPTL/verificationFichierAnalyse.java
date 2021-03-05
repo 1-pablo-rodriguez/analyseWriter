@@ -1,6 +1,5 @@
 package MEPTL;
 
-import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
 
