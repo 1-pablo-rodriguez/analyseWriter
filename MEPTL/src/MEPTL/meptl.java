@@ -53,11 +53,11 @@ public class meptl {
 		node nodeCSV = null; //Permet de convertir le fichier contenant la liste des étudiants en node
 				
 		patch = System.getProperty("user.dir");
-//		patch = "C:/Users/pabr6/Downloads/teste/";
+		patch = "C:/Users/pabr6/Downloads/teste/";
 //		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
 		//analyse les commandes passées
-		new commandes(args,patch);
+//		new commandes(args,patch);
 		
 		
 		Run a = new Run(patch,commandes.Profil);
@@ -132,7 +132,7 @@ public class meptl {
 				node init = InitialisationAvantAnalyse(nodeSujet);
 				if(!Boolean.valueOf(init.getAttributs().get("erreur"))) {
 					node ana = analyse(nodStudent, nodeSujet, i, a);
-					//a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false); //écriture du node analyse de l'étudiant
+					a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false); //écriture du node analyse de l'étudiant
 					if(!commandes.sansFeeback) feedback(ana);
 					if(commandes.ecritNoteCSV) ensembleanalyse.addNode(ana);
 					messageSystem(ana);
@@ -1590,7 +1590,7 @@ public class meptl {
 					for(int k = 0 ; k < nodSujet.getNodes().size();k++) { //niveau 3
 						node nod2Sujet = nodSujet.getNodes().get(k);
 						String nameNode2 = nod2Sujet.getNomElt();
-						page = addNodeSautTitre(nod2Sujet, page); // ajoute des saut s'il y a des sauts avec des titres
+						page = addNodeSautTitre(nod2Sujet, page); // ajoute des sauts s'il y a des sauts avec des titres
 
 						node nod2Student = null;	
 						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
@@ -1688,6 +1688,9 @@ public class meptl {
 					}
 				}
 				
+				//insère un saut si titre pas vide et saut=true
+				paragraph = addNodeSautTitre(nodSujet, paragraph);
+				
 				// analyse attribut et contenu des enfants du premier niveau
 				paragraph = analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, paragraph, "ana:paragraph",nodSujet.getNomElt());
 				
@@ -1699,9 +1702,12 @@ public class meptl {
 						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
 							nod2Student = paragraphStudent.retourneFirstEnfantsByName(nameNode2);
 						}
+						
+						//insère un saut si titre pas vide et saut=true
+						paragraph = addNodeSautTitre(nod2Sujet, paragraph);
+						
 						// analyse attribut et contenu des enfants du second niveau
 						paragraph = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, paragraph, "ana:paragraph",nod2Sujet.getNomElt() );
-						
 						
 						for(int l = 0 ; l < nod2Sujet.getNodes().size();l++) {
 							node nod3Sujet = nod2Sujet.getNodes().get(l);
@@ -1710,6 +1716,10 @@ public class meptl {
 							if(nod2Student!=null) if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
 								nod3Student = paragraphStudent.retourneFirstEnfantsByName(nameNode3);
 							}
+							
+							//insère un saut si titre pas vide et saut=true
+							paragraph = addNodeSautTitre(nod3Sujet, paragraph);
+							
 							// analyse attribut et contenu des enfants du troisième niveau
 							paragraph = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, paragraph, "ana:paragraph", nod3Sujet.getNomElt());
 						}
@@ -1767,6 +1777,9 @@ public class meptl {
 				
 				node seqStudent = a.retourneFirstNodeByNameAttributValue(nodStudentSequence, "text:sequence-decl", "text:name", nomSequence);
 				node seqSujet = nodSujetSequence.getNodes().get(i);
+				
+				//insère un saut si titre pas vide et saut=true
+				seq = addNodeSautTitre(seqSujet, seq);
 				
 				// analyse les attributs du node
 				seq = analyseLesAttributEtContenuDuNode(seqStudent, seqSujet, seq, "ana:seq",seqSujet.getNomElt());
@@ -1833,6 +1846,9 @@ public class meptl {
 					nodStudent = numerotationStudent.retourneFirstEnfantsByName(nameNode);
 				}
 				
+				//insère un saut si titre pas vide et saut=true
+				numerotation=addNodeSautTitre(nodSujet, numerotation);
+				
 				// analyse attribut et contenu des enfants du premier niveau
 				numerotation = analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, numerotation, "ana:numerotation",numerotationSujet.getNodes().get(j).getNomElt());
 				
@@ -1844,6 +1860,10 @@ public class meptl {
 						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
 							nod2Student = numerotationStudent.retourneFirstEnfantsByName(nameNode2);
 						}
+						
+						//insère un saut si titre pas vide et saut=true
+						numerotation=addNodeSautTitre(nod2Sujet, numerotation);
+						
 						// analyse attribut et contenu des enfants du second niveau
 						numerotation = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, numerotation, "ana:numerotation",nod2Sujet.getNomElt() );
 						
@@ -1855,6 +1875,10 @@ public class meptl {
 							if(nod2Student!=null) if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
 								nod3Student = numerotationStudent.retourneFirstEnfantsByName(nameNode3);
 							}
+							
+							//insère un saut si titre pas vide et saut=true
+							numerotation=addNodeSautTitre(nod3Sujet, numerotation);
+							
 							// analyse attribut et contenu des enfants du troisième niveau
 							numerotation = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, numerotation, "ana:paragraph", nod3Sujet.getNomElt());
 						}
@@ -1939,6 +1963,10 @@ public class meptl {
 					
 				}
 				
+				//insère un saut si titre pas vide et saut=true
+				frame=addNodeSautTitre(nodSujet, frame);
+				
+				
 				// analyse attribut et contenu des enfants du premier niveau
 				frame = analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, frame, "ana:frame",nodSujet.getNomElt());
 				
@@ -1960,6 +1988,10 @@ public class meptl {
 								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "text:column-name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:column-name")));
 							}
 						}
+						
+						//insère un saut si titre pas vide et saut=true
+						frame=addNodeSautTitre(nod2Sujet, frame);
+						
 						// analyse attribut et contenu des enfants du second niveau
 						frame = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, frame, "ana:frame",nod2Sujet.getNomElt() );
 						
@@ -1983,6 +2015,10 @@ public class meptl {
 								nod3Student.setNodes(changements);
 							}
 							
+							//insère un saut si titre pas vide et saut=true
+							frame=addNodeSautTitre(nod3Sujet, frame);
+							
+							// analyse attribut et contenu des enfants du second niveau
 							frame = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, frame, "ana:frame", nod3Sujet.getNomElt());
 						}
 	
@@ -2312,6 +2348,8 @@ public class meptl {
 					
 					
 				}
+				
+				//insère un saut s'il y a un titre avec un saut=true
 				page = addNodeSautTitre(nodSujet, page);
 
 				// analyse attribut et contenu des enfants du premier niveau
@@ -2406,6 +2444,8 @@ public class meptl {
 
 						}
 						
+						//insère un saut s'il y a un titre avec un saut=true
+						page = addNodeSautTitre(nod2Sujet, page);
 						
 						// analyse attribut et contenu des enfants du second niveau
 						page = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, page, "ana:page",nod2Sujet.getNomElt() );
@@ -2455,6 +2495,8 @@ public class meptl {
 
 							}
 							
+							//insère un saut s'il y a un titre avec un saut=true
+							page = addNodeSautTitre(nod3Sujet, page);
 							
 							// analyse attribut et contenu des enfants du troisième niveau
 							page = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, page, "ana:page", nod3Sujet.getNomElt());
@@ -2503,9 +2545,10 @@ public class meptl {
 										}
 									}
 								}
-
-
 								
+								//insère un saut s'il y a un titre avec un saut=true
+								page = addNodeSautTitre(nod4Sujet, page);
+
 								// analyse attribut et contenu des enfants du troisième niveau
 								page = analyseLesAttributEtContenuDuNode(nod4Student, nod4Sujet, page, "ana:page", nod4Sujet.getNomElt());
 							
@@ -2551,6 +2594,9 @@ public class meptl {
 										}
 										
 									}
+									
+									//insère un saut s'il y a un titre avec un saut=true
+									page = addNodeSautTitre(nod5Sujet, page);
 
 									// analyse attribut et contenu des enfants du troisième niveau
 									page = analyseLesAttributEtContenuDuNode(nod5Student, nod5Sujet, page, "ana:page", nod5Sujet.getNomElt());
@@ -2997,6 +3043,7 @@ public class meptl {
 		 
 		 //style de paragraphe
 		 if(nodana.retourneFirstEnfantsByName("paragraphs")!=null) if(nodana.retourneFirstEnfantsByName("paragraphs").isClose()) {
+			 //il est possible qu'il n'y ai aucun point car passé par analyseStyle dans le node structurepage
 			 if(!IdError.contains(nodana.retourneFirstEnfantsByName("paragraphs").getAttributs().get("id"))){
 				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("paragraphs"))); 
 			 }
