@@ -53,11 +53,11 @@ public class meptl {
 		node nodeCSV = null; //Permet de convertir le fichier contenant la liste des étudiants en node
 				
 		patch = System.getProperty("user.dir");
-		patch = "C:/Users/pabr6/Downloads/teste/";
+//		patch = "C:/Users/pabr6/Downloads/teste/";
 //		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
 		//analyse les commandes passées
-//		new commandes(args,patch);
+		new commandes(args,patch);
 		
 		
 		Run a = new Run(patch,commandes.Profil);
