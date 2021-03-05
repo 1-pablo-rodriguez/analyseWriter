@@ -18,7 +18,7 @@ import cXML.Run.UserStatus;
 public class commandes {
 
 	static String nameSujet = "";  //sujet par défaut
-	public static boolean analyse = true; //analyse des fichier étudiants
+	public static boolean analyse = false; //analyse des fichier étudiants
 	public static boolean ecritCode = false; // ecriture du code du sujet
 	public static boolean ecritSujet = false; // ecriture 2 du code du sujet
 	public static boolean ecritNoteCSV = false; // ecriture note.csv
