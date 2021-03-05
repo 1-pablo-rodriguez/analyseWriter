@@ -56,11 +56,11 @@ public class meptl {
 
 		
 		patch = System.getProperty("user.dir");
-//		patch = "C:/Users/pabr6/Downloads/teste/";
+		patch = "C:/Users/pabr6/Downloads/teste/";
 //		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
 		//analyse les commandes passées
-		new commandes(args,patch);
+//		new commandes(args,patch);
 		
 		
 		Run a = new Run(patch,Version);
@@ -1105,7 +1105,7 @@ public class meptl {
 
 		// verification si au moins une erreur alors l'analyse est terminée
 		if(Boolean.valueOf(erreurs.getAttributs().get("oneError"))){
-			return clotureNodeAnalyse(nodouverture, nodbodyetnotation, nodmenu, erreurs, nodmeta, nodpage, nodparagraph, nodsequence, nodnumerochapitre, nodframes, nodsections, nodbiblio, nodtablematieres, nodtableillustrations, nodstructurepage);
+			return clotureNodeAnalyse(nodouverture, nodbodyetnotation, nodmenu, erreurs, nodmeta, nodpage, nodparagraph, nodsequence, nodnumerochapitre, nodframes, nodsections, nodbiblio, nodtablematieres, nodtableillustrations, nodstructurepage, nodSujet.getContenu());
 		}
 		
 		// analyse Meta
@@ -1168,7 +1168,7 @@ public class meptl {
 		}
 		
 		// retourne le node analyse assemblé
-		return clotureNodeAnalyse(nodouverture, nodbodyetnotation, nodmenu, erreurs, nodmeta, nodpage, nodparagraph, nodsequence, nodnumerochapitre, nodframes, nodsections, nodbiblio, nodtablematieres, nodtableillustrations, nodstructurepage);
+		return clotureNodeAnalyse(nodouverture, nodbodyetnotation, nodmenu, erreurs, nodmeta, nodpage, nodparagraph, nodsequence, nodnumerochapitre, nodframes, nodsections, nodbiblio, nodtablematieres, nodtableillustrations, nodstructurepage,nodSujet.getContenu());
 	
 			
 		}
@@ -1285,7 +1285,7 @@ public class meptl {
 	 */
 	private static node clotureNodeAnalyse(node nodouverture, node nodbodyetnotation, node nodmenu, node erreurs, node nodmeta, node nodpage,
 			node nodparagraph, node nodsequence, node nodnumerochapitre, node nodframes, node nodsections, node nodbiblio, node nodtablematieres,
-			node nodtableillustrations, node nodstructurepage) {
+			node nodtableillustrations, node nodstructurepage, String texteCommentaire) {
 		
 		node nodanalyse = new node();
 				
@@ -1433,6 +1433,7 @@ public class meptl {
 		nodanalyse.getNodes().add(nodfermeturebodyHTML);
 		
 		nodanalyse.setNomElt("analyse");
+		nodanalyse.setContenu(texteCommentaire);
 		nodanalyse.setClose(true);
 		
 		return nodanalyse;
@@ -2838,6 +2839,7 @@ public class meptl {
 				+ ".header {background-color: #f1f1f1;padding: 30px;text-align:center;}"
 				+ "h1 { margin-bottom: 0.25cm; background: transparent;}"
 				+ "h2 {color: blue;font-size:22pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;  margin-right: 10px; text-decoration: underline overline;}"
+				+ "h3 {font-size:18pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;}"
 				+ "header.h1.western { font-family: \"Arial\"; font-size: 18pt; font-weight: bold; backgroung: #adff2f;}"
 				+ ".header p {color:blue; font-size:30px;}"
 				+ ".triche {background: #AA0000;padding-top: 5px;padding-right: 5px;padding-bottom: 5px;padding-left: 5px;width=80%;margin-top:18px; box-shadow: 5px 10px 18px #800000;}"
@@ -2852,6 +2854,7 @@ public class meptl {
 				+ "p.p8{font-size:14pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 8pt;  margin-right: 10px;}"
 				+ "p.p9{font-size:16pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 40pt;  margin-right: 0cm;text-decoration: underline overline wavy blue;text-shadow: 0px 1px #101010;}"
 				+ "p.p10{font-size:12pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 30pt;  margin-right: 0cm;text-decoration: underline overline wavy red;}"
+				+ ".commentaire{margin-left: 0px; margin-bottom: 24px; margin-top: 24px;font-size:1.4rem}"
 				+ "p.p2{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; line-height: 115%}"
 				+ "p.p3{margin-left: 20px; line-height: 100%; border: 1px solid black; background-color: lightcyan; margin-right: 10px;  }"
 				+ "p.p4{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; margin-right: 4px; line-height: 115%; background: darkblue; color:white; font-size: 20px; white-space: pre;}"
@@ -2944,9 +2947,9 @@ public class meptl {
 	   
 	    fichier.write("</div>");
 	   
+	    //ajoute le menu 
 	    fichier.write(HTML.getHTMLmenu(nodana.retourneFirstEnfantsByName("menu").getNodes()));
 	   
-
 		
 		//Les erreurs
 		node errors = nodana.retourneFirstEnfantsByName("erreurs");
@@ -2963,6 +2966,13 @@ public class meptl {
 	    
 		
 		 fichier.write(HTML.SautLigne());
+		 
+		 //Ajoute de commentaire de l'exercice
+		 fichier.write(HTML.H3(nodana.getContenu()).replace("-NewLine-", "<br>"));
+		 
+		 fichier.write(HTML.SautLigne());
+		 
+		    
 		 fichier.write(HTML.H2("Synthèse"));
 		
 		 fichier.write(HTML.TableEnteteTableurSynthese());
