@@ -2,9 +2,9 @@
 
 Tutorials videos (French)
 
-(présentation)          : https://artoistv.univ-artois.fr/video/3064-presentation-analysewriter/
+(presentation) https://artoistv.univ-artois.fr/video/3064-presentation-analysewriter/
 
-(first analyze file)    : https://artoistv.univ-artois.fr/video/3098-creer-un-fichier-danalyse-pour-analysewriter/
+(first create an analyze file) https://artoistv.univ-artois.fr/video/3098-creer-un-fichier-danalyse-pour-analysewriter/
 
 ## AnalyseWriter, what is it?
 
