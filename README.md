@@ -4,13 +4,13 @@ Tutorials videos (French)
 
 (presentation) https://artoistv.univ-artois.fr/video/3064-presentation-analysewriter/
 
-(first create an analyze file) https://artoistv.univ-artois.fr/video/3098-creer-un-fichier-danalyse-pour-analysewriter/
+(create an analyze file) https://artoistv.univ-artois.fr/video/3098-creer-un-fichier-danalyse-pour-analysewriter/
 
 ## AnalyseWriter, what is it?
 
 analyseWriter is a free application released under the GNU GPL3 license. It is a console application. This application allows you to analyze and evaluate word processing files in ODF 1.2 format. (native format of LibreOffice and OpenOffice Writer).
 
-analyzeWriter allows:
+analyseWriter allows:
 
      • analyze files created by (LibreOffice or OpenOffice) Writer and evaluate them.
      • compare the modifications in the files. This makes it possible to match in different files the same changes that took place at the same time.
