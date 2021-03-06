@@ -13,10 +13,10 @@ public class verificationFichierAnalyse {
 			System.out.println();
 	  	  	System.out.println("**-** Erreur le fichier d'analyse est null.");
 	  	  	System.out.println();
-	  	  	System.exit(0);
+	  	  	clotureWithErrorInanalyzeFile();
 		}
 		
-		//vérification des attribut du node fichier
+		//vérification des attributs du node fichier
 		if(Sujet.getAttributs().size()>0) {
 			verificationNodeFichier(Sujet.getAttributs());
 		}else {
@@ -27,20 +27,72 @@ public class verificationFichierAnalyse {
 			erreur=true;
 		}
 		
-		//vérification style de paragraphe par défaut
-		if(Sujet.retourneFirstEnfantsByName("style:paragraph").getNomElt().equals("style:paragraph")) {
+
+		
+		//Vérification des attributs du node style:paragraph et vérification style de paragraphe par défaut
+		if(Sujet.retourneEnfantsByNameExist("style:paragraph")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("style:paragraph").getAttributs(),"style:paragraph");
 			if(Sujet.retourneFirstEnfantsByName("style:paragraph").retourneEnfantsByNameExist("style:default-style")) {
 				verifcationStyleParagraphDefaut(Sujet.retourneFirstEnfantsByName("style:paragraph").retourneFirstEnfantsByName("style:default-style"));
 			}
 		}
 		
+		//Vérification des attributs du node office:meta
+		if(Sujet.retourneEnfantsByNameExist("office:meta")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("office:meta").getAttributs(),"office:meta");
+		}
+		
+		//Vérification des attributs du node style:page
+		if(Sujet.retourneEnfantsByNameExist("style:page")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("style:page").getAttributs(),"style:page");
+		}
+		
+		//Vérification des attributs du node sequences
+		if(Sujet.retourneEnfantsByNameExist("sequences")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("sequences").getAttributs(),"sequences");
+		}
+		
+		//Vérification des attributs du node numerotationchapitre
+		if(Sujet.retourneEnfantsByNameExist("numerotationchapitre")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("numerotationchapitre").getAttributs(),"numerotationchapitre");
+		}
+
+		//Vérification des attributs du node frames
+		if(Sujet.retourneEnfantsByNameExist("frames")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("frames").getAttributs(),"frames");
+		}
+		
+		//Vérification des attributs du node sections
+		if(Sujet.retourneEnfantsByNameExist("sections")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("sections").getAttributs(),"sections");
+		}
+		
+		//Vérification des attributs du node biblio
+		if(Sujet.retourneEnfantsByNameExist("biblio")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("biblio").getAttributs(),"biblio");
+		}
+		
+		//Vérification des attributs du node tablematieres
+		if(Sujet.retourneEnfantsByNameExist("tablematieres")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("tablematieres").getAttributs(),"tablematieres");
+		}
+		
+		//Vérification des attributs du node tableillustrations
+		if(Sujet.retourneEnfantsByNameExist("tableillustrations")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("tableillustrations").getAttributs(),"tableillustrations");
+		}
+		
+		//Vérification des attributs du node structurepage
+		if(Sujet.retourneEnfantsByNameExist("structurepage")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("structurepage").getAttributs(),"structurepage");
+		}
 		
 		
 		//vérification du node structure
 		if(Sujet.retourneEnfantsByNameExist("structurepage")) {
 			verifNodeAutoriserDansStructure(Sujet.retourneFirstEnfantsByName("structurepage"));
 		}
-		
+	
 	}
 	
 	
@@ -98,7 +150,39 @@ public class verificationFichierAnalyse {
   		
 	}
 	
+	/**
+	 * Vérification de la présence de l'attribut addmenu=true lorsque l'attribut evaluer=true.<br/>
+	 * Uniquement pour les nodes principaux.<br/>
+	 * <br/>
+	 * @param attribut
+	 * @param nameNode
+	 */
+	private static void verificationNodeEvaluate(Dictionary<String, String> attribut, String nameNode) {
+		if(attribut.get("evaluer")!=null) {
+			if(attribut.get("evaluer").equals("true")) {
+				if(attribut.get("addmenu")!=null) {
+					if(!attribut.get("addmenu").equals("true")) {
+			  			System.out.println();
+			  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \""+ nameNode +"\".");
+			  			System.out.println("Le node \"" + nameNode +"\" doit avoir l'attribut \"addmenu=true\".");
+			  			System.out.println("Dans cette version, il est obligatoire de créer une synthèse et un menu pour les nodes principaux.");
+			  			System.out.println();
+			  			erreur=true;
+					}
+				}else {
+					System.out.println();
+		  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \""+ nameNode +"\".");
+		  			System.out.println("Le node \"" + nameNode +"\" doit avoir l'attribut \"addmenu=true\". Cette attribut a été supprimé.");
+		  			System.out.println("Dans le node \"" + nameNode +"\" replacer l'attribut \"addmenu=true\".");
+		  			System.out.println("Dans cette version, il est obligatoire de créer une synthèse et un menu pour les nodes principaux.");
+		  			System.out.println();
+		  			erreur=true;
+				}
+			}
+		}
+	}
 	
+
 	private static void verifNodeAutoriserDansStructure(node structure) throws CloneNotSupportedException {
    		
 		String nom = structure.getNomElt();
@@ -164,6 +248,25 @@ public class verificationFichierAnalyse {
 	  			System.out.println();
 			}
 		}
+	}
+	
+	/**
+	 * Clôture lorsqu'il y a une erreur dans le fichier d'analyse
+	 */
+	public static void clotureWithErrorInanalyzeFile() {
+		System.out.println();
+		System.out.println("\t\t┌─────────────────────────────────────────────┐");
+		System.out.println("\t\t│  You made a mistake in your analyze file.   │");
+		System.out.println("\t\t│                                             │");
+		System.out.println("\t\t│  You need to look for your error in the     │");
+		System.out.println("\t\t│  analyze file. Read the information above.  │");		
+		System.out.println("\t\t│                                             │");
+		System.out.println("\t\t│  (')_(')                                    │");
+		System.out.println("\t\t│  (=`.°=)                                    │");
+		System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.   │");
+		System.out.println("\t\t└─────────────────────────────────────────────┘");
+		System.out.println();
+		System.exit(0);
 	}
 	
 	

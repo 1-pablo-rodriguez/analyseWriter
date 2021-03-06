@@ -47,8 +47,9 @@ public class meptl {
 	 * @throws SAXException
 	 * @throws IOException
 	 * @throws CloneNotSupportedException
+	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, CloneNotSupportedException {
+	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, CloneNotSupportedException, InterruptedException {
 		System.getProperty("file.encoding","UTF-8");
 		node nodeCSV = null; //Permet de convertir le fichier contenant la liste des étudiants en node
 				
@@ -68,13 +69,13 @@ public class meptl {
 		if(!commandes.ecritCode && commandes.analyse) {
 			nodeSujet = chargementsujet(a, commandes.nameSujet);
 			new verificationFichierAnalyse(nodeSujet);
-			if(verificationFichierAnalyse.erreur==true) System.exit(0);
+			if(verificationFichierAnalyse.erreur==true) verificationFichierAnalyse.clotureWithErrorInanalyzeFile();
 			//a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 			if(commandes.ecritSujet) {
 				a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 				System.out.println();
 				System.out.println("Ecriture du fichier \"sujet.xml\" réalisée.");
-				clotureAvecDraw();
+				commandes.clotureApplication();
 				System.exit(0);
 			}
 		}
@@ -98,7 +99,7 @@ public class meptl {
 			//a.ecritureNodeEnXML(verification, "VerificationHistorique"); //écriture du node de l'étudiant
 			verif = verificationHistorique(verification, a);
 			a.ecritureNodeEnXML(verif, "Verif",commandes.pathDestination,commandes.fourniDossierDestination); //écriture du node de vérification
-			if(!commandes.analyse) System.exit(0);
+			if(!commandes.analyse) {commandes.clotureApplication();System.exit(0);}
 		}
 		
 		
@@ -155,7 +156,7 @@ public class meptl {
 		}
 		
 		//bye bye
-		clotureAvecDraw();
+		commandes.clotureApplication();
 		
 	}
 		
@@ -3736,18 +3737,7 @@ public class meptl {
 		return styleParagraph;
 	}
 	
-	/**
-	 * Bye Bye the application
-	 */
-	private static void clotureAvecDraw() {
-		System.out.println();
-		System.out.println("\t\t┌──────────────────────────────────────┐");
-		System.out.println("\t\t│  (')_(')                             │");
-		System.out.println("\t\t│  (=‛.°=)                             │");
-		System.out.println("\t\t│  (\")__(\") .. Bye Bye analyseWriter   │");
-		System.out.println("\t\t└──────────────────────────────────────┘");
-		System.out.println();
-	}
+
 	
 }
 	
