@@ -1,6 +1,6 @@
 # analyseWriter
 
-Tutorials videos (French)
+Tutorials videos (these tutorials are intended for French computer teachers )
 
 (presentation) https://artoistv.univ-artois.fr/video/3064-presentation-analysewriter/
 
