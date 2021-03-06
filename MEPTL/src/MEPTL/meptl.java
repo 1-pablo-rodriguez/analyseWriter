@@ -153,6 +153,8 @@ public class meptl {
 			ecritureCSV(ensembleanalyse,verif,a,nodeCSV);
 			//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
 		}
+		
+		//bye bye
 		clotureAvecDraw();
 		
 	}
