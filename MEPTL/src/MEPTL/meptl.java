@@ -74,6 +74,7 @@ public class meptl {
 				a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 				System.out.println();
 				System.out.println("Ecriture du fichier \"sujet.xml\" réalisée.");
+				clotureAvecDraw();
 				System.exit(0);
 			}
 		}
@@ -152,7 +153,7 @@ public class meptl {
 			ecritureCSV(ensembleanalyse,verif,a,nodeCSV);
 			//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
 		}
-
+		clotureAvecDraw();
 		
 	}
 		
@@ -3731,6 +3732,19 @@ public class meptl {
 			
 		}
 		return styleParagraph;
+	}
+	
+	/**
+	 * Bye Bye the application
+	 */
+	private static void clotureAvecDraw() {
+		System.out.println();
+		System.out.println("\t\t┌──────────────────────────────────────┐");
+		System.out.println("\t\t│  (')_(')                             │");
+		System.out.println("\t\t│  (=‛.°=)                             │");
+		System.out.println("\t\t│  (\")__(\") .. Bye Bye analyseWriter   │");
+		System.out.println("\t\t└──────────────────────────────────────┘");
+		System.out.println();
 	}
 	
 }
