@@ -90,7 +90,7 @@ public class commandes {
 				if(args[i].equals("-help")) {
 					if(args.length>1) {System.out.println("\n\n***\nLa commande -help doit être unique.\n***");clotureWithError();}
 					help();
-					clotureApplication();
+					clotureWithHelp();
 				}
 				if(args[i].equals("-licence")) {
 					if(args.length>1) {System.out.println("\n\n***\nLa commande -licence doit être unique.\n***");clotureWithError();}
@@ -329,7 +329,7 @@ public class commandes {
 		    
 			System.out.println();
 			System.out.println("\t\t┌─────────────────────────────────────────────┐");
-			System.out.println("\t\t│  Above, you have the application license.   │");
+			System.out.println("\t\t│  Above, you have the app license.           │");
 			System.out.println("\t\t│                                             │");
 			System.out.println("\t\t│  (')_(')                                    │");
 			System.out.println("\t\t│  (=`.°=)                                    │");
@@ -374,6 +374,27 @@ public class commandes {
 		System.exit(0);
 	}
 	
+	public static void clotureWithHelp() {
+		System.out.println();
+		System.out.println("\t\t┌─────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│  Above you have the help of the app.                │");
+		System.out.println("\t\t│  But don't forget, you also have the documentation  │");
+		System.out.println("\t\t│  on the github website. And soon in english.        │");
+		System.out.println("\t\t│                                                     │");
+		System.out.println("\t\t│  (')_(')                                            │");
+		System.out.println("\t\t│  (=`.°=)                                            │");
+		System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.           │");
+		System.out.println("\t\t└─────────────────────────────────────────────────────┘");
+		System.out.println();
+		System.exit(0);
+		System.exit(0);
+	}	
+	
+	/**
+	 * Nettoyage de la console
+	 * @throws InterruptedException
+	 * @throws IOException
+	 */
 	public static void CLS() throws InterruptedException, IOException {
 	   	new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 	}
