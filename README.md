@@ -8,7 +8,7 @@ Tutorials videos (these tutorials are intended for French computer teachers )
 
 ## AnalyseWriter, what is it?
 
-analyseWriter is a free application released under the GNU GPL3 license. It is a console application. This application allows you to analyze and evaluate word processing files in ODF 1.2 format. (native format of LibreOffice and OpenOffice Writer).
+analyseWriter is a free application released under the GNU GPL3 license. It is a console application. This application allows you to analyze and evaluate layout files in Open Document Format 1.2. (native format of LibreOffice and OpenOffice Writer).
 
 analyseWriter allows:
 
