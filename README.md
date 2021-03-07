@@ -2,9 +2,9 @@
 
 Tutorials videos (these tutorials are intended for French computer teachers )
 
-(presentation) https://artoistv.univ-artois.fr/video/3064-presentation-analysewriter/
+(presentation in french) https://artoistv.univ-artois.fr/video/3112-presentation-de-lapplication-analysewriter/
 
-(create an analyze file) https://artoistv.univ-artois.fr/video/3098-creer-un-fichier-danalyse-pour-analysewriter/
+(create an analyze file in french) https://artoistv.univ-artois.fr/video/3098-creer-un-fichier-danalyse-pour-analysewriter/
 
 ## AnalyseWriter, what is it?
 
