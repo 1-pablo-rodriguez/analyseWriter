@@ -40,7 +40,7 @@ public class commandes {
 	public static String nameCSV = ""; //le nom du fichier contenant la liste des étudiants
 	public static String path ="";
 	public static String pathDestination ="";
-	public static String version ="3.5.0";
+	public static String version ="3.5.1";
 	public static String Command ="";
 	
 	/**

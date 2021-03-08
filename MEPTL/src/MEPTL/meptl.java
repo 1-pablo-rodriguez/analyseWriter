@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -122,10 +123,11 @@ public class meptl {
 			//a.ecritureNodeEnXML(nodStudent, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false); //écriture du node de l'étudiant
 
 			
-			// ecriture du code d'un sujet pour analyse
-			// commande -write
+			// ecriture d'une fichier d'analyse. Ce fichier contient le node setting
+			// commande -write 
 			if(commandes.ecritCode && ! commandes.verifHisto && !commandes.analyse) {
 				node nodSujet = nodePourEcritureSujet(nodStudent,a,i);
+				nodSujet = addSetting(nodSujet); // ajoute le node setting
 				a.ecritureNodeEnXML(nodSujet, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false);
 			}
 			
@@ -147,12 +149,12 @@ public class meptl {
 		}
 		//exportation au format CSV
 		if(commandes.ecritNoteCSV && !commandes.fourniCSV) {
-			if(!commandes.verifHisto2)ecritureCSV(ensembleanalyse);
-			if(commandes.verifHisto2)ecritureCSV(ensembleanalyse,verif,a);
+			if(!commandes.verifHisto2) ecritureCSV(ensembleanalyse);
+			if(commandes.verifHisto2) ecritureCSV(ensembleanalyse,verif,a);
 			//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
 		}
 		if(commandes.ecritNoteCSV && commandes.fourniCSV) {
-			ecritureCSV(ensembleanalyse,verif,a,nodeCSV);
+			ecritureCSV(ensembleanalyse,verif,a,nodeCSV, nodeSujet.retourneFirstEnfantsByName("setting"));
 			//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
 		}
 		
@@ -1174,6 +1176,7 @@ public class meptl {
 			nodstructurepage = analyseStructurePage(nodStudent.retourneFirstEnfantsByName("structurepage"),  nodSujet.retourneFirstEnfantsByName("structurepage"), a, nodmenu,nodSujetParagraphs, nodStudentParagraphs );
 		}
 		
+	
 		// retourne le node analyse assemblé
 		return clotureNodeAnalyse(nodouverture, nodbodyetnotation, nodmenu, erreurs, nodmeta, nodpage, nodparagraph, nodsequence, nodnumerochapitre, nodframes, nodsections, nodbiblio, nodtablematieres, nodtableillustrations, nodstructurepage,nodSujet.getContenu());
 	
@@ -3399,6 +3402,8 @@ public class meptl {
 		if(!commandes.fourniDossierDestination) System.out.println(patch +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		if(commandes.fourniDossierDestination) System.out.println(patch +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
+		
+		
 		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
 		fichier.write("prénom nom;date modification;producteur;durée edition;sujet;note\n");
 		
@@ -3434,7 +3439,34 @@ public class meptl {
 	 * @param verification
 	 * @throws IOException
 	 */
-	private static void ecritureCSV(node ana, node verif, Run a, node nodeCVS) throws IOException {
+	private static void ecritureCSV(node ana, node verif, Run a, node nodeCVS, node setting) throws IOException {
+		
+		String separator =";"; //valeur par défaut du séparteur
+		Charset encoding = StandardCharsets.UTF_8; //valeur par défaut
+		String champMoodleEmail = "Adresse de courriel";
+		String champMoodleNumeroEtudiant = "Numéro d'identification";
+		
+		if(setting.getNomElt().equals("setting")) {
+			if(setting.containElementByName("csv")){
+				node csv = setting.retourneFirstEnfantsByName("csv");
+				if(csv.getAttributs().get("separator")!=null)separator = csv.getAttributs().get("separator");
+				if(csv.getAttributs().get("encoding")!=null) {
+					if(csv.getAttributs().get("encoding").equals("UFT-8")) encoding = StandardCharsets.UTF_8;
+					if(csv.getAttributs().get("encoding").equals("ISO-8859-1")) encoding = StandardCharsets.ISO_8859_1;
+					if(csv.getAttributs().get("encoding").equals("US-ASCII")) encoding = StandardCharsets.US_ASCII;
+					if(csv.getAttributs().get("encoding").equals("UTF-16")) encoding = StandardCharsets.UTF_16;
+					if(csv.getAttributs().get("encoding").equals("UTF-16BE")) encoding = StandardCharsets.UTF_16BE;
+					if(csv.getAttributs().get("encoding").equals("UTF-16LE")) encoding = StandardCharsets.UTF_16LE;
+					if(csv.containElementByName("export_moodle")) {
+						node export_moodle = csv.retourneFirstEnfantsByName("export_moodle");
+						if(export_moodle.getAttributs().get("champ_email_moodle")!=null) champMoodleEmail=export_moodle.getAttributs().get("champ_email_moodle");
+						if(export_moodle.getAttributs().get("champ_student_number_moodle")!=null) champMoodleNumeroEtudiant=export_moodle.getAttributs().get("champ_student_number_moodle");
+					}
+				}
+			}
+		}
+		
+		
 		
 		Date aujourdhui = new Date();
 		Path outputFilePath = Paths.get(patch + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
@@ -3443,7 +3475,7 @@ public class meptl {
 		if(!commandes.fourniDossierDestination) System.out.println(patch +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		if(commandes.fourniDossierDestination) System.out.println(patch +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
-		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
+		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, encoding);
 		fichier.write("prénom nom;email;identifiant;date modification;producteur;durée edition;sujet;note\n");
 		
 		for (int i = 0 ; i < ana.getNodes().size() ; i++) {
@@ -3468,66 +3500,66 @@ public class meptl {
 			if(ident.length==2) {
 				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", ident[0], "Nom", ident[1]);
 				if(A!=null) {
-					mail = A.getAttributs().get("\"Adresse de courriel\"");
-					if(mail==null) mail = A.getAttributs().get("'Adresse de courriel'");
-					if(mail==null) mail = A.getAttributs().get("Adresse de courriel");
-					numeroEtudiant = A.getAttributs().get("\"Numéro d'identification\"");
-					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'Numéro d''identification'");
-					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("Numéro d'identification");
+					mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
+					if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
+					if(mail==null) mail = A.getAttributs().get(champMoodleEmail);
+					numeroEtudiant = A.getAttributs().get("\"" + champMoodleNumeroEtudiant + "\"");
+					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'" + champMoodleNumeroEtudiant + "'");
+					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 				}
 			}
 			if(ident.length==3) {
 				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", "\"" + ident[0] + " " + ident[1] +"\"", "Nom", ident[2]);
 				if(A!=null) {
-					mail = A.getAttributs().get("\"Adresse de courriel\"");
-					if(mail==null) mail = A.getAttributs().get("'Adresse de courriel'");
-					if(mail==null) mail = A.getAttributs().get("Adresse de courriel");
-					numeroEtudiant = A.getAttributs().get("\"Numéro d'identification\"");
-					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'Numéro d''identification'");
-					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("Numéro d'identification");
+					mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
+					if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
+					if(mail==null) mail = A.getAttributs().get(champMoodleEmail);
+					numeroEtudiant = A.getAttributs().get("\"" + champMoodleNumeroEtudiant + "\"");
+					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'" + champMoodleNumeroEtudiant + "'");
+					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 				} 
 				if(A==null) {
 					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", ident[0], "Nom", "\"" +ident[1] + " " + ident[2] + "\"");
 					if(A!=null) {
-						mail = A.getAttributs().get("\"Adresse de courriel\"");
-						if(mail==null) mail = A.getAttributs().get("'Adresse de courriel'");
-						if(mail==null) mail = A.getAttributs().get("Adresse de courriel");
-						numeroEtudiant = A.getAttributs().get("\"Numéro d'identification\"");
-						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'Numéro d''identification'");
-						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("Numéro d'identification");
+						mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
+						if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
+						if(mail==null) mail = A.getAttributs().get(champMoodleEmail);
+						numeroEtudiant = A.getAttributs().get("\"" + champMoodleNumeroEtudiant + "\"");
+						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'" + champMoodleNumeroEtudiant + "'");
+						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 					}
 				}
 			}
 			if(ident.length==4) {
 				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", ident[0], "Nom", "\"" + ident[1] + " " + ident[2] + " " + ident[3] + "\"");
 				if(A!=null) {
-					mail = A.getAttributs().get("\"Adresse de courriel\"");
-					if(mail==null) mail = A.getAttributs().get("'Adresse de courriel'");
-					if(mail==null) mail = A.getAttributs().get("Adresse de courriel");
-					numeroEtudiant = A.getAttributs().get("\"Numéro d'identification\"");
-					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'Numéro d''identification'");
-					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("Numéro d'identification");
+					mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
+					if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
+					if(mail==null) mail = A.getAttributs().get(champMoodleEmail);
+					numeroEtudiant = A.getAttributs().get("\"" + champMoodleNumeroEtudiant + "\"");
+					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'" + champMoodleNumeroEtudiant + "'");
+					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 				} 
 				if(A==null) {
 					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", "\"" + ident[0] + " " + ident[1] +"\"", "Nom", "\"" + ident[2] + " " + ident[3] + "\"");
 					if(A!=null) {
-						mail = A.getAttributs().get("\"Adresse de courriel\"");
-						if(mail==null) mail = A.getAttributs().get("'Adresse de courriel'");
-						if(mail==null) mail = A.getAttributs().get("Adresse de courriel");
-						numeroEtudiant = A.getAttributs().get("\"Numéro d'identification\"");
-						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'Numéro d''identification'");
-						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("Numéro d'identification");
+						mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
+						if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
+						if(mail==null) mail = A.getAttributs().get(champMoodleEmail);
+						numeroEtudiant = A.getAttributs().get("\"" + champMoodleNumeroEtudiant + "\"");
+						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'" + champMoodleNumeroEtudiant + "'");
+						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 					}
 				}
 				if(A==null) {
 					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", "\"" + ident[0] + " " + ident[1] + ident[2] + "\"", "Nom", ident[3]);
 					if(A!=null) {
-						mail = A.getAttributs().get("\"Adresse de courriel\"");
-						if(mail==null) mail = A.getAttributs().get("'Adresse de courriel'");
-						if(mail==null) mail = A.getAttributs().get("Adresse de courriel");
-						numeroEtudiant = A.getAttributs().get("\"Numéro d'identification\"");
-						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'Numéro d''identification'");
-						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("Numéro d'identification");
+						mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
+						if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
+						if(mail==null) mail = A.getAttributs().get(champMoodleEmail);
+						numeroEtudiant = A.getAttributs().get("\"" + champMoodleNumeroEtudiant + "\"");
+						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get("'" + champMoodleNumeroEtudiant + "'");
+						if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 					}
 				}
 			}
@@ -3538,12 +3570,12 @@ public class meptl {
 				if(nbreCorrespondance<=2) {
 					note = ana.getNodes().get(i).retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note");
 				}
-				fichier.write(identification + ";" + mail + ";" + numeroEtudiant + ";" + dateModif + ";" + producteur + ";" + traitementDureeEdition(dureeEdition) + ";" + sujet + ";" + traitementNote(note) + "\n");
+				fichier.write(identification + separator + mail + separator + numeroEtudiant + separator + dateModif + separator + producteur + separator + traitementDureeEdition(dureeEdition) + separator + sujet + separator + traitementNote(note) + "\n");
 			}
 			
 			if(!commandes.verifHisto2) {
 				note = ana.getNodes().get(i).retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note");
-				fichier.write(identification + ";" + mail + ";" + numeroEtudiant + ";" + dateModif + ";" + producteur + ";" + traitementDureeEdition(dureeEdition) + ";"+ sujet + ";" + traitementNote(note) + "\n");
+				fichier.write(identification + separator + mail + separator + numeroEtudiant + separator + dateModif + separator + producteur + separator + traitementDureeEdition(dureeEdition) + separator + sujet + separator + traitementNote(note) + "\n");
 			}
 			
 
@@ -3737,7 +3769,44 @@ public class meptl {
 		return styleParagraph;
 	}
 	
-
+	/**
+	 * Ce node permet la configuration personnalisé de l'application.<br/>
+	 * <br/>
+	 * @param sujet : le node du sujet
+	 * @return retourne le node du sujet avec le node setting
+	 */
+	private static node addSetting(node sujet) {
+		//node setting
+		node setting = new node();
+		setting.setNomElt("setting");
+		setting.getAttributs().put("culture","FR");
+		
+		
+		//node csv
+		node csv = new node();
+		csv.setNomElt("csv");
+		csv.getAttributs().put("encoding", "UTF-8");
+		csv.getAttributs().put("separator", ";");
+		csv.setContenu("encoding UTF-8 US-ASCII ISO-8859-1 UTF-16BE UTF-16LE UTF-16");
+		//node export du csv
+		node export = new node();
+		export.setNomElt("export_moodle");
+		export.getAttributs().put("champ_email_moodle", "Adresse de courriel");
+		export.getAttributs().put("champ_student_number_moodle", "Numéro d'identification");
+		
+		
+		//construction du node seeting
+		csv.getNodes().add(export);
+		setting.getNodes().add(csv);
+		
+		// ajoute le node setting au node sujet
+		sujet.getNodes().add(setting);
+		
+		//fermeture du node
+		setting.setClose(true);
+		
+		return sujet;
+	}
 	
 }
 	
