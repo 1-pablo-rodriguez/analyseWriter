@@ -70,6 +70,7 @@ public class meptl {
 		node nodeSujet = new node();
 		if(!commandes.ecritCode && commandes.analyse) {
 			nodeSujet = chargementsujet(a, commandes.nameSujet);
+			commandes.culture = nodeSujet.retourneFirstEnfantsByName("setting").getAttributs().get("culture"); //récupère la culture de l'utilisateur
 			new verificationFichierAnalyse(nodeSujet);
 			if(verificationFichierAnalyse.erreur==true) verificationFichierAnalyse.clotureWithErrorInanalyzeFile();
 			//a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
@@ -3612,18 +3613,23 @@ public class meptl {
 	 * @return
 	 * @throws IOException
 	 */
-	private static node chargementFichierCSV(Run a, String nameCSV) throws IOException {
+	private static node chargementFichierCSV(Run a, String nameCSV) {
 		String targetString = "";
-
-		BufferedReader br = new BufferedReader(
+		try {
+			BufferedReader br = new BufferedReader(
 		        new InputStreamReader(
 		            new FileInputStream(a.getPatch() + "/" + nameCSV), "UTF-8")); 
 		
-		String line;
-		while ((line = br.readLine()) != null) {
-			targetString = targetString + line + "\n";
+			String line;
+			while ((line = br.readLine()) != null) {
+				targetString = targetString + line + "\n";
+			}
+		
+			br.close();
+		} catch (IOException e) {
+			commandes.clotureWithErrorFile(nameCSV);
+			e.printStackTrace();
 		}
-		br.close();
 		
 		
 		String[] target = targetString.split("\\n");
@@ -3807,6 +3813,10 @@ public class meptl {
 		
 		return sujet;
 	}
+	
+	
+
+	
 	
 }
 	

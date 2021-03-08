@@ -42,6 +42,7 @@ public class commandes {
 	public static String pathDestination ="";
 	public static String version ="3.5.1";
 	public static String Command ="";
+	public static String culture = "FR";
 	
 	/**
 	 * 
@@ -392,7 +393,25 @@ public class commandes {
 		System.out.println();
 		System.exit(0);
 		System.exit(0);
-	}	
+	}
+	
+	public static void clotureWithErrorFile(String filename) {
+		int nbespace = 29-filename.length();
+		if (nbespace<0) nbespace=1;
+		System.out.println();
+		System.out.println("\t\t┌──────────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│  The file \""+ filename + "\" does not exist." + new String(new char[nbespace]).replace("\0", " ") +"│" );
+		System.out.println("\t\t│                                                          │");
+		System.out.println("\t\t│  (')_(')                                                 │");
+		System.out.println("\t\t│  ( `.° )                                                 │");
+		System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.                │");
+		System.out.println("\t\t└──────────────────────────────────────────────────────────┘");
+		System.out.println();
+		System.exit(0);
+		System.exit(0);
+	}
+	
+	
 	
 	/**
 	 * Nettoyage de la console.<br/>
