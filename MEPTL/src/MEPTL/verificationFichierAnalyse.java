@@ -11,7 +11,7 @@ public class verificationFichierAnalyse {
 	public verificationFichierAnalyse(node Sujet) throws CloneNotSupportedException{
 		if(Sujet==null) {
 			System.out.println();
-	  	  	System.out.println("**-** Erreur le fichier d'analyse est null.");
+	  	  	System.out.println("**-** Error, the analysis file is null.");
 	  	  	System.out.println();
 	  	  	clotureWithErrorInanalyzeFile();
 		}
@@ -21,8 +21,8 @@ public class verificationFichierAnalyse {
 			verificationNodeFichier(Sujet.getAttributs());
 		}else {
 			System.out.println();
-	  	  	System.out.println("**-** ERROR dans le fichier d'analyse.");
-	  		System.out.println("* le node \"fichier\" ne contient aucun attribut.");
+	  	  	System.out.println("**-** ERROR in the analysis file.");
+	  		System.out.println("* The node \"fichier\" does not contain any attributes.");
 	  	  	System.out.println();
 			erreur=true;
 		}
@@ -100,10 +100,10 @@ public class verificationFichierAnalyse {
   		// le node fichier ne doit pas avoir un attribut addmenu="true"
   		if(attribut.get("addmenu")!=null) if(attribut.get("addmenu").equals("true")) {
   			System.out.println();
-  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \"fichier\".");
-  			System.out.println("Le node \"fichier\" ne doit pas avoir l'attribut \"addmenu=true\".");
-  			System.out.println("Il n'est pas autorisé de créer un menu pour l'ensemble du feedback.");
-  			System.out.println("Seul les nodes principaux peuvent avoir cet attribut avec cette valeur.");
+  			System.out.println("**-** ERROR in the analysis file at node \"fichier\".");
+  			System.out.println("The \"fichier\" node must not have the attribute \"addmenu = true\".");
+  			System.out.println("This node not allowed to create a menu.");
+  			System.out.println("Only main nodes can have this attribute with this value.");
   			System.out.println();
   			erreur=true;
   		}
@@ -111,17 +111,17 @@ public class verificationFichierAnalyse {
   		// le node fichier doit avoir l'attribut evaluer=true
   		if(attribut.get("evaluer")==null) {
   			System.out.println();
-  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \"fichier\".");
-  			System.out.println("Le node \"fichier\" doit contenir l'attribut \"evaluer=true\".");
-  			System.out.println("Ce node a été supprimé ou a été renommé.");
+  			System.out.println("**-** ERROR in the analysis file at node \"fichier\".");
+  			System.out.println("The \"fichier\" node must contain the attribute \"evaluer = true\".");
+  			System.out.println("This attribute has been deleted or has been renamed.");
   			System.out.println();
   			erreur=true;
   		}else {
   			if(!attribut.get("evaluer").equals("true")) {
   				System.out.println();
-  	  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \"fichier\".");
-  	  			System.out.println("Le node \"fichier\" doit contenir l'attribut \"evaluer=true\".");
-  	  			System.out.println("La valeur de ce node n'est pas correcte (différent de true).");
+  	  			System.out.println("**-** ERROR in the analysis file at node \"fichier\".");
+  	  			System.out.println("The \"fichier\" node must contain the attribute \"evaluer = true\".");
+  	  			System.out.println("The value of this attribute is not correct.");
   	  			System.out.println();
   	  			erreur=true;
   			}
@@ -130,18 +130,18 @@ public class verificationFichierAnalyse {
   		// le node fichier doit contenir l'attribut metaSujet et une valeur autre que le point d'interrogation ou vide
   		if(attribut.get("metaSujet")==null) {
   			System.out.println();
-  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \"fichier\".");
-  			System.out.println("Le node \"fichier\" doit contenir l'attribut \"metaSujet\".");
-  			System.out.println("Ce node a été supprimé ou a été renommé.");
-  			System.out.println("Ce node doit contenir obligatoirement une valeur.");
+  			System.out.println("**-** ERROR in the analysis file at node \"fichier\".");
+  			System.out.println("The \"fichier\" node must contain the attribute \"sujetMeta\".");
+  			System.out.println("This attribute has been deleted or has been renamed.");
+  			System.out.println("This attribute must contain a value.");
   			System.out.println();
   			erreur=true;
   		}else {
   			if(attribut.get("evaluer").equals("?") || attribut.get("evaluer").isEmpty() ) {
   				System.out.println();
-  	  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \"fichier\".");
-  	  			System.out.println("Le node \"metaSujet\" doit contenir une valeur autre que \"?\" et pas vide.");
-  	  			System.out.println("Dans les propriétés personnalisées du fichier, veuillez créer la propriété \"Sujet\" et saisir un texte comme valeur.");
+  	  			System.out.println("**-** ERROR in the analysis file at node \"fichier\".");
+  	  			System.out.println("The \"sujetMeta\" node must contain a value other than \"?\" And not empty.");
+  	  			System.out.println("In the custom properties of the ODF file, create the \"Sujet\" property and enter some text as the value.");
   	  			System.out.println();
   	  			erreur=true;
   			}
@@ -163,18 +163,17 @@ public class verificationFichierAnalyse {
 				if(attribut.get("addmenu")!=null) {
 					if(!attribut.get("addmenu").equals("true")) {
 			  			System.out.println();
-			  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \""+ nameNode +"\".");
-			  			System.out.println("Le node \"" + nameNode +"\" doit avoir l'attribut \"addmenu=true\".");
-			  			System.out.println("Dans cette version, il est obligatoire de créer une synthèse et un menu pour les nodes principaux.");
+			  			System.out.println("**-** ERROR in analysis file at node \""+ nameNode +"\".");
+			  			System.out.println("The main node \"" + nameNode +"\" must contain the attribute \"addmenu=true\".");
+			  			System.out.println("For this version, it is necessary to create a summary and a menu for the main nodes.");
 			  			System.out.println();
 			  			erreur=true;
 					}
 				}else {
 					System.out.println();
-		  			System.out.println("**-** ERROR dans le fichier d'analyse au niveau du node \""+ nameNode +"\".");
-		  			System.out.println("Le node \"" + nameNode +"\" doit avoir l'attribut \"addmenu=true\". Cette attribut a été supprimé.");
-		  			System.out.println("Dans le node \"" + nameNode +"\" replacer l'attribut \"addmenu=true\".");
-		  			System.out.println("Dans cette version, il est obligatoire de créer une synthèse et un menu pour les nodes principaux.");
+		  			System.out.println("**-** ERROR in analysis file at node \""+ nameNode +"\".");
+		  			System.out.println("The main node \"" + nameNode +"\" must contain the attribute \"addmenu=true\". This attribute has been deleted.");
+		  			System.out.println("For this version, it is necessary to create a summary and a menu for the main nodes.");
 		  			System.out.println();
 		  			erreur=true;
 				}
@@ -196,10 +195,9 @@ public class verificationFichierAnalyse {
 					String k = key.nextElement();
 					if(structure.getAttributs().get(k).contains("‽")) {
 						System.out.println();
-		  	  	  		System.out.println("**-** Erreur dans le fichier d'analyse au niveau du node \"structurepage\".");
-		  	  	  		System.out.println("*");
-		  	  	  		System.out.println("* Le node " +  nom  + " ne doit pas avoir d'attribut évalué.");
-		  	  	  		System.out.println("* Le node " + nom + " peut avoir l'attribut evaluer=\"true\" mais aucun attribut ne peut contenir ‽.");
+		  	  	  		System.out.println("**-** ERROR in analysis file at node \"structurepage\".");
+		  	  	  		System.out.println("The node " +  nom  + " must not have evaluated attributes.");
+		  	  	  		System.out.println("The node " + nom + " can have the attribut \"evaluer=true\" but any attributes values cannot contain \"‽\".");
 		  	  	  		System.out.println();
 		  	  	  		erreur= true;
 					}
@@ -222,12 +220,10 @@ public class verificationFichierAnalyse {
 					String k = key.nextElement();
 					if(structure.getNodes().get(i).getAttributs().get(k).contains("‽")) {
 						System.out.println();
-		  	  	  		System.out.println("**-** Erreur dans le fichier d'analyse au niveau du node \"structurepage\".");
-		  	  	  		System.out.println("*");
-		  	  	  		System.out.println("* Le node " +  nom  + " ne doit pas avoir d'attribut évalué.");
-		  	  	  		System.out.println("* Le node " + nom + " peut avoir l'attribut evaluer=\"true\" mais aucun attribut ne peut contenir ‽.");
-		  	  	  		System.out.println("*");
-		  	  	  		System.out.println("**-** FIN");
+		  	  	  		System.out.println("**-** ERROR in analysis file at node \"structurepage\".");
+		  	  	  		System.out.println("The node " +  nom  + " must not have evaluated attributes.");
+		  	  	  		System.out.println("The node " + nom + " can have the attribut \"evaluer=true\" but any attributes values cannot contain \"‽\".");
+		  	  	  		System.out.println();
 		  	  	  		System.out.println();
 		  	  	  		erreur= true;
 					}
@@ -241,10 +237,10 @@ public class verificationFichierAnalyse {
 		if(styleParagraphDefault.getAttributs().get("evaluer")!=null) {
 			if(styleParagraphDefault.getAttributs().get("evaluer").equals("true")) {
 				System.out.println();
-	  			System.out.println("**-** WARNING dans le fichier d'analyse au niveau du node \"style:paragraph\".");
-	  			System.out.println("Le node \"style:default-style\" ne doit pas contenir l'attribut \"evaluer=true\".");
-	  			System.out.println("Les valeurs par défauts sont ajoutées aux différents nodes \"style:paragraph\" évalués.");
-	  			System.out.println("Cependant, il faut que dans les attributs du node \"style:default-style\", il y ait le code d'évaluation \"?\".");
+	  			System.out.println("**-** WARNING in analysis file at node \"style:default-style\".");
+	  			System.out.println("The node \"style:default-style\" must not contain \"evaluer=true\".");
+	  			System.out.println("Default values are added to the different nodes \"style:style\" that are evaluated.");
+	  			System.out.println("Read the documentation about the node \"style:paragraph\".");
 	  			System.out.println();
 			}
 		}
@@ -262,7 +258,7 @@ public class verificationFichierAnalyse {
 		System.out.println("\t\t│  analyze file. Read the information above.  │");		
 		System.out.println("\t\t│                                             │");
 		System.out.println("\t\t│  (')_(')                                    │");
-		System.out.println("\t\t│  (=`.°=)                                    │");
+		System.out.println("\t\t│  ( `.° )                                    │");
 		System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.   │");
 		System.out.println("\t\t└─────────────────────────────────────────────┘");
 		System.out.println();

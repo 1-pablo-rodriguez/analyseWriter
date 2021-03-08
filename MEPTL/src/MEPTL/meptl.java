@@ -41,7 +41,8 @@ public class meptl {
 	static double progression = 1.0;
 	
 	/**
-	 * Début de l'application.
+	 * Start of application.<br/>
+	 * <br/>
 	 * @param args
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
@@ -74,7 +75,7 @@ public class meptl {
 			if(commandes.ecritSujet) {
 				a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 				System.out.println();
-				System.out.println("Ecriture du fichier \"sujet.xml\" réalisée.");
+				System.out.println("Writing of the file \"sujet.xml\" done.");
 				commandes.clotureApplication();
 				System.exit(0);
 			}
@@ -944,8 +945,8 @@ public class meptl {
 			br.close();
 		}catch (Exception e) {
 			System.out.println();
-			System.out.println("** Le fichier d'analyse " + nameSujet + " n'est pas dans le répertoire courant.");
-			System.out.println("** le répertoire courant de l'application est " + patch);
+			System.out.println("** The file \"" + nameSujet + "\" is not in the current directory.");
+			System.out.println("** The current directory of the application is " + patch);
 			System.out.println();
 		}
 		
@@ -1303,14 +1304,14 @@ public class meptl {
 				try {
 					notefrom = Math.abs(Double.valueOf(nodouverture.getAttributs().get("notefrom")));
 				}catch (Exception e) {
-					System.out.println("L'attribut noteFrom dans le fichier d'analyse ne peut pas être converti en double.");
+					System.out.println("The \"noteFrom\" attribute of the analyze file cannot be converted to a \"double\".");
 				}
 			}
 			if(nodouverture.getAttributs().get("progression")!=null) {
 				try {
 					progression = Math.abs(Double.valueOf(nodouverture.getAttributs().get("progression")));
 				}catch (Exception e) {
-					System.out.println("L'attribut progression dans le fichier d'analyse ne peut pas être converti en double.");
+					System.out.println("The \"progression\" attribute of the analyze file cannot be converted to \"double\".");
 				}
 			}
 		}
@@ -2860,9 +2861,6 @@ public class meptl {
 		Path outputFilePath = Paths.get(patch + "/" + cheminFeedBack);
 		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(patch + "/" + commandes.pathDestination+ "/" + cheminFeedBack);
 		
-		//affichage dans la console
-		if(!commandes.fourniDossierDestination) System.out.println(patch + "\\" + cheminFeedBack);
-		if(commandes.fourniDossierDestination) System.out.println(patch + "\\" + commandes.pathDestination + "\\" + cheminFeedBack);
 			
 		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
 		
@@ -3172,6 +3170,11 @@ public class meptl {
 			
 		fichier.close();
 		
+		//affichage dans la console
+		if(!commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + cheminFeedBack);
+		if(commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + commandes.pathDestination + "\\" + cheminFeedBack);
+				
+		
  	}
 
  	/**
@@ -3184,21 +3187,18 @@ public class meptl {
  		node erreurs = nod.retourneFirstEnfantsByName("erreurs");
  		boolean flagError = Boolean.valueOf(erreurs.getAttributs().get("oneError"));
  		
- 		System.out.println("\t Analyse du dossier :" + ouverture.getAttributs().get("dossier"));
-		System.out.println("\t Note : " +  notation.getAttributs().get("note") + "/" + ouverture.getAttributs().get("notefrom"));
+ 		System.out.println("\t Folder analyzed : " + ouverture.getAttributs().get("dossier"));
+		System.out.println("\t Grade : " +  notation.getAttributs().get("note") + "/" + ouverture.getAttributs().get("notefrom"));
 		if(flagError) {
-			System.out.println("\t ERREUR dans le fichier");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueHistorique"))) System.out.println("\t ERREUR : Il n'y a pas d'historique dans le fichier. Le fichier n'a pas été modifier ou il a été réïnitilisé.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueCreationDate"))) System.out.println("\t ERREUR : Ce n'est pas la bonne date de création du fichier. Le fichier a été réïnitialisé ou ce n'est pas le bon fichier.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurCreationDate"))) System.out.println("\t ERREUR : Ce n'est pas la bonne date de création du fichier.");
+			System.out.println("\t ERROR in student's file.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueHistorique"))) System.out.println("\t ERROR : There is no historic in the file. Perhaps, the file has not been modified or it has been reset by the student.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueCreationDate"))) System.out.println("\t ERROR : This is the wrong file creation date. The file has been reset or it is not the correct file.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurCreationDate"))) System.out.println("\t ERROR : This is teh wrong file creation date.");
 			
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueMetaSujet"))) System.out.println("\t ERREUR : la meta-données \"Sujet\" a été supprimée ... impossible identifier le sujet.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurMetaSujet"))) System.out.println("\t ERREUR : La valeur de la méta donnée \"Sujet\" dans les propriétés du fichier n'est pas \"" + ouverture.getAttributs().get("metaSujet")+"\"");
-			
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueMetaSujet"))) System.out.println("\t ERROR : The metadata \"Sujet\" has been deleted in the student's file. It is impossible to identify the exercise.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurMetaSujet"))) System.out.println("\t ERROR : The metadata value of  \"Sujet \" in the student's file is not \"" + ouverture.getAttributs().get("metaSujet")+"\"");
 		}
-		
 		System.out.println();
-		
  	}
  	
 //	/**
@@ -3307,7 +3307,7 @@ public class meptl {
 			
 			int compteurnombreCorrespondance = 0 ;
 			
-			System.out.println(LesFichiers.get(i).getAttributs().get("dossier") + " -  nombre de modification : " + nombreModifications);
+			System.out.println(LesFichiers.get(i).getAttributs().get("dossier") + " -  number of modifications : " + nombreModifications);
 			
 			@SuppressWarnings("unchecked")
 			ArrayList<node> LesFichiers2 = (ArrayList<node>) LesFichiers.clone();
@@ -3331,7 +3331,7 @@ public class meptl {
 							correspondance.getAttributs().put("type",N2.getNomElt());
 							correspondance.getAttributs().put("Avec_etudiant", nameStudent2);
 							nodStudent.getNodes().add(correspondance);
-							System.out.println("** Trouve correspondance ** " + dcdate1);
+							System.out.println("** Find a match ** " + dcdate1);
 							break;
 						}
 					}

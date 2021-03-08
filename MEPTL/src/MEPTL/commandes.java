@@ -41,7 +41,7 @@ public class commandes {
 	public static String path ="";
 	public static String pathDestination ="";
 	public static String version ="3.5.0";
-
+	public static String Command ="";
 	
 	/**
 	 * 
@@ -54,63 +54,65 @@ public class commandes {
 		commandes.path = path;
 		
 		try {
-			if(args.length==0) {badCommand=true; System.out.println("Il doit y avoir au minimum une commande.");System.out.println("Tapez la commande -help pour obtenir de l'aide.");}
+			if(args.length==0) {badCommand=true; System.out.println("There must be at least one command.");System.out.println("You can type the -help command to get help.");}
 			for(int i = 0 ; i < args.length ; i++) {
-				if(args[i].equals("-use")) if((i+1)<args.length) { if(!args[i+1].contains(".xml")) {badCommand=true; System.out.println("La commande -use doit être suivi du fichier d'analyse");}}else {badCommand=true; System.out.println("La commande -use doit être suivi du fichier d'analyse");}
+				Command = Command  + " " +args[i];
+				if(args[i].equals("-use")) if((i+1)<args.length) { if(!args[i+1].contains(".xml")) {badCommand=true; System.out.println("The -use command must be followed by the name of analyze file.");}}else {badCommand=true; System.out.println("The -use command must be followed by the name of analyze file.");}
 				if(args[i].contains(".xml")) {
 					Matcher m = Pattern.compile("{1,}.xml$").matcher(args[i]);
-					if(m.find()) {nameSujet = args[i];}else {badCommand=true;System.out.println("Problème avec l'extension du fichier .xml");};
-					if(i-1>=0) {if(args[i-1].equals("-use")) analyse=true;}else {badCommand=true; System.out.println("La commande -se doit être devant le fichier d'analyse.");}
-					if(i-1>=0) {if(!args[i-1].equals("-use")) {badCommand=true; System.out.println("Manque la commande -use devant le nom du fichier d'analyse.");}}else {badCommand=true; System.out.println("La commande -se doit être devant le fichier d'analyse.");}
+					if(m.find()) {nameSujet = args[i];}else {badCommand=true;System.out.println("There is a problem with the extension of the analyze file. The extension must be \".xml\".");};
+					if(i-1>=0) {if(args[i-1].equals("-use")) analyse=true;}else {badCommand=true; System.out.println("The -use command must be before the name of the analyze file.");}
+					if(i-1>=0) {if(!args[i-1].equals("-use")) {badCommand=true; System.out.println("The -use command is missing in front of the name of the scan file.");}}else {badCommand=true; System.out.println("The -use command must be before the name of the analyze file.");}
 				}
 				if(args[i].contains(".csv")) {
 					Matcher m = Pattern.compile("{1,}.csv$").matcher(args[i]);
-					if(m.find()) {fourniCSV=true; nameCSV = args[i];}else {badCommand=true;System.out.println("Problème avec l'extension du fichier .csv");}
-					if(!args[i-1].equals("-csv") && !args[i-1].equals("-verifcsv")) {badCommand=true; System.out.println("Manque la commande -csv ou -verifcsv devant le nom du fichier contenant la liste des étudiants avec leurs identifiants.");}
+					if(m.find()) {fourniCSV=true; nameCSV = args[i];}else {badCommand=true;System.out.println("There is a problem with the extension of the CSV file. The extension must be \".csv\".");}
+					if(!args[i-1].equals("-csv") && !args[i-1].equals("-verifcsv")) {badCommand=true; System.out.println("The -csv or -verifcsv command is missing in front of the name of the file containing the list of students with their identifiers.");}
 				}
 				if(args[i].equals("-csv")) {
 					ecritNoteCSV=true;
-					if(!analyse) {badCommand=true;System.out.println("Vous devez taper la commande -use analysefile.xml devant la commande -csv");}
+					if(!analyse) {badCommand=true;System.out.println("You must type the -use analyzefileName.xml command then after the command -csv.");}
 				}
 				if(args[i].equals("-verifcsv")) {
-					if(verifHisto) {badCommand=true;System.out.println("La commande -verifcsv et -verif ne peuvent pas être exécutées ensemble");}
+					if(verifHisto) {badCommand=true;System.out.println("The -verifcsv and -verif commands cannot be executed together.");}
 					ecritNoteCSV=true;
 					verifHisto=false;
 					verifHisto2=true;
-					if(!analyse) {badCommand=true;System.out.println("Vous devez taper la commande -use analysefile.xml devant la commande -verifcsv");}
+					if(!analyse) {badCommand=true;System.out.println("You must type the command -use analyzeFileName.xml then after the command -verifcsv.");}
 				}
 				if(args[i].equals("-nofeedback")) {
 					sansFeeback=true;
 				}
 				if(args[i].equals("-verif")) {
-					if(verifHisto2) {badCommand=true;System.out.println("La commande -verifcsv et -verif ne peuvent pas être exécutées ensemble");}
+					if(verifHisto2) {badCommand=true;System.out.println("The -verifcsv and -verif commands cannot be executed together.");}
 					verifHisto=true;
 					verifHisto2=false;
 				}
 				if(args[i].equals("-help")) {
-					if(args.length>1) {System.out.println("\n\n***\nLa commande -help doit être unique.\n***");clotureWithError();}
+					if(args.length>1) {System.out.println("\n\n***\nThe -help command should be the only command.\n***");clotureWithError();}
 					help();
 					clotureWithHelp();
 				}
 				if(args[i].equals("-licence")) {
-					if(args.length>1) {System.out.println("\n\n***\nLa commande -licence doit être unique.\n***");clotureWithError();}
+					if(args.length>1) {System.out.println("\n\n***\nThe -licence command should be the only command.\n***");clotureWithError();}
 					licence();
 				}
 				if(args[i].equals("-write")) {
-					if(args.length>1) {System.out.println("\n\n***\nLa commande -write doit être unique.\n***");clotureWithError();}
+					if(args.length>1) {System.out.println("\n\n***\nThe -write command should be the only command.\n***");clotureWithError();}
 					ecritCode=true;
 					Profil = UserStatus.STUDENT;
 				}
 				if(args[i].equals("-sujet")) {
-					if(!analyse) {badCommand=true;System.out.println("Vous devez taper la commande -use analysefile.xml devant la commande -sujet");}
+					if(!analyse) {badCommand=true;System.out.println("You must type the command -use, then  the name of analysis file, then  the  command -sujet.");}
+					if(args.length>3) {badCommand=true; System.out.println("If you use the command -sujet, you can't use other commands except -use and the filename.");}
 					ecritSujet=true;
 				}
 				if(args[i].equals("-nologo")) {
-					if(!analyse) {badCommand=true;System.out.println("Vous devez taper la commande -use analysefile.xml devant la commande -sujet");}
+					if(!analyse) {badCommand=true;System.out.println("You must type the command -use , then the filename and after then the command -sujet.");}
 					noLogo=true;
 				}				
 				if(args[i].equals("-about")) {
-					if(args.length>1) {System.out.println("\n\n***\nLa commande -about doit être unique.\n***");clotureWithError();}
+					if(args.length>1) {System.out.println("\n\n***\nThe -about command should be the only command.\n***");clotureWithError();}
 					about();
 					clotureApplication();
 				}
@@ -126,16 +128,16 @@ public class commandes {
 						File file = new File(path+"/"+ pathDestination);
 				        if (!file.exists()) {
 				            if (file.mkdir()) {
-				                System.out.println("Le répertoire \"" + pathDestination + "\" est créé.");
+				                System.out.println("The directory \"" + pathDestination + "\" has been created.");
 				            } else {
-				            	 System.out.println("Peut pas créer le répertoire " + pathDestination);
+				            	 System.out.println("Cannot create  the directory " + pathDestination);
 				            }
 				        }else {
-				        	System.out.println("Le répertoire \"" + pathDestination + "\" n'est pas créé.");
+				        	System.out.println("The directory \"" + pathDestination + "\" has not been created.");
 				        }
 					}else {
 						System.out.println(args[i+1]);
-						System.out.println("Après la commande -dest, il doit y avoir le chemin vers le dossier de destination.\nLe chemin vers le dossier de destination n'est pas correct.");
+						System.out.println("After the -dest command, there must be the path to the destination folder.\nThe path to the destination folder is not correct.");
 						badCommand =true;
 					}
 				}
@@ -144,11 +146,11 @@ public class commandes {
 						&&!args[i].contains(".csv")&&!args[i].contains(".xml")&&!args[i].contains("-nofeedback")&&!args[i].contains("-help")
 						&&!args[i].equals("-about")&&!args[i].equals("-nonote") &&!args[i].equals("-dest")&&!args[i].equals("-sujet")&&!args[i].equals("-nologo")
 						&&!args[i].equals("-licence")&&!m.find()) {
-					badCommand=true; System.out.println("La commande " + args[i] + " est inconnue.");System.out.println("Tapez la commande -help pour obtenir de l'aide.");
+					badCommand=true; System.out.println("the command " + args[i] + " is unknown.");System.out.println("You can type the -help command to get help.");
 				}
 			}
 		}catch (ArrayIndexOutOfBoundsException e){
-	        System.out.println("Error...bad argument");
+	        System.out.println("Error...bad argument.");
 	        clotureWithError();
 	        System.exit(0);
 	 }
@@ -158,27 +160,27 @@ public class commandes {
 		//affichage dans la console des commandes passées
 		CLS();
 		System.out.println();
-		System.out.println("-----------------------------------");
+		System.out.println("---------------------------------------------------");
 		System.out.println("AnalyseWriter Version : " + version );
 		System.out.println();
-		System.out.println("Analyse des fichier étudiants = " + analyse);
-		System.out.println("Fichier d'analyse au format XML = " + nameSujet);
-		System.out.println("Pas de Feedback = " + sansFeeback);
-		System.out.println("Pas de logo = " + noLogo);
-		System.out.println("Ecriture d'un fichier d'analyse = "+ ecritCode);
-		System.out.println("Ecriture d'un fichier sujet.xml = "+ ecritSujet);
-		System.out.println("Vérification des historiques (-verif) = " + verifHisto);
-		System.out.println("Vérification et écriture d'un fichier CSV (-verifcsv) = " + verifHisto2);
-		System.out.println("Exportation au format CSV = " + ecritNoteCSV);
-		System.out.println("Fichier contenant les identifiants des étudiants fourni = " + fourniCSV);
-		System.out.println("Nom du fichier CSV contenant les identifiants des étudiants = " + nameCSV);
-		System.out.println("Fourni un répertoire de destination = " + fourniDossierDestination);
-		System.out.println("Répertoire de destination = " + pathDestination);
-		System.out.println("Nombre de commande = " + args.length);
-		
+		System.out.println("Analysis of student files = " + analyse);
+		System.out.println("The name of the analysis file in XML format = " + nameSujet);
+		System.out.println("No feedback = " + sansFeeback);
+		System.out.println("No logo = " + noLogo);
+		System.out.println("Writing an analysis file = "+ ecritCode);
+		System.out.println("Write the subject file \"sujet.xml\" = "+ ecritSujet);
+		System.out.println("Check historics (-verif) = " + verifHisto);
+		System.out.println("Check historics and write CSV file (-verifcsv) = " + verifHisto2);
+		System.out.println("Export in CSV format = " + ecritNoteCSV);
+		System.out.println("File containing the student identifiers provided = " + fourniCSV);
+		System.out.println("Name of the CSV file containing the student identifiers = " + nameCSV);
+		System.out.println("Provides a destination directory = " + fourniDossierDestination);
+		System.out.println("Destination directory = " + pathDestination);
 		System.out.println();
-		System.out.println("Dossier de travail = " + path);
-		System.out.println("-----------------------------------");
+		System.out.println("Command(s) = " + Command);
+		System.out.println();
+		System.out.println("Current directory = " + path);
+		System.out.println("---------------------------------------------------");
 		System.out.println();
 		
 		
@@ -195,6 +197,8 @@ public class commandes {
 		System.out.println("***************************************");
 		System.out.println("* LISTE DES COMMANDES D'ANALYSEWRITER * ");
 		System.out.println("***************************************");
+		System.out.println();
+		System.out.println("List of analiseWriter commands (only in french), soon in english.");
 		System.out.println();
 		
 		System.out.println(" -use       : \t Permet d'indiquer le fichier d'analyse.");
@@ -332,7 +336,7 @@ public class commandes {
 			System.out.println("\t\t│  Above, you have the app license.           │");
 			System.out.println("\t\t│                                             │");
 			System.out.println("\t\t│  (')_(')                                    │");
-			System.out.println("\t\t│  (=`.°=)                                    │");
+			System.out.println("\t\t│  ( `.° )                                    │");
 			System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.   │");
 			System.out.println("\t\t└─────────────────────────────────────────────┘");
 			System.out.println();
@@ -352,7 +356,7 @@ public class commandes {
 		System.out.println("\t\t│  start over.                                │");		
 		System.out.println("\t\t│                                             │");
 		System.out.println("\t\t│  (')_(')                                    │");
-		System.out.println("\t\t│  (=`.°=)                                    │");
+		System.out.println("\t\t│  ( `.° )                                    │");
 		System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.   │");
 		System.out.println("\t\t└─────────────────────────────────────────────┘");
 		System.out.println();
@@ -367,7 +371,7 @@ public class commandes {
 		System.out.println();
 		System.out.println("\t\t┌────────────────────────────────────────────────────┐");
 		System.out.println("\t\t│  (')_(')                                           │");
-		System.out.println("\t\t│  (=`.°=)     Well done, you've worked very hard!   │");
+		System.out.println("\t\t│  ( `.° )     Well done, you've worked very hard!   │");
 		System.out.println("\t\t│  (\")__(\") .. Bye Bye analyseWriter.                │");
 		System.out.println("\t\t└────────────────────────────────────────────────────┘");
 		System.out.println();
@@ -382,7 +386,7 @@ public class commandes {
 		System.out.println("\t\t│  on the github website. And soon in english.        │");
 		System.out.println("\t\t│                                                     │");
 		System.out.println("\t\t│  (')_(')                                            │");
-		System.out.println("\t\t│  (=`.°=)                                            │");
+		System.out.println("\t\t│  ( `.° )                                            │");
 		System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.           │");
 		System.out.println("\t\t└─────────────────────────────────────────────────────┘");
 		System.out.println();
@@ -391,7 +395,8 @@ public class commandes {
 	}	
 	
 	/**
-	 * Nettoyage de la console
+	 * Nettoyage de la console.<br/>
+	 * <br/>
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
