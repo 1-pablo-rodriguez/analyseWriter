@@ -3627,7 +3627,7 @@ public class meptl {
 		
 			br.close();
 		} catch (IOException e) {
-			commandes.clotureWithErrorFile(nameCSV);
+			commandes.clotureWithErrorFile(nameCSV); 
 			e.printStackTrace();
 		}
 		
