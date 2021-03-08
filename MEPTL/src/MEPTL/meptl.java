@@ -2263,7 +2263,7 @@ public class meptl {
 		//initialise les points
 		outils.initiliseLesPoints();
 		
-		//************
+		//********************************
 		// Premier niveau
 		for(int i = 0 ; i < nodSujetS.getNodes().size(); i++) {
 			if(nodSujetS.getNodes().get(i).getNomElt().equals("page")) {
@@ -3600,7 +3600,12 @@ public class meptl {
 		return dureeEdition;
 	}
 	
-	
+	/**
+	 * Remplace la virgule par un point.<br/>
+	 * <br/>
+	 * @param note
+	 * @return
+	 */
 	private static String traitementNote(String note) {
 		note = note.replace(",", ".");
 		return note;
@@ -3768,15 +3773,13 @@ public class meptl {
 					break;
 				}
 			}
-			
-			
-			
 		}
 		return styleParagraph;
 	}
 	
 	/**
 	 * Ce node permet la configuration personnalisé de l'application.<br/>
+	 * Ajoute le node setting avec les différentes valeurs.<br/>
 	 * <br/>
 	 * @param sujet : le node du sujet
 	 * @return retourne le node du sujet avec le node setting
@@ -3814,6 +3817,77 @@ public class meptl {
 		return sujet;
 	}
 	
+	
+	private static node rechercheLeNode(String nameNode, node nodSujet,node nodStudentS, node nod1Student, node nod2Student, Run a ) {
+		
+		node nodStudent =null;
+		
+		if(nameNode.equals("text:p")) {
+			//si le node "text:p" contient un "text:user-defined" alors le recherche par le "text:name" de ce node "text:user-defined"
+			if(nodSujet.containElementByName("text:user-defined")) {
+				String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:user-defined").getAttributs().get("text:name"));
+				if(nod2Student!=null) nodStudent = nod2Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
+				if(nod1Student!=null) nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
+				if(nodStudentS!=null) nodStudent = nodStudentS.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
+			}
+			//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
+			if(nodSujet.containElementByName("text:database-display")) {
+				String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
+				if(nod2Student!=null) nodStudent = nod2Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+				if(nod1Student!=null) nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+				if(nodStudentS!=null) nodStudent = nodStudentS.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+			}
+			//si le node "text:p" contient un "text:date" alors le recherche par le "text:fixed" de ce node "text:date"
+			if(nodSujet.containElementByName("text:date")) {
+				String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:date").getAttributs().get("text:fixed"));
+				nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:date", "text:fixed", valueAttribut);
+			}
+			
+			if(nodStudent==null) {
+				if(nodSujet.retourneLesContenusEnfants("").isEmpty()) { //s'il n'y a pas de contenu, passe par l'index
+					if(nodSujet.getAttributs().get("index")!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
+				}else {
+					nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+				}
+			}
+		}
+		if(nameNode.equals("text:h")) {
+			nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+		}
+		
+		
+		if(nameNode.equals("text:section")) {
+			//recherche par text:name exacte mais nettexte
+			nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			if(nodStudent==null) {
+				//recherche si le nnme contient dans la page student
+				nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			}
+			if(nodStudent==null) {
+				//recherche si le name contient dans le node student
+				nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nodStudentS, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			}
+		}
+		
+		if(nameNode.equals("text:database-display")) {
+			nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+		}
+		
+		if(nameNode.equals("draw:frame")) {
+			nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "draw:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("draw:name")));
+		}
+		
+		if(nodStudent==null) {
+			if(nod1Student.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
+				nodStudent = nod1Student.retourneFirstEnfantsByName(nameNode);
+			}
+		}
+		
+		return nodStudent;
+	}
+		
+		
+
 	
 
 	
