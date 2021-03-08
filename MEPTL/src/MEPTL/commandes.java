@@ -392,7 +392,7 @@ public class commandes {
 		System.out.println("\t\t└─────────────────────────────────────────────────────┘");
 		System.out.println();
 		System.exit(0);
-		System.exit(0);
+		System.exit(0); 
 	}
 	
 	public static void clotureWithErrorFile(String filename) {
