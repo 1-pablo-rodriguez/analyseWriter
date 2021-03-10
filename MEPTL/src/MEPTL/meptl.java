@@ -28,6 +28,7 @@ import org.xml.sax.SAXException;
 import cXML.Run;
 import cXML.Run.UserStatus;
 import cXML.node;
+import net.lingala.zip4j.exception.ZipException;
 
 
 /**
@@ -57,10 +58,10 @@ public class meptl {
 				
 		patch = System.getProperty("user.dir");
 //		patch = "C:/Users/pabr6/Downloads/teste/";
-//		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
+		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
 		//analyse les commandes passées
-		new commandes(args,patch);
+//		new commandes(args,patch);
 		
 		
 		Run a = new Run(patch,commandes.Profil);
@@ -124,7 +125,7 @@ public class meptl {
 			//a.ecritureNodeEnXML(nodStudent, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false); //écriture du node de l'étudiant
 
 			
-			// ecriture d'une fichier d'analyse. Ce fichier contient le node setting
+			// ecriture d'une fichier d'analyse.
 			// commande -write 
 			if(commandes.ecritCode && ! commandes.verifHisto && !commandes.analyse) {
 				node nodSujet = nodePourEcritureSujet(nodStudent,a,i);
@@ -139,7 +140,25 @@ public class meptl {
 				if(!Boolean.valueOf(init.getAttributs().get("erreur"))) {
 					node ana = analyse(nodStudent, nodeSujet, i, a);
 					//a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false); //écriture du node analyse de l'étudiant
-					if(!commandes.sansFeeback) feedback(ana);
+					
+					// création des feedbacks avace des tailles défini
+					if(!commandes.sansFeeback) if(!commandes.zipfeedback) feedback(ana); //classique directement dans le répertoire
+					if(!commandes.sansFeeback) if(commandes.zipfeedback) { // Dans une archive pour Moodle
+						try {
+							long size = 48000000; //valeur par défaut
+							String nameZip = "feedbackMoodle";
+							node zip = nodeSujet.retourneFirstEnfantsByName("zip");
+							if(zip!=null) {
+								if(zip.getAttributs().get("size")!=null)size = Long.valueOf(zip.getAttributs().get("size"));
+								if(zip.getAttributs().get("name")!=null)nameZip = zip.getAttributs().get("name");
+							}
+								a.AddStreamToZip(feedbackForZip(ana), retourneLeNomDuFeedback(a.getLectDossiers().getEC().getListeNomFichierFeedBack().get(i),ana),size,nameZip);
+						} catch (ZipException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 					if(commandes.ecritNoteCSV) ensembleanalyse.addNode(ana);
 					messageSystem(ana);
 				}else {
@@ -2264,7 +2283,7 @@ public class meptl {
 		outils.initiliseLesPoints();
 		
 		//********************************
-		// Premier niveau
+		// Premier niveau que les pages
 		for(int i = 0 ; i < nodSujetS.getNodes().size(); i++) {
 			if(nodSujetS.getNodes().get(i).getNomElt().equals("page")) {
 				int pointDebut = outils.getPointsClass();
@@ -2293,70 +2312,71 @@ public class meptl {
 				node nodSujet = pageSujet.getNodes().get(j);
 				String nameNode = nodSujet.getNomElt();
 				node nodStudent = null;	
-				if(pageStudent!=null) {
-
-					
-					if(nameNode.equals("text:p")) {
-						paragrapheTexte=true;
-						//si le node "text:p" contient un "text:user-defined" alors le recherche par le "text:name" de ce node "text:user-defined"
-						if(nodSujet.containElementByName("text:user-defined")) {
-							String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:user-defined").getAttributs().get("text:name"));
-							nodStudent = pageStudent.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
-							//nodStudent = pageStudent.retourneFirstNodeByNameAndAttributValue("text:user-defined", "text:name", outils.NetChiffreALaFin(valueAttribut));
-						}
-						//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
-						if(nodSujet.containElementByName("text:database-display")) {
-							String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
-							nodStudent = pageStudent.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
-						}
-						//si le node "text:p" contient un "text:date" alors le recherche par le "text:fixed" de ce node "text:date"
-						if(nodSujet.containElementByName("text:date")) {
-							String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:date").getAttributs().get("text:fixed"));
-							nodStudent = pageStudent.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:date", "text:fixed", valueAttribut);
-						}
-						
-						if(nodStudent==null) {
-							if(nodSujet.retourneLesContenusEnfants("").isEmpty()) { //s'il n'y a pas de contenu, passe par l'index
-								if(nodSujet.getAttributs().get("index")!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-							}else {
-								nodStudent = a.retourneFirstNodeByFindContent2(pageStudent.getNodes(), nodSujet.retourneLesContenusEnfants(""));
-							}
-						}
-					}
-					if(nameNode.equals("text:h")) {
-						nodStudent = a.retourneFirstNodeByFindContent2(pageStudent.getNodes(), nodSujet.retourneLesContenusEnfants(""));
-					}
-					
-					
-					if(nameNode.equals("text:section")) {
-						//recherche par text:name exacte mais nettexte
-						nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(pageStudent, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-						if(nodStudent==null) {
-							//recherche si le nnme contient dans la page student
-							nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(pageStudent, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-						}
-						if(nodStudent==null) {
-							//recherche si le name contient dans le node student
-							nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nodStudentS, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-						}
-					}
-					
-					if(nameNode.equals("text:database-display")) {
-						nodStudent = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
-					}
-					
-					if(nameNode.equals("draw:frame")) {
-						nodStudent = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode, "draw:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("draw:name")));
-					}
-					
-					if(nodStudent==null) {
-						if(pageStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
-							nodStudent = pageStudent.retourneFirstEnfantsByName(nameNode);
-						}
-					}
-					
-					
-				}
+//				if(pageStudent!=null) {
+//					if(nameNode.equals("text:p")) {
+//						paragrapheTexte=true;
+//						//si le node "text:p" contient un "text:user-defined" alors le recherche par le "text:name" de ce node "text:user-defined"
+//						if(nodSujet.containElementByName("text:user-defined")) {
+//							String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:user-defined").getAttributs().get("text:name"));
+//							nodStudent = pageStudent.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
+//							//nodStudent = pageStudent.retourneFirstNodeByNameAndAttributValue("text:user-defined", "text:name", outils.NetChiffreALaFin(valueAttribut));
+//						}
+//						//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
+//						if(nodSujet.containElementByName("text:database-display")) {
+//							String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
+//							nodStudent = pageStudent.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+//						}
+//						//si le node "text:p" contient un "text:date" alors le recherche par le "text:fixed" de ce node "text:date"
+//						if(nodSujet.containElementByName("text:date")) {
+//							String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:date").getAttributs().get("text:fixed"));
+//							nodStudent = pageStudent.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:date", "text:fixed", valueAttribut);
+//						}
+//						
+//						if(nodStudent==null) {
+//							if(nodSujet.retourneLesContenusEnfants("").isEmpty()) { //s'il n'y a pas de contenu, passe par l'index
+//								if(nodSujet.getAttributs().get("index")!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
+//							}else {
+//								nodStudent = a.retourneFirstNodeByFindContent2(pageStudent.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+//							}
+//						}
+//					}
+//					if(nameNode.equals("text:h")) {
+//						nodStudent = a.retourneFirstNodeByFindContent2(pageStudent.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+//					}
+//					
+//					
+//					if(nameNode.equals("text:section")) {
+//						//recherche par text:name exacte mais nettexte
+//						nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(pageStudent, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+//						if(nodStudent==null) {
+//							//recherche si le nnme contient dans la page student
+//							nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(pageStudent, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+//						}
+//						if(nodStudent==null) {
+//							//recherche si le name contient dans le node student
+//							nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nodStudentS, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+//						}
+//					}
+//					
+//					if(nameNode.equals("text:database-display")) {
+//						nodStudent = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+//					}
+//					
+//					if(nameNode.equals("draw:frame")) {
+//						nodStudent = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode, "draw:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("draw:name")));
+//					}
+//					
+//					if(nodStudent==null) {
+//						if(pageStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
+//							nodStudent = pageStudent.retourneFirstEnfantsByName(nameNode);
+//						}
+//					}
+//					
+//					
+//				}
+				
+				nodStudent = rechercheLeNodeEnCascade(nameNode,nodSujet,null,null,pageStudent,a);
+				
 				
 				//insère un saut s'il y a un titre avec un saut=true
 				page = addNodeSautTitre(nodSujet, page);
@@ -2366,6 +2386,7 @@ public class meptl {
 				
 				
 				//********************************
+				// analyse du style du paragarphe
 				// Il faut déplacer dans une nouvelle méthode
 				//analyse du style du paragraphe niveau 2 mais correspond au premier niveu  du node <text:p> dans la structure de la page
 				if(nameNode.equals("text:p") && nodSujetParagraphs!=null && nodStudent!=null) {
@@ -2399,59 +2420,60 @@ public class meptl {
 						node nod2Sujet = nodSujet.getNodes().get(k);
 						String nameNode2 = nod2Sujet.getNomElt();
 						node nod2Student = null;
-						if(nodStudent!=null) {
-
-							if(nameNode2.equals("text:user-defined") && paragrapheTexte) {
-								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
-								if(nod2Student==null) {
-									nod2Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
-								}
-							}
-							if(nameNode2.equals("text:database-display")) {
-								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "text:column-name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:column-name")));
-								if(nod2Student==null) {
-									nod2Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode2, "text:column-name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:column-name")));
-								}
-							}
-							if(nameNode2.equals("table:table-row")) {
-								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "index", nod2Sujet.getAttributs().get("index"));
-							}
-							if(nameNode2.equals("text:section")) {
-								//recherche par text:name exacte mais nettexte
-								nod2Student = a.retourneFirstNodeByNameAttributValueNetTexte(nodStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
-								if(nod2Student==null) {
-									//recherche si le name contient dans la page student
-									nod2Student = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nodStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
-								}
-								if(nod2Student==null) {
-									//recherche si le name contient dans le node student
-									nod2Student = a.retourneFirstNodeByNameAttributContainsValueNetTexte(pageStudent, nameNode, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
-								}
-							}
-							if(nameNode2.equals("text:h")) {
-								nod2Student = a.retourneFirstNodeByFindContent2(nodStudent.getNodes(), nod2Sujet.retourneLesContenusEnfants(""));
-								if(nod2Student==null) {
-									nod2Student = a.retourneFirstNodeByFindContent2(pageStudent, nod2Sujet.retourneLesContenusEnfants(""));	
-								}
-							}
-							if(nameNode2.equals("text:p") || nameNode2.equals("text:span")) {
-								if(nod2Sujet.retourneLesContenusEnfants("").isEmpty()) {
-									nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "index", nod2Sujet.getAttributs().get("index"));
-								}else {
-									nod2Student = a.retourneFirstNodeByFindContent2(nodStudent.getNodes(),nod2Sujet.retourneLesContenusEnfants("") );
-									if(nod2Student==null) {
-										nod2Student = a.retourneFirstNodeByFindContent2(pageStudent.getNodes(),nod2Sujet.retourneLesContenusEnfants("") );
-									}
-								}
-							}
-							
-							if(nod2Student==null) {
-								if(pageStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
-									nod2Student = pageStudent.retourneFirstEnfantsByName(nameNode2);
-								}
-							}
-
-						}
+//						if(nodStudent!=null) {
+//							if(nameNode2.equals("text:user-defined") && paragrapheTexte) {
+//								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
+//								if(nod2Student==null) {
+//									nod2Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
+//								}
+//							}
+//							if(nameNode2.equals("text:database-display")) {
+//								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "text:column-name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:column-name")));
+//								if(nod2Student==null) {
+//									nod2Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode2, "text:column-name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:column-name")));
+//								}
+//							}
+//							if(nameNode2.equals("table:table-row")) {
+//								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "index", nod2Sujet.getAttributs().get("index"));
+//							}
+//							if(nameNode2.equals("text:section")) {
+//								//recherche par text:name exacte mais nettexte
+//								nod2Student = a.retourneFirstNodeByNameAttributValueNetTexte(nodStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
+//								if(nod2Student==null) {
+//									//recherche si le name contient dans la page student
+//									nod2Student = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nodStudent, nameNode2, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
+//								}
+//								if(nod2Student==null) {
+//									//recherche si le name contient dans le node student
+//									nod2Student = a.retourneFirstNodeByNameAttributContainsValueNetTexte(pageStudent, nameNode, "text:name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:name")));
+//								}
+//							}
+//							if(nameNode2.equals("text:h")) {
+//								nod2Student = a.retourneFirstNodeByFindContent2(nodStudent.getNodes(), nod2Sujet.retourneLesContenusEnfants(""));
+//								if(nod2Student==null) {
+//									nod2Student = a.retourneFirstNodeByFindContent2(pageStudent, nod2Sujet.retourneLesContenusEnfants(""));	
+//								}
+//							}
+//							if(nameNode2.equals("text:p") || nameNode2.equals("text:span")) {
+//								if(nod2Sujet.retourneLesContenusEnfants("").isEmpty()) {
+//									nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "index", nod2Sujet.getAttributs().get("index"));
+//								}else {
+//									nod2Student = a.retourneFirstNodeByFindContent2(nodStudent.getNodes(),nod2Sujet.retourneLesContenusEnfants("") );
+//									if(nod2Student==null) {
+//										nod2Student = a.retourneFirstNodeByFindContent2(pageStudent.getNodes(),nod2Sujet.retourneLesContenusEnfants("") );
+//									}
+//								}
+//							}
+//							
+//							if(nod2Student==null) {
+//								if(pageStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
+//									nod2Student = pageStudent.retourneFirstEnfantsByName(nameNode2);
+//								}
+//							}
+//
+//						}
+						
+						nod2Student = rechercheLeNodeEnCascade(nameNode2,nod2Sujet,null,pageStudent,nodStudent,a);
 						
 						//insère un saut s'il y a un titre avec un saut=true
 						page = addNodeSautTitre(nod2Sujet, page);
@@ -2465,44 +2487,46 @@ public class meptl {
 							node nod3Sujet = nod2Sujet.getNodes().get(l);
 							String nameNode3 = nod3Sujet.getNomElt();
 							node nod3Student = null;	
-							if(nod2Student!=null) {
-								if(nameNode3.equals("table:table-cell")) {
-										nod3Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode3, "index", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("index")));	
-								}
-								if(nameNode3.equals("text:database-display")) {
-									nod3Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode3, "text:column-name", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("text:column-name")));
-									if(nod3Student==null) {
-										nod3Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode3, "text:column-name", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("text:column-name")));
-									}
-									if(nod3Student==null) {
-										nod3Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode3, "text:column-name", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("text:column-name")));
-									}
-								}
-								if(nameNode3.equals("text:p")) {
-									//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
-									if(nod3Sujet.containElementByName("text:database-display")) {
-										String valueAttribut = outils.withoutCodeAndPoint(nod3Sujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
-										nod3Student = nod2Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
-									}
-									if(nod3Student==null) {
-										if(nod3Sujet.retourneLesContenusEnfants("").isEmpty()) { //s'il n'y a pas de contenu, passe par l'index
-											if(nod3Sujet.getAttributs().get("index")!=null) nod3Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode3, "index", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("index")));
-										}else {
-											nod3Student = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nod3Sujet.retourneLesContenusEnfants(""));
-											if(nod3Student==null) {
-												nod3Student = a.retourneFirstNodeByFindContent2(nodStudent.getNodes(), nod3Sujet.retourneLesContenusEnfants(""));	
-											}
-										}
-									}
-								}
-								
-								if(nod3Student==null) {
-									if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
-										nod3Student = nod2Student.retourneFirstEnfantsByName(nameNode3);
-									}
-								}
-
-							}
+//							if(nod2Student!=null) {
+//								if(nameNode3.equals("table:table-cell")) {
+//										nod3Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode3, "index", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("index")));	
+//								}
+//								if(nameNode3.equals("text:database-display")) {
+//									nod3Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode3, "text:column-name", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("text:column-name")));
+//									if(nod3Student==null) {
+//										nod3Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode3, "text:column-name", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("text:column-name")));
+//									}
+//									if(nod3Student==null) {
+//										nod3Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode3, "text:column-name", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("text:column-name")));
+//									}
+//								}
+//								if(nameNode3.equals("text:p")) {
+//									//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
+//									if(nod3Sujet.containElementByName("text:database-display")) {
+//										String valueAttribut = outils.withoutCodeAndPoint(nod3Sujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
+//										nod3Student = nod2Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+//									}
+//									if(nod3Student==null) {
+//										if(nod3Sujet.retourneLesContenusEnfants("").isEmpty()) { //s'il n'y a pas de contenu, passe par l'index
+//											if(nod3Sujet.getAttributs().get("index")!=null) nod3Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode3, "index", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("index")));
+//										}else {
+//											nod3Student = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nod3Sujet.retourneLesContenusEnfants(""));
+//											if(nod3Student==null) {
+//												nod3Student = a.retourneFirstNodeByFindContent2(nodStudent.getNodes(), nod3Sujet.retourneLesContenusEnfants(""));	
+//											}
+//										}
+//									}
+//								}
+//								
+//								if(nod3Student==null) {
+//									if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
+//										nod3Student = nod2Student.retourneFirstEnfantsByName(nameNode3);
+//									}
+//								}
+//
+//							}
+							
+							nod3Student = rechercheLeNodeEnCascade(nameNode3,nod3Sujet,pageStudent,nodStudent,nod2Student,a);
 							
 							//insère un saut s'il y a un titre avec un saut=true
 							page = addNodeSautTitre(nod3Sujet, page);
@@ -2516,45 +2540,46 @@ public class meptl {
 								node nod4Sujet = nod3Sujet.getNodes().get(m);
 								String nameNode4 = nod4Sujet.getNomElt();
 								node nod4Student = null;
-								if(nod3Student!=null) {
-
-									if(nameNode4.equals("text:database-display")) {
-										nod4Student = a.retourneFirstNodeByNameAttributValue(nod3Student, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
-										if(nod4Student==null) {
-											nod4Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
-										}
-										if(nod4Student==null) {
-											nod4Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
-										}
-										if(nod4Student==null) {
-											nod4Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
-										}
-									}
-									if(nameNode4.equals("text:p")) {
-										//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
-										if(nod4Sujet.containElementByName("text:database-display")) {
-											String valueAttribut = outils.withoutCodeAndPoint(nod4Sujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
-											nod4Student = nod3Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
-										}
-										if(nod4Student==null) {
-											if(nod4Sujet.retourneLesContenusEnfants("").isEmpty()) {
-												nod4Student = a.retourneFirstNodeByNameAttributValue(nod3Student, nameNode4, "index", nod4Sujet.getAttributs().get("index"));
-											}else {
-												nod4Student = a.retourneFirstNodeByFindContent2(nod3Student.getNodes(),nod4Sujet.retourneLesContenusEnfants("") );
-												if(nod4Student==null) {
-													nod4Student = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(),nod4Sujet.retourneLesContenusEnfants("") );
-												}
-											}
-										}
-									}
-									
-									if(nod4Student==null) {
-										if(nod3Student.retourneFirstEnfantsByName(nameNode4).getNomElt().equals(nameNode4)) {
-											nod4Student = nod3Student.retourneFirstEnfantsByName(nameNode4);
-										}
-									}
-								}
+//								if(nod3Student!=null) {
+//									if(nameNode4.equals("text:database-display")) {
+//										nod4Student = a.retourneFirstNodeByNameAttributValue(nod3Student, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
+//										if(nod4Student==null) {
+//											nod4Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
+//										}
+//										if(nod4Student==null) {
+//											nod4Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
+//										}
+//										if(nod4Student==null) {
+//											nod4Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode4, "text:column-name", outils.withoutCodeAndPoint(nod4Sujet.getAttributs().get("text:column-name")));
+//										}
+//									}
+//									if(nameNode4.equals("text:p")) {
+//										//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
+//										if(nod4Sujet.containElementByName("text:database-display")) {
+//											String valueAttribut = outils.withoutCodeAndPoint(nod4Sujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
+//											nod4Student = nod3Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+//										}
+//										if(nod4Student==null) {
+//											if(nod4Sujet.retourneLesContenusEnfants("").isEmpty()) {
+//												nod4Student = a.retourneFirstNodeByNameAttributValue(nod3Student, nameNode4, "index", nod4Sujet.getAttributs().get("index"));
+//											}else {
+//												nod4Student = a.retourneFirstNodeByFindContent2(nod3Student.getNodes(),nod4Sujet.retourneLesContenusEnfants("") );
+//												if(nod4Student==null) {
+//													nod4Student = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(),nod4Sujet.retourneLesContenusEnfants("") );
+//												}
+//											}
+//										}
+//									}
+//									
+//									if(nod4Student==null) {
+//										if(nod3Student.retourneFirstEnfantsByName(nameNode4).getNomElt().equals(nameNode4)) {
+//											nod4Student = nod3Student.retourneFirstEnfantsByName(nameNode4);
+//										}
+//									}
+//								}
 								
+								nod4Student = rechercheLeNodeEnCascade(nameNode4,nod4Sujet,nodStudent,nod2Student,nod3Student,a);
+
 								//insère un saut s'il y a un titre avec un saut=true
 								page = addNodeSautTitre(nod4Sujet, page);
 
@@ -2568,41 +2593,43 @@ public class meptl {
 									node nod5Sujet = nod4Sujet.getNodes().get(p);
 									String nameNode5 = nod5Sujet.getNomElt();
 									node nod5Student = null;
-									if(nod4Student!=null) {
-
-										if(nameNode5.equals("text:database-display")) {
-											nod5Student = a.retourneFirstNodeByNameAttributValue(nod4Student, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
-											if(nod5Student==null) {
-												nod5Student = a.retourneFirstNodeByNameAttributValue(nod3Student, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
-											}
-											if(nod5Student==null) {
-												nod5Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
-											}
-											if(nod5Student==null) {
-												nod5Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
-											}
-											if(nod5Student==null) {
-												nod5Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
-											}
-										}
-										if(nameNode5.equals("text:p") || nameNode5.equals("text:span")) {
-											if(nod5Sujet.retourneLesContenusEnfants("").isEmpty()) {
-												nod5Student = a.retourneFirstNodeByNameAttributValue(nod4Student, nameNode5, "index", nod5Sujet.getAttributs().get("index"));
-											}else {
-												nod5Student = a.retourneFirstNodeByFindContent2(nod4Student.getNodes(),nod5Sujet.retourneLesContenusEnfants("") );
-												if(nod5Student==null) {
-													nod5Student = a.retourneFirstNodeByFindContent2(nod3Student.getNodes(),nod5Sujet.retourneLesContenusEnfants("") );
-												}
-											}
-										}
-										
-										if(nod5Student==null) {
-											if(nod4Student.retourneFirstEnfantsByName(nameNode5).getNomElt().equals(nameNode5)) {
-												nod5Student = nod4Student.retourneFirstEnfantsByName(nameNode5);
-											}
-										}
-										
-									}
+//									if(nod4Student!=null) {
+//										if(nameNode5.equals("text:database-display")) {
+//											nod5Student = a.retourneFirstNodeByNameAttributValue(nod4Student, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
+//											if(nod5Student==null) {
+//												nod5Student = a.retourneFirstNodeByNameAttributValue(nod3Student, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
+//											}
+//											if(nod5Student==null) {
+//												nod5Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
+//											}
+//											if(nod5Student==null) {
+//												nod5Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
+//											}
+//											if(nod5Student==null) {
+//												nod5Student = a.retourneFirstNodeByNameAttributValue(pageStudent, nameNode5, "text:column-name", outils.withoutCodeAndPoint(nod5Sujet.getAttributs().get("text:column-name")));
+//											}
+//										}
+//										if(nameNode5.equals("text:p") || nameNode5.equals("text:span")) {
+//											if(nod5Sujet.retourneLesContenusEnfants("").isEmpty()) {
+//												nod5Student = a.retourneFirstNodeByNameAttributValue(nod4Student, nameNode5, "index", nod5Sujet.getAttributs().get("index"));
+//											}else {
+//												nod5Student = a.retourneFirstNodeByFindContent2(nod4Student.getNodes(),nod5Sujet.retourneLesContenusEnfants("") );
+//												if(nod5Student==null) {
+//													nod5Student = a.retourneFirstNodeByFindContent2(nod3Student.getNodes(),nod5Sujet.retourneLesContenusEnfants("") );
+//												}
+//											}
+//										}
+//										
+//										if(nod5Student==null) {
+//											if(nod4Student.retourneFirstEnfantsByName(nameNode5).getNomElt().equals(nameNode5)) {
+//												nod5Student = nod4Student.retourneFirstEnfantsByName(nameNode5);
+//											}
+//										}
+//										
+//									}
+									
+									
+									nod5Student = rechercheLeNodeEnCascade(nameNode5,nod5Sujet,nod2Student,nod3Student,nod4Student,a);
 									
 									//insère un saut s'il y a un titre avec un saut=true
 									page = addNodeSautTitre(nod5Sujet, page);
@@ -3181,6 +3208,381 @@ public class meptl {
 		
  	}
 
+ 	
+ 	/**
+ 	 * Retourne le nom du fichier de l'étudiant pour le Zip de Moodle.<br/>
+ 	 * </br>
+ 	 * @param filename
+ 	 * @param nodana
+ 	 * @return
+ 	 */
+ 	private static String retourneLeNomDuFeedback( String filename,node nodana) {
+ 		System.getProperty("file.encoding","UTF-8");
+ 		//Date aujourdhui = new Date();
+ 		
+ 		//nom du fichier feedback
+ 		String metaS = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet");
+ 		if(metaS.equals("?")) metaS = "metaSujet-inconnu";
+ 		if(metaS.isEmpty()) metaS = "metaSujet-inconnu";
+ 		String cheminFeedBack = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier") +"-"+metaS;  //+ "-DateLong" + aujourdhui.getTime()
+  		
+ 		if(!commandes.noNote) {
+  			cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
+  		}else {
+  			cheminFeedBack = cheminFeedBack + ".html";
+  		}
+ 		
+ 		return filename + cheminFeedBack;
+ 	}
+ 	
+ 	
+ 	/**
+ 	 * Ecriture du fichier pour l'archive ZIP de moodle.<br/>
+ 	 * <br/>
+ 	 * @param nodana
+ 	 * @return
+ 	 * @throws IOException
+ 	 */
+ 	private static StringBuilder feedbackForZip(node nodana) throws IOException {
+ 		
+ 		System.getProperty("file.encoding","UTF-8");
+ 		Date aujourdhui = new Date();
+ 		
+ 		//nom du fichier feedback
+// 		String metaS = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet");
+// 		if(metaS.equals("?")) metaS = "metaSujet-inconnu";
+// 		if(metaS.isEmpty()) metaS = "metaSujet-inconnu";
+// 		String cheminFeedBack = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier") + "-DateLong" + aujourdhui.getTime()+"-"+metaS;
+//  		
+// 		if(!commandes.noNote) {
+//  			cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
+//  		}else {
+//  			cheminFeedBack = cheminFeedBack + ".html";
+//  		}
+ 		
+  		// Chemin vers le dossier de destination
+//		Path outputFilePath = Paths.get(patch + "/" + cheminFeedBack);
+//		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(patch + "/" + commandes.pathDestination+ "/" + cheminFeedBack);
+		
+			
+		//BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
+		
+		StringBuilder fichier = new StringBuilder();
+		
+		//ajoute le chemin vers le feedback dans le node d'analyse
+		//nodana.retourneFirstEnfantsByName("ouverture").getAttributs().put("feedback", patch + "/" + cheminFeedBack);
+		
+		// auteur du sujet
+		String auteurSujet = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("auteur");
+		if(auteurSujet==null) auteurSujet="";
+		
+		
+		//création du feedback
+		fichier.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\r"
+				+ "<html>\r"
+				+ "<head>\r"
+				+ "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>\r"
+				+ "<title>Analyse LibreOffice Calc</title>\r");
+		
+		fichier.append("<meta name=\"generator\" content=\"AnalyseMEPTL V1.0\"/>"
+				+ "<meta name=\"author\" content=\"Pablo Rodriguez\"/>"
+				+ "<meta name=\"created\" content=\""+  nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("date") +"\"/>");
+
+		
+		fichier.append("<style type=\"text/css\">" 
+				+ "p.pablo { margin-bottom: 0.25cm; line-height: 100%; background: transparent;  margin-left: 1cm; }"
+				+ ".header {background-color: #f1f1f1;padding: 30px;text-align:center;}"
+				+ "h1 { margin-bottom: 0.25cm; background: transparent;}"
+				+ "h2 {color: blue;font-size:22pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;  margin-right: 10px; text-decoration: underline overline;}"
+				+ "h3 {font-size:18pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;}"
+				+ "header.h1.western { font-family: \"Arial\"; font-size: 18pt; font-weight: bold; backgroung: #adff2f;}"
+				+ ".header p {color:blue; font-size:30px;}"
+				+ ".triche {background: #AA0000;padding-top: 5px;padding-right: 5px;padding-bottom: 5px;padding-left: 5px;width=80%;margin-top:18px; box-shadow: 5px 10px 18px #800000;}"
+				+ ".triche p {color:white; font-size:16px;margin-left:10px;margin-bottom:6px;margin-top:6px}"
+				+ ".header h4 {text-align:left;font-family: \"Arial\"; font-size: 12pt; font-weight: bold; line-height: 110%;}"
+				+ "h4.western { font-family: \"Arial\"; font-size: 14pt; font-style: italic; font-weight: bold; line-height: 40%}"
+				+ "a:link { color: #0000ff; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
+				+ "a:visited { color: #800000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
+				+ "hr { display: block; margin-top: 0.5em; margin-bottom: 8em; margin-left: 2em; margin-right: 2em; border-style: inset; border-width: 4px;}"
+				+ "spanpablo { float: right; width: 8em; font-size: 250%; font-family: algerian, courier; line-height: 80%; margin-right: 1%; color: red; text-align: center}"
+				+ "p.p1{margin-bottom: 0cm; margin-top: 0cm; line-height: 100%; background: transparent;  margin-left: 0cm; white-space: pre;}"
+				+ "p.p8{font-size:14pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 8pt;  margin-right: 10px;}"
+				+ "p.p9{font-size:16pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 40pt;  margin-right: 0cm;text-decoration: underline overline wavy blue;text-shadow: 0px 1px #101010;}"
+				+ "p.p10{font-size:12pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 30pt;  margin-right: 0cm;text-decoration: underline overline wavy red;}"
+				+ ".commentaire{margin-left: 0px; margin-bottom: 24px; margin-top: 24px;font-size:1.4rem}"
+				+ "p.p2{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; line-height: 115%}"
+				+ "p.p3{margin-left: 20px; line-height: 100%; border: 1px solid black; background-color: lightcyan; margin-right: 10px;  }"
+				+ "p.p4{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; margin-right: 4px; line-height: 115%; background: darkblue; color:white; font-size: 20px; white-space: pre;}"
+				+ "p.p5{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: red; color:white; font-size: 20px;}"
+				+ "p.p6{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: beige; color:darkcyan; font-size: 20px;}"
+				+ "p.p7{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: #7FFF00; font-size: 20px;}"
+				+ "#navbar {overflow: hidden;background-color: #333;width:100%;box-shadow: 5px 10px 8px #888888;}"
+				+ "#navbar a {float: left;display: block;color: #f2f2f2;text-align: center;padding: 14px 16px;text-decoration: none;font-size: 17px;}"
+				+ "#navbar a:hover {background-color: #ddd;color: black;}" 
+				+ "#navbar a.active {background-color: #4CAF50;color: white;margin-left:0px;}"
+				+ "#navbar a.active2 {background-color: #FF8050;color: white;margin-left:0px;}"
+				+ "#navbar a.active3 {background-color: #5080FF;color: white;margin-left:0px;}"
+				+ "div.sticky {position: fixed;top: 0;width: 100%;}"
+				+ ".sticky + .content {padding-top: 60px;}"
+				+ "#navbar2 {overflow: hidden; background-color: #333;}"
+				+ "#navbar2 a {float: left; font-size: 18px; color: white; text-align: center; padding: 16px 18px; text-decoration: none;}"
+				+ ".dropdown {position: relative; display: inline-block;}"
+				+ ".dropbtn:hover, .dropbtn:focus { background-color: #3e8e41;}"
+				+ ".dropdown-content {display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);}"
+				+ ".dropdown-content a {color: black; padding: 12px 16px; text-decoration: none; display: block;}"
+				+ ".dropdown-content a:hover {background-color: #f1f1f1}"
+				+".show {display:block;}"
+				+ "#myDropdown {background-color: #508050;color: black;}"
+				+ ".menu-box{display: none;}"
+				+ ".menuopen{display: block;}"
+				+ ".tooltip {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
+				+ ".tooltip .tooltiptext {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -30px; width: 260px;top: 100%;left: 10%;}"
+				+ ".tooltip .tooltiptext::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
+				+ ".tooltip:hover .tooltiptext {visibility: visible;}"
+				+ ".tooltip2 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
+				+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
+				+ ".tooltip2 .tooltiptext2::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
+				+ ".tooltip2:hover .tooltiptext2 {visibility: visible;}"
+				+ ".footer {position: fixed;left: 0;bottom: 0;width: 100%;background-color: white;color: black;text-align: center;}"
+				+"</style>");
+		
+		fichier.append("</head>\r");
+		fichier.append("<body lang=\"fr-FR\" link=\"#000080\" vlink=\"#800000\" dir=\"ltr\">\r");
+		
+		fichier.append("<div class=\"header\">");
+		if(!commandes.noLogo) {
+			fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
+					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/>"+HTML.imgLogos()+"</font></h1>\r");
+		}else {
+			fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
+					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/></font></h1>\r");
+		}
+				
+		
+		//Note
+		node ouvre = nodana.retourneFirstEnfantsByName("ouverture");
+		String noteFrom = ouvre.getAttributs().get("notefrom");
+		if(noteFrom ==null) noteFrom="20";
+		if(!commandes.noNote) fichier.append("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+
+		 
+		//informations
+		// date d'analyse, dossier étudiant, auteur sujet, date de la dernière modificatio, lien, algorithme
+		DateFormat mediumDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
+		LocalDateTime dateTimeModif = null;
+		String dateModif="";
+		if(!ouvre.getAttributs().get("dateModification").isEmpty()) {
+			dateTimeModif = LocalDateTime.parse(ouvre.getAttributs().get("dateModification"));
+			dateModif = dateTimeModif.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
+		}
+		
+		fichier.append("<h4>Date d'analyse : "+ mediumDateFormat.format(aujourdhui) + "<br/>");
+	    fichier.append("Dossier étudiant : <span style=\"color:blue\">"+ ouvre.getAttributs().get("dossier") + "</span><br/>");
+	    fichier.append("Nom du fichier analysé et évalué : <span style=\"color:blue\">"+ ouvre.getAttributs().get("filename") + "</span><br/>");
+	    fichier.append("Date de la dernière modification du fichier analysé : <span style=\"color:purple\">"+ dateModif + "</span><br/>");
+	    fichier.append("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br/>"));
+	    if(!auteurSujet.isEmpty()) {fichier.append("Sujet créé par : <span style=\"color:blue\">"+ auteurSujet + "</span><br/>");}else {fichier.append("<br/>");}
+		   
+	    if(!commandes.noNote)fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br/>");
+  	    if(ouvre.getAttributs().get("link_sujet")!=null) {
+			String linkSujet= ouvre.getAttributs().get("link_sujet");
+			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
+			if(m.find()) {fichier.append("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br/>");}
+		}
+  	  if(ouvre.getAttributs().get("link_help")!=null) {
+			String linkSujet= ouvre.getAttributs().get("link_help");
+			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
+			if(m.find()) {fichier.append("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le support</a><br/>");}
+		}
+  	    
+  	    fichier.append("<br/><font color=\"#808080\" style=\"font-size: 9pt\"><i>Analysé avec la version : " + commandes.version + "<br/></h4>");
+		
+		
+	    fichier.append(HTML.SautLigne());
+	   
+	    fichier.append("</div>");
+	   
+	    //ajoute le menu 
+	    fichier.append(HTML.getHTMLmenu(nodana.retourneFirstEnfantsByName("menu").getNodes()));
+	   
+		
+		//Les erreurs
+		node errors = nodana.retourneFirstEnfantsByName("erreurs");
+	    if(Boolean.valueOf(errors.getAttributs().get("oneError"))) {
+	    	fichier.append(HTML.SautLigne());
+    		if(Boolean.valueOf(errors.getAttributs().get("manqueHistorique"))) fichier.append(HTML.Paragraph_classp5("ERREUR : Il n'y a pas d'historique des modifications dans ce fichier. Le fichier n'a pas été modifié ou il a été réinitialisé."));
+	    	if(Boolean.valueOf(errors.getAttributs().get("manqueCreationDate"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La date de création du fichier a été supprimée."));
+	    	if(Boolean.valueOf(errors.getAttributs().get("manqueValeurCreationDate"))) fichier.append(HTML.Paragraph_classp5("ERREUR : Ce n'est pas la bonne date de création du fichier. Le fichier a été réinitialisé ou ce n'est pas le bon fichier."));
+	    	if(Boolean.valueOf(errors.getAttributs().get("manqueMetaSujet"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La méta donnée \"Sujet\" dans les propriétés du fichier a été supprimée ou renommée."));
+	    	if(Boolean.valueOf(errors.getAttributs().get("manqueValeurMetaSujet"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La valeur de la méta donnée \"Sujet\" dans les propriétés du fichier n'est pas \"" + nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet"))+"\"");
+		    
+	    }
+	    
+	    
+		
+		 fichier.append(HTML.SautLigne());
+		 
+		 //Ajoute de commentaire de l'exercice
+		 fichier.append(HTML.H3(nodana.getContenu()).replace("-NewLine-", "<br>"));
+		 
+		 fichier.append(HTML.SautLigne());
+		 
+		    
+		 fichier.append(HTML.H2("Synthèse"));
+		
+		 fichier.append(HTML.TableEnteteTableurSynthese());
+		 String IdError = ""; // permet de récupérer les id des menu ou la proportioncorrect est NaN. (à cause de l'attribut analyseStyle=true)
+		 for(int k = 0 ; k < nodana.getNodes().size();k++) {
+			 if(nodana.getNodes().get(k).getAttributs().get("addmenu")!=null) if(nodana.getNodes().get(k).getAttributs().get("addmenu").equals("true")) {
+			    if(!nodana.getNodes().get(k).getAttributs().get("proportioncorrect").equals("NaN")) {
+			    	 fichier.append(HTML.TablePointsSyntheseStyle(nodana.getNodes().get(k).getAttributs().get("titre"),Double.valueOf(nodana.getNodes().get(k).getAttributs().get("proportioncorrect")),nodana.getNodes().get(k).getAttributs().get("pointtotal") + " pt",nodana.getNodes().get(k).getAttributs().get("pointgagner") + " pt", nodana.getNodes().get(k).getAttributs().get("poids"),nodana.getNodes().get(k).getAttributs().get("id")));
+			    }else {
+			    	IdError = IdError + nodana.getNodes().get(k).getAttributs().get("id");
+			    }
+			 }
+		  }
+		
+		 
+		 //Metadonnées
+		 if(nodana.retourneFirstEnfantsByName("meta")!=null) if(nodana.retourneFirstEnfantsByName("meta").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("meta")));
+		 }
+		 
+		 //style de paragraphe
+		 if(nodana.retourneFirstEnfantsByName("paragraphs")!=null) if(nodana.retourneFirstEnfantsByName("paragraphs").isClose()) {
+			 //il est possible qu'il n'y ai aucun point car passé par analyseStyle dans le node structurepage
+			 if(!IdError.contains(nodana.retourneFirstEnfantsByName("paragraphs").getAttributs().get("id"))){
+				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("paragraphs"))); 
+			 }
+		 }
+		 
+		 //pages
+		 if(nodana.retourneFirstEnfantsByName("pages")!=null) if(nodana.retourneFirstEnfantsByName("pages").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("pages")));
+		 }
+		 
+		 //sequences
+		 if(nodana.retourneFirstEnfantsByName("sequences")!=null) if(nodana.retourneFirstEnfantsByName("sequences").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("sequences")));
+		 }	 
+
+		 //numerotationchapitre
+		 if(nodana.retourneFirstEnfantsByName("numerotationchapitre")!=null) if(nodana.retourneFirstEnfantsByName("numerotationchapitre").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("numerotationchapitre")));
+		 }
+		 
+		 //frames
+		 if(nodana.retourneFirstEnfantsByName("frames")!=null) if(nodana.retourneFirstEnfantsByName("frames").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("frames")));
+		 }	 
+		 
+		 //bibliographies
+		 if(nodana.retourneFirstEnfantsByName("bibliographies")!=null) if(nodana.retourneFirstEnfantsByName("bibliographies").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("bibliographies")));
+		 }		 
+		 
+		 //tablematieres
+		 if(nodana.retourneFirstEnfantsByName("tablematieres")!=null) if(nodana.retourneFirstEnfantsByName("tablematieres").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("tablematieres")));
+		 }			
+
+		 //tableillustrations
+		 if(nodana.retourneFirstEnfantsByName("tableillustrations")!=null) if(nodana.retourneFirstEnfantsByName("tableillustrations").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("tableillustrations")));
+		 }
+		 
+		 //structurepage
+		 if(nodana.retourneFirstEnfantsByName("structurepage")!=null) if(nodana.retourneFirstEnfantsByName("structurepage").isClose()) {
+			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("structurepage")));
+		 }		 
+		 
+		 fichier.append("<p><br/><br/></p>");
+		 
+		 //footer
+		 fichier.append("<div class=\"footer\">");
+		 fichier.append("<font color=\"#808080\" style=\"font-size: 10pt\"><i>analyseWriter - P. Rodriguez (université d'Artois) - Licence GPL v3.0 - analysé avec la version : " + commandes.version + " - ");
+		 fichier.append("Fichier d'analyse créé avec la version : " + ouvre.getAttributs().get("version") + "</i></font>");  
+		 fichier.append("</div>");
+		
+		 fichier.append("<script>");
+		   
+	   	   fichier.append("window.onscroll = function() {myFunction()};");
+		   fichier.append("var navbar = document.getElementById(\"navbar\");");
+		   fichier.append("var sticky = navbar.offsetTop;");
+
+		   fichier.append("function myFunction() {");
+		   fichier.append("if (window.pageYOffset >= sticky) {");
+		   fichier.append("navbar.classList.add(\"sticky\")");
+		   fichier.append("} else {");
+		   fichier.append("navbar.classList.remove(\"sticky\");");
+		   fichier.append("}");
+		   fichier.append("}\r\n");
+		   
+		   
+		   fichier.append("function toggleMenu() {\r\n" + 
+		   		"  var menuBox0 = document.getElementById('menu-box0');    \r\n" + 
+		   		"  var menuBox1 = document.getElementById('menu-box1');    \r\n" + 
+		   		"  var menuBox2 = document.getElementById('menu-box2');    \r\n" +
+		   		"  var menuBox3 = document.getElementById('menu-box3');    \r\n" +
+		   		"  var menuBox4 = document.getElementById('menu-box4');    \r\n" +
+		   		"  var menuBox5 = document.getElementById('menu-box5');    \r\n" +
+		   		"\r\n"+
+		   		"  if(menuBox0.style.display == \"block\") { " + 
+		   		"    menuBox0.style.display = \"none\";\r\n" + 
+		   		"  }\r\n" + 
+		   		"  else {" + 
+		   		"    menuBox0.style.display = \"block\";\r\n" + 
+		   		"  }\r\n" +
+		   		"\r\n"+
+		   		"  if(menuBox1.style.display == \"block\") { " + 
+		   		"    menuBox1.style.display = \"none\";\r\n" + 
+		   		"  }\r\n" + 
+		   		"  else {" + 
+		   		"    menuBox1.style.display = \"block\";\r\n" + 
+		   		"  }\r\n" +
+		   		"\r\n"+
+		   		"  if(menuBox2.style.display == \"block\") { " + 
+		   		"    menuBox2.style.display = \"none\";\r\n" + 
+		   		"  }\r\n" + 
+		   		"  else {" + 
+		   		"    menuBox2.style.display = \"block\";\r\n" + 
+		   		"  }\r\n" +
+		   		"\r\n"+
+		   		"  if(menuBox3.style.display == \"block\") { " + 
+		   		"    menuBox3.style.display = \"none\";\r\n" + 
+		   		"  }\r\n" + 
+		   		"  else {" + 
+		   		"    menuBox3.style.display = \"block\";\r\n" + 
+		   		"  }\r\n" +
+		   		"  if(menuBox4.style.display == \"block\") { " + 
+		   		"    menuBox4.style.display = \"none\";\r\n" + 
+		   		"  }\r\n" + 
+		   		"  else {" + 
+		   		"    menuBox4.style.display = \"block\";\r\n" + 
+		   		"  }\r\n" +
+		   		"  if(menuBox5.style.display == \"block\") { " + 
+		   		"    menuBox5.style.display = \"none\";\r\n" + 
+		   		"  }\r\n" + 
+		   		"  else {" + 
+		   		"    menuBox5.style.display = \"block\";\r\n" + 
+		   		"  }\r\n" +
+		   		"}");
+		   
+		fichier.append("</script>");
+		   
+		fichier.append("</body>\r");
+		fichier.append("</html>");
+			
+		
+		//affichage dans la console
+//		if(!commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + cheminFeedBack);
+//		if(commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + commandes.pathDestination + "\\" + cheminFeedBack);
+				
+		return fichier;
+ 	}
+
+ 	
+ 	
  	/**
  	 * Affichage uniquement dans la console des erreurs
  	 * @param nod
@@ -3197,7 +3599,7 @@ public class meptl {
 			System.out.println("\t ERROR in student's file.");
 			if(Boolean.valueOf(erreurs.getAttributs().get("manqueHistorique"))) System.out.println("\t ERROR : There is no historic in the file. Perhaps, the file has not been modified or it has been reset by the student.");
 			if(Boolean.valueOf(erreurs.getAttributs().get("manqueCreationDate"))) System.out.println("\t ERROR : This is the wrong file creation date. The file has been reset or it is not the correct file.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurCreationDate"))) System.out.println("\t ERROR : This is teh wrong file creation date.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurCreationDate"))) System.out.println("\t ERROR : This is the wrong file creation date.");
 			
 			if(Boolean.valueOf(erreurs.getAttributs().get("manqueMetaSujet"))) System.out.println("\t ERROR : The metadata \"Sujet\" has been deleted in the student's file. It is impossible to identify the exercise.");
 			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurMetaSujet"))) System.out.println("\t ERROR : The metadata value of  \"Sujet \" in the student's file is not \"" + ouverture.getAttributs().get("metaSujet")+"\"");
@@ -3797,16 +4199,26 @@ public class meptl {
 		csv.getAttributs().put("encoding", "UTF-8");
 		csv.getAttributs().put("separator", ";");
 		csv.setContenu("encoding UTF-8 US-ASCII ISO-8859-1 UTF-16BE UTF-16LE UTF-16");
+		csv.setClose(true);
+		
 		//node export du csv
 		node export = new node();
 		export.setNomElt("export_moodle");
 		export.getAttributs().put("champ_email_moodle", "Adresse de courriel");
 		export.getAttributs().put("champ_student_number_moodle", "Numéro d'identification");
+		export.setClose(true);
 		
+		//node taille zip
+		node zip = new node();
+		zip.setNomElt("zip");
+		zip.getAttributs().put("size", "48000000");
+		zip.getAttributs().put("nameZip", "48000000");
+		zip.isClose();
 		
-		//construction du node seeting
+		//construction du node setting
 		csv.getNodes().add(export);
 		setting.getNodes().add(csv);
+		setting.getNodes().add(zip);
 		
 		// ajoute le node setting au node sujet
 		sujet.getNodes().add(setting);
@@ -3818,69 +4230,104 @@ public class meptl {
 	}
 	
 	
-	private static node rechercheLeNode(String nameNode, node nodSujet,node nodStudentS, node nod1Student, node nod2Student, Run a ) {
+	private static node rechercheLeNodeEnCascade(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a ) {
 		
 		node nodStudent =null;
 		
+		// recherche par différent contenu du node
 		if(nameNode.equals("text:p")) {
 			//si le node "text:p" contient un "text:user-defined" alors le recherche par le "text:name" de ce node "text:user-defined"
 			if(nodSujet.containElementByName("text:user-defined")) {
 				String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:user-defined").getAttributs().get("text:name"));
 				if(nod2Student!=null) nodStudent = nod2Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
-				if(nod1Student!=null) nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
-				if(nodStudentS!=null) nodStudent = nodStudentS.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
+				if(nod1Student!=null) if(nodStudent==null) nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
+				if(nod0Student!=null) if(nodStudent==null) nodStudent = nod0Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:user-defined", "text:name", valueAttribut);
 			}
 			//si le node "text:p" contient un "text:database-display" alors le recherche par le "text:column-name" de ce node "text:database-display"
 			if(nodSujet.containElementByName("text:database-display")) {
 				String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:database-display").getAttributs().get("text:column-name"));
 				if(nod2Student!=null) nodStudent = nod2Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
-				if(nod1Student!=null) nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
-				if(nodStudentS!=null) nodStudent = nodStudentS.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+				if(nod1Student!=null) if(nodStudent==null) nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
+				if(nod0Student!=null) if(nodStudent==null) nodStudent = nod0Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:database-display", "text:column-name", valueAttribut);
 			}
 			//si le node "text:p" contient un "text:date" alors le recherche par le "text:fixed" de ce node "text:date"
 			if(nodSujet.containElementByName("text:date")) {
 				String valueAttribut = outils.withoutCodeAndPoint(nodSujet.retourneFirstEnfantsByName("text:date").getAttributs().get("text:fixed"));
-				nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:date", "text:fixed", valueAttribut);
+				if(nod2Student!=null) nodStudent = nod2Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:date", "text:fixed", valueAttribut);
+				if(nod1Student!=null) if(nodStudent==null) nodStudent = nod1Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:date", "text:fixed", valueAttribut);
+				if(nod0Student!=null) if(nodStudent==null) nodStudent = nod0Student.retourneFirstNodeByNameContainsNodeByNameAndAttributValue("text:p","text:date", "text:fixed", valueAttribut);
 			}
 			
 			if(nodStudent==null) {
 				if(nodSujet.retourneLesContenusEnfants("").isEmpty()) { //s'il n'y a pas de contenu, passe par l'index
-					if(nodSujet.getAttributs().get("index")!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
+					if(nodSujet.getAttributs().get("index")!=null) {
+						if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
+						if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
+						if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
+					}
 				}else {
-					nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+					if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
 				}
 			}
 		}
+		
+		if(nameNode.equals("text:user-defined")) {
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+		}
+		
+		
+		//recherche par le contenu enfant du node
 		if(nameNode.equals("text:h")) {
-			nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
 		}
 		
-		
+		//recherche par text:name
 		if(nameNode.equals("text:section")) {
-			//recherche par text:name exacte mais nettexte
-			nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-			if(nodStudent==null) {
-				//recherche si le nnme contient dans la page student
-				nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-			}
-			if(nodStudent==null) {
-				//recherche si le name contient dans le node student
-				nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nodStudentS, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-			}
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
 		}
 		
+		//recherche par le nom de la colonne
 		if(nameNode.equals("text:database-display")) {
-			nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
 		}
 		
+		//recherche par le nom de l'objet
 		if(nameNode.equals("draw:frame")) {
-			nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "draw:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("draw:name")));
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "draw:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("draw:name")));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "draw:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("draw:name")));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "draw:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("draw:name")));
 		}
 		
+		//recherche par l'index
+		if(nameNode.equals("table:table-row")) {
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", nodSujet.getAttributs().get("index"));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", nodSujet.getAttributs().get("index"));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", nodSujet.getAttributs().get("index"));
+			
+		}
+		
+		//recherche par texte:name
+		if(nameNode.equals("text:table-of-content")) {
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));		
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+		}
+		
+		// dernière tentative si le node est vide, recherche par le nom du node
 		if(nodStudent==null) {
-			if(nod1Student.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
-				nodStudent = nod1Student.retourneFirstEnfantsByName(nameNode);
-			}
+			if(nod2Student!=null) if(nod2Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod2Student.retourneFirstEnfantsByName(nameNode);
+			if(nod1Student!=null) if(nodStudent==null) if(nod1Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod1Student.retourneFirstEnfantsByName(nameNode);
+			if(nod0Student!=null) if(nodStudent==null) if(nod0Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod0Student.retourneFirstEnfantsByName(nameNode);
 		}
 		
 		return nodStudent;
