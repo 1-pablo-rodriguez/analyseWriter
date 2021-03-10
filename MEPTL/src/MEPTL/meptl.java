@@ -58,10 +58,10 @@ public class meptl {
 				
 		patch = System.getProperty("user.dir");
 //		patch = "C:/Users/pabr6/Downloads/teste/";
-		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
+//		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
 		//analyse les commandes passées
-//		new commandes(args,patch);
+		new commandes(args,patch);
 		
 		
 		Run a = new Run(patch,commandes.Profil);
@@ -2308,7 +2308,7 @@ public class meptl {
 				// second niveau
 				for(int j = 0 ; j < pageSujet.getNodes().size();j++ ) {
 				
-				boolean paragrapheTexte = false;
+				//boolean paragrapheTexte = false;
 				node nodSujet = pageSujet.getNodes().get(j);
 				String nameNode = nodSujet.getNomElt();
 				node nodStudent = null;	
@@ -2394,7 +2394,7 @@ public class meptl {
 					node StyleParagraphStudent = null;
 					if(nodSujet.getAttributs().get("analyseStyle")!=null) {
 						if(nodSujet.getAttributs().get("analyseStyle").equals("true") && nodSujet.getAttributs().get("text:style-name")!=null) {
-							paragrapheTexte=true;
+							//paragrapheTexte=true;
 							String StyleParagrapheSujet = nodSujet.getAttributs().get("text:style-name");
 							StyleParagraphSujet = nodSujetParagraphs.retourneFirstNodeByNameAndAttributValue("style:style", "style:name", StyleParagrapheSujet);
 						}
@@ -3848,6 +3848,8 @@ public class meptl {
 		Charset encoding = StandardCharsets.UTF_8; //valeur par défaut
 		String champMoodleEmail = "Adresse de courriel";
 		String champMoodleNumeroEtudiant = "Numéro d'identification";
+		String champPrenom = "prénom";
+		String champNom= "nom";
 		
 		if(setting.getNomElt().equals("setting")) {
 			if(setting.containElementByName("csv")){
@@ -3860,10 +3862,12 @@ public class meptl {
 					if(csv.getAttributs().get("encoding").equals("UTF-16")) encoding = StandardCharsets.UTF_16;
 					if(csv.getAttributs().get("encoding").equals("UTF-16BE")) encoding = StandardCharsets.UTF_16BE;
 					if(csv.getAttributs().get("encoding").equals("UTF-16LE")) encoding = StandardCharsets.UTF_16LE;
-					if(csv.containElementByName("export_moodle")) {
-						node export_moodle = csv.retourneFirstEnfantsByName("export_moodle");
-						if(export_moodle.getAttributs().get("champ_email_moodle")!=null) champMoodleEmail=export_moodle.getAttributs().get("champ_email_moodle");
-						if(export_moodle.getAttributs().get("champ_student_number_moodle")!=null) champMoodleNumeroEtudiant=export_moodle.getAttributs().get("champ_student_number_moodle");
+					if(csv.containElementByName("import_moodle")) {
+						node import_moodle = csv.retourneFirstEnfantsByName("import_moodle");
+						if(import_moodle.getAttributs().get("email")!=null) champMoodleEmail=import_moodle.getAttributs().get("email");
+						if(import_moodle.getAttributs().get("id")!=null) champMoodleNumeroEtudiant=import_moodle.getAttributs().get("id");
+						if(import_moodle.getAttributs().get("firstname")!=null) champPrenom=import_moodle.getAttributs().get("firstname");
+						if(import_moodle.getAttributs().get("name")!=null) champNom=import_moodle.getAttributs().get("name");
 					}
 				}
 			}
@@ -3901,7 +3905,7 @@ public class meptl {
 			String[] ident = identification.split(" ");
 			node A=null;
 			if(ident.length==2) {
-				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", ident[0], "Nom", ident[1]);
+				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", champPrenom, ident[0], champNom, ident[1]);
 				if(A!=null) {
 					mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
 					if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
@@ -3912,7 +3916,7 @@ public class meptl {
 				}
 			}
 			if(ident.length==3) {
-				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", "\"" + ident[0] + " " + ident[1] +"\"", "Nom", ident[2]);
+				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", champPrenom, "\"" + ident[0] + " " + ident[1] +"\"", champNom, ident[2]);
 				if(A!=null) {
 					mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
 					if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
@@ -3922,7 +3926,7 @@ public class meptl {
 					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 				} 
 				if(A==null) {
-					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", ident[0], "Nom", "\"" +ident[1] + " " + ident[2] + "\"");
+					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", champPrenom, ident[0], champNom, "\"" +ident[1] + " " + ident[2] + "\"");
 					if(A!=null) {
 						mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
 						if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
@@ -3934,7 +3938,7 @@ public class meptl {
 				}
 			}
 			if(ident.length==4) {
-				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", ident[0], "Nom", "\"" + ident[1] + " " + ident[2] + " " + ident[3] + "\"");
+				A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", champPrenom, ident[0], champNom, "\"" + ident[1] + " " + ident[2] + " " + ident[3] + "\"");
 				if(A!=null) {
 					mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
 					if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
@@ -3944,7 +3948,7 @@ public class meptl {
 					if(numeroEtudiant==null) numeroEtudiant = A.getAttributs().get(champMoodleNumeroEtudiant);
 				} 
 				if(A==null) {
-					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", "\"" + ident[0] + " " + ident[1] +"\"", "Nom", "\"" + ident[2] + " " + ident[3] + "\"");
+					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", champPrenom, "\"" + ident[0] + " " + ident[1] +"\"", champNom, "\"" + ident[2] + " " + ident[3] + "\"");
 					if(A!=null) {
 						mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
 						if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
@@ -3955,7 +3959,7 @@ public class meptl {
 					}
 				}
 				if(A==null) {
-					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", "Prénom", "\"" + ident[0] + " " + ident[1] + ident[2] + "\"", "Nom", ident[3]);
+					A = a.retourneNodeByNameAttributValueAttributValueExact(nodeCVS, "student", champPrenom, "\"" + ident[0] + " " + ident[1] + ident[2] + "\"", champNom, ident[3]);
 					if(A!=null) {
 						mail = A.getAttributs().get("\"" + champMoodleEmail + "\"");
 						if(mail==null) mail = A.getAttributs().get("'"+ champMoodleEmail +"'");
@@ -4198,14 +4202,16 @@ public class meptl {
 		csv.setNomElt("csv");
 		csv.getAttributs().put("encoding", "UTF-8");
 		csv.getAttributs().put("separator", ";");
-		csv.setContenu("encoding UTF-8 US-ASCII ISO-8859-1 UTF-16BE UTF-16LE UTF-16");
+		csv.setContenu("choose the encoding from this list : UTF-8 US-ASCII ISO-8859-1 UTF-16BE UTF-16LE UTF-16");
 		csv.setClose(true);
 		
 		//node export du csv
 		node export = new node();
-		export.setNomElt("export_moodle");
-		export.getAttributs().put("champ_email_moodle", "Adresse de courriel");
-		export.getAttributs().put("champ_student_number_moodle", "Numéro d'identification");
+		export.setNomElt("import_moodle");
+		export.getAttributs().put("email", "Adresse de courriel");
+		export.getAttributs().put("id", "Numéro d'identification");
+		export.getAttributs().put("firstname", "prénom");
+		export.getAttributs().put("name", "nom");
 		export.setClose(true);
 		
 		//node taille zip
