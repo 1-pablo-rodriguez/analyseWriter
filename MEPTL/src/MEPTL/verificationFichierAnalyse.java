@@ -305,6 +305,32 @@ public class verificationFichierAnalyse {
 			}
 		}
 		
+		if(setting.containElementByName("plagiarism")) {
+			node plagiarism = setting.retourneFirstEnfantsByName("plagiarism");
+			if(plagiarism.getAttributs().get("number_match") != null) {
+				int number_match = -1;
+				try {
+					number_match = Integer.valueOf(plagiarism.getAttributs().get("number_match"));
+				}catch (Exception e) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The number of match must be a numeric value.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				if(number_match<0) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The number of matches must be a positive numeric value.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				
+			}
+		}
+		
+		
+		
 	}
 	
 	

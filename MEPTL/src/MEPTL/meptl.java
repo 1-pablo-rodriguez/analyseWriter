@@ -3789,17 +3789,19 @@ public class meptl {
 						String dccreator2 = HitoriqueDuFichier2.get(j2).retourneFirstEnfantsByName("dc:creator").getContenu();
 						node N2 = HitoriqueDuFichier2.get(j2).retourneFirstEnfantsByName(N1.getNomElt());
 						if(dcdate1.equals(dcdate2) && N1.getNomElt().equals(N2.getNomElt()) && dccreator.equals(dccreator2)) {
-							//affinage du match
-							compteurnombreCorrespondance++;
-							node correspondance = new node();
-							correspondance.setNomElt("correspondance");
-							correspondance.getAttributs().put("date", dcdate1);
-							correspondance.getAttributs().put("type",N2.getNomElt());
-							correspondance.getAttributs().put("Avec_etudiant", nameStudent2);
-							correspondance.getAttributs().put("dc:creator", dccreator2);
-							nodStudent.getNodes().add(correspondance);
-							System.out.println("** Find a match ** " + dcdate1);
-							break;
+							if(nodStudent.retourneFirstNodeByNameAndAttributValue("correspondance", "date", dcdate2)==null) {
+								//affinage du match
+								compteurnombreCorrespondance++;
+								node correspondance = new node();
+								correspondance.setNomElt("correspondance");
+								correspondance.getAttributs().put("date", dcdate1);
+								correspondance.getAttributs().put("type",N2.getNomElt());
+								correspondance.getAttributs().put("Avec_etudiant", nameStudent2);
+								correspondance.getAttributs().put("dc:creator", dccreator2);
+								nodStudent.getNodes().add(correspondance);
+								System.out.println("** Find a match ** " + dcdate1);
+								break;
+							}
 						}
 					}
 					
@@ -4280,7 +4282,7 @@ public class meptl {
 		
 		//node verif
 		node plagiarism  = new node();
-		plagiarism.setNomElt("plagiarism ");
+		plagiarism.setNomElt("plagiarism");
 		plagiarism.getAttributs().put("number_match", "2");
 		
 		//construction du node setting
