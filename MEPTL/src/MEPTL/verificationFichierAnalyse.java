@@ -2,6 +2,8 @@ package MEPTL;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import cXML.node;
 
@@ -93,6 +95,11 @@ public class verificationFichierAnalyse {
 			verifNodeAutoriserDansStructure(Sujet.retourneFirstEnfantsByName("structurepage"));
 		}
 	
+		//vérification du node setting
+		if(Sujet.retourneEnfantsByNameExist("setting")) {
+			verificationNodeSetting(Sujet.retourneFirstEnfantsByName("setting"));
+		}
+		
 	}
 	
 	
@@ -232,6 +239,76 @@ public class verificationFichierAnalyse {
   			verifNodeAutoriserDansStructure(structure.getNodes().get(i));
   		}
   	}
+	
+	
+	/**
+	 * Evaluation du node seeting
+	 * @param attribut
+	 * @param nameNode
+	 */
+	private static void verificationNodeSetting(node setting) {
+		if(setting.getAttributs().get("culture") != null) {
+			if(!setting.getAttributs().get("culture").equals("FR")) {
+				System.out.println();
+  	  	  		System.out.println("**-** WARNING in analysis file at node \"setting\".");
+  	  	  		System.out.println("The culture cannot be different than \"FR\".");
+  	  	  		System.out.println();
+			}
+		}
+		
+		if(setting.containElementByName("csv")) {
+			node csv = setting.retourneFirstEnfantsByName("csv");
+			if(csv.getAttributs().get("encoding") != null) {
+				if(!csv.getAttributs().get("encoding").equals("UTF-8") && !csv.getAttributs().get("encoding").equals("US-ASCII") && !csv.getAttributs().get("encoding").equals("ISO-8859-1")
+						&& !csv.getAttributs().get("encoding").equals("UTF-16BE") && !csv.getAttributs().get("encoding").equals("UTF-16LE") && !csv.getAttributs().get("encoding").equals("UTF-16")) {
+					System.out.println();
+	  	  	  		System.out.println("**-** WARNING in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The encoding cannot be "+ csv.getAttributs().get("encoding") +"in csv node.");
+	  	  	  		System.out.println();
+				}
+			}
+		}
+		
+		if(setting.containElementByName("zip")) {
+			node zip = setting.retourneFirstEnfantsByName("zip");
+			if(zip.getAttributs().get("size") != null) {
+				Long size = (long) 0;
+				try {
+					size = Long.valueOf(zip.getAttributs().get("size"));
+				}catch (Exception e) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The zip size cannot be different from a numeric value.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				if(size<1000000) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The zip size is too low.");
+	  	  	  		System.out.println("The zip size should be bigger than 1Mo.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+			}
+			if(zip.getAttributs().get("name") != null) {
+				String name = zip.getAttributs().get("name");
+				 Pattern pt = Pattern.compile("[^a-zA-Z0-9]"); // avec les chiffres "[^a-zA-Z0-9]"
+			        Matcher match= pt.matcher(name);
+			        if(match.find()) {
+			        	System.out.println();
+		  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+		  	  	  		System.out.println("The name of the zip cannot contain a special character.");
+		  	  	  		System.out.println();
+		  	  	  		erreur=true;
+			        }
+			}
+		}
+		
+	}
+	
+	
+	
 	
 	private static void verifcationStyleParagraphDefaut(node styleParagraphDefault) {
 		if(styleParagraphDefault.getAttributs().get("evaluer")!=null) {

@@ -165,16 +165,18 @@ public class commandes {
 		
 		if(badCommand) clotureWithError();
 
-		//affichage dans la console des commandes passées
+		//affichage dans la console des commandes passées 
 		CLS();
 		System.out.println();
 		System.out.println("---------------------------------------------------");
 		System.out.println("AnalyseWriter Version : " + version );
 		System.out.println();
 		System.out.println("Analysis of student files = " + analyse);
-		System.out.println("The name of the analysis file in XML format = " + nameSujet);
+		System.out.println("The name of the analysis file is = " + nameSujet);
+		System.out.println("Zip feedback = " + zipfeedback);
 		System.out.println("No feedback = " + sansFeeback);
 		System.out.println("No logo = " + noLogo);
+		System.out.println("No student grade = " + noNote);
 		System.out.println("Writing an analysis file = "+ ecritCode);
 		System.out.println("Write the subject file \"sujet.xml\" = "+ ecritSujet);
 		System.out.println("Check historics (-verif) = " + verifHisto);

@@ -60,14 +60,15 @@ public class meptl {
 //		patch = "C:/Users/pabr6/Downloads/teste/";
 //		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
-		//analyse les commandes passées
+		//les commandes
 		new commandes(args,patch);
 		
-		
+		//Lancement des lectures des dossiers
 		Run a = new Run(patch,commandes.Profil);
 
 		
-		//chargement du sujet dans un node
+		//chargement du node sujet (fichier d'analyse)
+		//La méthode verificationFichier Analyse permet de détecter des erreurs dans le fichier d'analyse
 		node nodeSujet = new node();
 		if(!commandes.ecritCode && commandes.analyse) {
 			nodeSujet = chargementsujet(a, commandes.nameSujet);
@@ -78,7 +79,7 @@ public class meptl {
 			if(commandes.ecritSujet) {
 				a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 				System.out.println();
-				System.out.println("Writing of the file \"sujet.xml\" done.");
+				System.out.println("\tWriting of the \"sujet.xml\" file completed.");
 				commandes.clotureApplication();
 				System.exit(0);
 			}
@@ -107,15 +108,17 @@ public class meptl {
 		}
 		
 		
+		//nombre de fichier writer à analyser
 		int nbFichierWriter = a.getLectDossiers().getEC().getListeContentWriter().size();
 		System.getProperty("file.encoding","UTF-8");
 		
+		//ensemble des analyses
 		node ensembleanalyse = new node();
 		ensembleanalyse.setNomElt("analyses");
 		
 		for(int i = 0 ; i < nbFichierWriter ; i++) {
 			
-			// ne prends pas en compte le dossier destination créé
+			// Ne prends pas en compte le dossier destination créé par la commande -dest
 			// Si pas d'analyse alors le nom doit contenir le caractère $ dans le nom du dossier.
 			if(commandes.fourniDossierDestination)if(a.getLectDossiers().getEC().getListeNomDossier().get(i).equals(commandes.pathDestination)) continue;
 			
