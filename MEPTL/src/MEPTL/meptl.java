@@ -96,13 +96,17 @@ public class meptl {
 			node verification = new node();
 			verification.setNomElt("verification");
 			verification.getAttributs().put("nombre_fichier", String.valueOf(a.getLectDossiers().getEC().getListeFichierodt().size()));
+			if(nodeSujet.containElementByName("plagiarism")) {
+				node plagiarism = nodeSujet.retourneFirstEnfantsByName("plagiarism");
+				if(plagiarism.getAttributs().get("number_match") != null) verification.getAttributs().put("number_match", plagiarism.getAttributs().get("number_match"));
+			}
 			for(int i = 0 ; i < nbFichierWriter ; i++) {
 				node nod = a.XMLContent(a.getLectDossiers().getEC().getListeContentWriter().get(i));
 				node nodStudent = LectureFichierEtudiantPourVerification(nod,a,i);
 				verification.getNodes().add(nodStudent);
 			}
-			//a.ecritureNodeEnXML(verification, "VerificationHistorique"); //écriture du node de l'étudiant
-			verif = verificationHistorique(verification, a);
+			//a.ecritureNodeEnXML(verification, "VerificationHistorique","",false); //écriture du node de l'étudiant
+			verif = verificationHistorique(verification, a);  // vérification des correspondance entre les fichiers
 			a.ecritureNodeEnXML(verif, "Verif",commandes.pathDestination,commandes.fourniDossierDestination); //écriture du node de vérification
 			if(!commandes.analyse) {commandes.clotureApplication();System.exit(0);}
 		}
@@ -145,7 +149,7 @@ public class meptl {
 					//a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false); //écriture du node analyse de l'étudiant
 					
 					// création des feedbacks avace des tailles défini
-					if(!commandes.sansFeeback) if(!commandes.zipfeedback) feedback(ana); //classique directement dans le répertoire
+					if(!commandes.sansFeeback) if(!commandes.zipfeedback) feedback(ana, verif); //classique directement dans le répertoire
 					if(!commandes.sansFeeback) if(commandes.zipfeedback) { // Dans une archive pour Moodle
 						try {
 							long size = 48000000; //valeur par défaut
@@ -155,7 +159,7 @@ public class meptl {
 								if(zip.getAttributs().get("size")!=null)size = Long.valueOf(zip.getAttributs().get("size"));
 								if(zip.getAttributs().get("name")!=null)nameZip = zip.getAttributs().get("name");
 							}
-								a.AddStreamToZip(feedbackForZip(ana), retourneLeNomDuFeedback(a.getLectDossiers().getEC().getListeNomFichierFeedBack().get(i),ana),size,nameZip);
+								a.AddStreamToZip(feedbackForZip(ana, verif), retourneLeNomDuFeedback(a.getLectDossiers().getEC().getListeNomFichierFeedBack().get(i),ana, verif),size,nameZip);
 						} catch (ZipException e) {
 							e.printStackTrace();
 						} catch (IOException e) {
@@ -2875,10 +2879,25 @@ public class meptl {
  	 * @param nodana
  	 * @throws IOException
  	 */
- 	private static void feedback(node nodana) throws IOException {
+ 	private static void feedback(node nodana, node verif) throws IOException {
  		
  		System.getProperty("file.encoding","UTF-8");
  		Date aujourdhui = new Date();
+ 		
+ 		int number_match = 2;
+		boolean plagiat = false;
+		node verifStudent = null;
+ 		if((commandes.verifHisto||commandes.verifHisto2)&&commandes.ecritNoteCSV&&commandes.fourniCSV) {
+ 			if(verif.getAttributs().get("number_match") != null) number_match = Integer.valueOf(verif.getAttributs().get("number_match"));
+ 			//verification du plagiat
+			verifStudent = verif.retourneFirstNodeByNameAndAttributValue("fichier", "dossier", nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"));
+ 			if(verifStudent != null) {
+ 				if(verifStudent.getAttributs().get("filename").equals(nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("filename"))) {
+ 					if(Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondance"))>number_match) plagiat=true;
+ 				}
+ 			}
+ 		}
+ 		
  		
  		//nom du fichier feedback
  		String metaS = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet");
@@ -2886,7 +2905,8 @@ public class meptl {
  		if(metaS.isEmpty()) metaS = "metaSujet-inconnu";
  		String cheminFeedBack = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier") + "-DateLong" + aujourdhui.getTime()+"-"+metaS;
   		if(!commandes.noNote) {
-  			cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
+  			if(!plagiat)cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
+  			if(plagiat) cheminFeedBack = cheminFeedBack + "- plagiat.html";
   		}else {
   			cheminFeedBack = cheminFeedBack + ".html";
   		}
@@ -2986,15 +3006,16 @@ public class meptl {
 			fichier.write("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
 					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/></font></h1>\r");
 		}
-				
+		
 		
 		//Note
 		node ouvre = nodana.retourneFirstEnfantsByName("ouverture");
 		String noteFrom = ouvre.getAttributs().get("notefrom");
 		if(noteFrom ==null) noteFrom="20";
-		if(!commandes.noNote) fichier.write("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-
+		if(!commandes.noNote) if(!plagiat) fichier.write("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+		if(!commandes.noNote) if(plagiat) fichier.write("<p><spanpablo> Plagiat / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
 		 
+		
 		//informations
 		// date d'analyse, dossier étudiant, auteur sujet, date de la dernière modificatio, lien, algorithme
 		DateFormat mediumDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
@@ -3012,8 +3033,10 @@ public class meptl {
 	    fichier.write("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br/>"));
 	    if(!auteurSujet.isEmpty()) {fichier.write("Sujet créé par : <span style=\"color:blue\">"+ auteurSujet + "</span><br/>");}else {fichier.write("<br/>");}
 		   
-	    if(!commandes.noNote)fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br/>");
-  	    if(ouvre.getAttributs().get("link_sujet")!=null) {
+	    if(!commandes.noNote) if(!plagiat) fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br/>");
+	    if(!commandes.noNote) if(plagiat) fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : plagiat <br/>");
+	    	
+	    if(ouvre.getAttributs().get("link_sujet")!=null) {
 			String linkSujet= ouvre.getAttributs().get("link_sujet");
 			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
 			if(m.find()) {fichier.write("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br/>");}
@@ -3047,6 +3070,14 @@ public class meptl {
 		    
 	    }
 	    
+	    //plagiat
+	    if(plagiat) if(verifStudent!=null){
+	    	fichier.append(HTML.SautLigne());
+	    	ArrayList<node> correspondance = verifStudent.retourneEnfantsByName("correspondance", new ArrayList<node>());
+	    	for(int j = 0 ; j < correspondance.size();j++) {
+	    		fichier.write(HTML.Paragraph_classp5("Correspondance à la date=" + correspondance.get(j).getAttributs().get("date") + " avec l'étudiant " + correspondance.get(j).getAttributs().get("Avec_etudiant")));
+	    	}
+	    }
 	    
 		
 		 fichier.write(HTML.SautLigne());
@@ -3219,9 +3250,22 @@ public class meptl {
  	 * @param nodana
  	 * @return
  	 */
- 	private static String retourneLeNomDuFeedback( String filename,node nodana) {
+ 	private static String retourneLeNomDuFeedback( String filename,node nodana, node verif) {
  		System.getProperty("file.encoding","UTF-8");
- 		//Date aujourdhui = new Date();
+ 		
+ 		int number_match = 2;
+		boolean plagiat = false;
+		node verifStudent = null;
+ 		if((commandes.verifHisto||commandes.verifHisto2)&&commandes.ecritNoteCSV&&commandes.fourniCSV) {
+ 			if(verif.getAttributs().get("number_match") != null) number_match = Integer.valueOf(verif.getAttributs().get("number_match"));
+ 			//verification du plagiat
+			verifStudent = verif.retourneFirstNodeByNameAndAttributValue("fichier", "dossier", nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"));
+ 			if(verifStudent != null) {
+ 				if(verifStudent.getAttributs().get("filename").equals(nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("filename"))) {
+ 					if(Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondance"))>number_match) plagiat=true;
+ 				}
+ 			}
+ 		}
  		
  		//nom du fichier feedback
  		String metaS = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet");
@@ -3230,8 +3274,9 @@ public class meptl {
  		String cheminFeedBack = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier") +"-"+metaS;  //+ "-DateLong" + aujourdhui.getTime()
   		
  		if(!commandes.noNote) {
-  			cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
-  		}else {
+  			if(!plagiat) cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
+  			if(plagiat) cheminFeedBack = cheminFeedBack + "-Plagiat.html";
+ 		}else {
   			cheminFeedBack = cheminFeedBack + ".html";
   		}
  		
@@ -3246,29 +3291,25 @@ public class meptl {
  	 * @return
  	 * @throws IOException
  	 */
- 	private static StringBuilder feedbackForZip(node nodana) throws IOException {
+ 	private static StringBuilder feedbackForZip(node nodana, node verif) throws IOException {
  		
  		System.getProperty("file.encoding","UTF-8");
  		Date aujourdhui = new Date();
  		
- 		//nom du fichier feedback
-// 		String metaS = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet");
-// 		if(metaS.equals("?")) metaS = "metaSujet-inconnu";
-// 		if(metaS.isEmpty()) metaS = "metaSujet-inconnu";
-// 		String cheminFeedBack = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier") + "-DateLong" + aujourdhui.getTime()+"-"+metaS;
-//  		
-// 		if(!commandes.noNote) {
-//  			cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
-//  		}else {
-//  			cheminFeedBack = cheminFeedBack + ".html";
-//  		}
+ 		int number_match = 2;
+		boolean plagiat = false;
+		node verifStudent = null;
+ 		if((commandes.verifHisto||commandes.verifHisto2)&&commandes.ecritNoteCSV&&commandes.fourniCSV) {
+ 			if(verif.getAttributs().get("number_match") != null) number_match = Integer.valueOf(verif.getAttributs().get("number_match"));
+ 			//verification du plagiat
+			verifStudent = verif.retourneFirstNodeByNameAndAttributValue("fichier", "dossier", nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"));
+ 			if(verifStudent != null) {
+ 				if(verifStudent.getAttributs().get("filename").equals(nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("filename"))) {
+ 					if(Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondance"))>number_match) plagiat=true;
+ 				}
+ 			}
+ 		}
  		
-  		// Chemin vers le dossier de destination
-//		Path outputFilePath = Paths.get(patch + "/" + cheminFeedBack);
-//		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(patch + "/" + commandes.pathDestination+ "/" + cheminFeedBack);
-		
-			
-		//BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
 		
 		StringBuilder fichier = new StringBuilder();
 		
@@ -3360,13 +3401,13 @@ public class meptl {
 			fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
 					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/></font></h1>\r");
 		}
-				
 		
 		//Note
 		node ouvre = nodana.retourneFirstEnfantsByName("ouverture");
 		String noteFrom = ouvre.getAttributs().get("notefrom");
 		if(noteFrom ==null) noteFrom="20";
-		if(!commandes.noNote) fichier.append("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+		if(!commandes.noNote) if(!plagiat) fichier.append("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+		if(!commandes.noNote) if(plagiat) fichier.append("<p><spanpablo> Plagiat / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
 
 		 
 		//informations
@@ -3386,8 +3427,10 @@ public class meptl {
 	    fichier.append("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br/>"));
 	    if(!auteurSujet.isEmpty()) {fichier.append("Sujet créé par : <span style=\"color:blue\">"+ auteurSujet + "</span><br/>");}else {fichier.append("<br/>");}
 		   
-	    if(!commandes.noNote)fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br/>");
-  	    if(ouvre.getAttributs().get("link_sujet")!=null) {
+	    if(!commandes.noNote) if(!plagiat) fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br/>");
+	    if(!commandes.noNote) if(plagiat) fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : Plagiat <br/>");
+	    
+	    if(ouvre.getAttributs().get("link_sujet")!=null) {
 			String linkSujet= ouvre.getAttributs().get("link_sujet");
 			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
 			if(m.find()) {fichier.append("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br/>");}
@@ -3419,6 +3462,15 @@ public class meptl {
 	    	if(Boolean.valueOf(errors.getAttributs().get("manqueMetaSujet"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La méta donnée \"Sujet\" dans les propriétés du fichier a été supprimée ou renommée."));
 	    	if(Boolean.valueOf(errors.getAttributs().get("manqueValeurMetaSujet"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La valeur de la méta donnée \"Sujet\" dans les propriétés du fichier n'est pas \"" + nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet"))+"\"");
 		    
+	    }
+	    
+	    //plagiat
+	    if(plagiat) if(verifStudent!=null){
+	    	fichier.append(HTML.SautLigne());
+	    	ArrayList<node> correspondance = verifStudent.retourneEnfantsByName("correspondance", new ArrayList<node>());
+	    	for(int j = 0 ; j < correspondance.size();j++) {
+	    		fichier.append(HTML.Paragraph_classp5("Correspondance à la date=" + correspondance.get(j).getAttributs().get("date") + " avec l'étudiant " + correspondance.get(j).getAttributs().get("Avec_etudiant")));
+	    	}
 	    }
 	    
 	    
@@ -3700,6 +3752,7 @@ public class meptl {
 		
 		node verif = new node();
 		verif.setNomElt("verification");
+		verif.setAttributs(verification.getAttributs());
 		
 		ArrayList<node> LesFichiers = verification.retourneLesEnfantsByName("fichier", new ArrayList<node>());
 		
@@ -3724,6 +3777,8 @@ public class meptl {
 			
 			for(int j = 0 ; j < HitoriqueDuFichier.size(); j++) {
 				String dcdate1 = HitoriqueDuFichier.get(j).retourneFirstEnfantsByName("dc:date").getContenu();
+				String dccreator = HitoriqueDuFichier.get(j).retourneFirstEnfantsByName("dc:creator").getContenu();
+				
 				node N1 = HitoriqueDuFichier.get(j).getNodes().get(0);
 				
 				for(int i2 = 0 ; i2 < LesFichiers2.size(); i2++) {
@@ -3731,14 +3786,17 @@ public class meptl {
 					ArrayList<node> HitoriqueDuFichier2 = LesFichiers2.get(i2).retourneEnfantsByName("text:changed-region", new ArrayList<node>());
 					for(int j2 = 0 ; j2 <HitoriqueDuFichier2.size(); j2++ ) {
 						String dcdate2 = HitoriqueDuFichier2.get(j2).retourneFirstEnfantsByName("dc:date").getContenu();
+						String dccreator2 = HitoriqueDuFichier2.get(j2).retourneFirstEnfantsByName("dc:creator").getContenu();
 						node N2 = HitoriqueDuFichier2.get(j2).retourneFirstEnfantsByName(N1.getNomElt());
-						if(dcdate1.equals(dcdate2) && N1.getNomElt().equals(N2.getNomElt())) {
+						if(dcdate1.equals(dcdate2) && N1.getNomElt().equals(N2.getNomElt()) && dccreator.equals(dccreator2)) {
+							//affinage du match
 							compteurnombreCorrespondance++;
 							node correspondance = new node();
 							correspondance.setNomElt("correspondance");
 							correspondance.getAttributs().put("date", dcdate1);
 							correspondance.getAttributs().put("type",N2.getNomElt());
 							correspondance.getAttributs().put("Avec_etudiant", nameStudent2);
+							correspondance.getAttributs().put("dc:creator", dccreator2);
 							nodStudent.getNodes().add(correspondance);
 							System.out.println("** Find a match ** " + dcdate1);
 							break;
@@ -3746,10 +3804,6 @@ public class meptl {
 					}
 					
 				}
-				
-				
-				
-				
 			}
 			
 			nodStudent.getAttributs().put("nombre_correspondance", String.valueOf(compteurnombreCorrespondance));
@@ -4224,10 +4278,16 @@ public class meptl {
 		zip.getAttributs().put("nameZip", "48000000");
 		zip.isClose();
 		
+		//node verif
+		node plagiarism  = new node();
+		plagiarism.setNomElt("plagiarism ");
+		plagiarism.getAttributs().put("number_match", "2");
+		
 		//construction du node setting
 		csv.getNodes().add(export);
 		setting.getNodes().add(csv);
 		setting.getNodes().add(zip);
+		setting.getNodes().add(plagiarism);
 		
 		// ajoute le node setting au node sujet
 		sujet.getNodes().add(setting);

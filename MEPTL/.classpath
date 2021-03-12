@@ -4,6 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="lib" path="C:/Users/pabr6/eclipse-workspace/zip4j-1.2.7.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/cXML"/>
+	<classpathentry kind="lib" path="C:/Users/pabr6/eclipse-workspace/cXML.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
