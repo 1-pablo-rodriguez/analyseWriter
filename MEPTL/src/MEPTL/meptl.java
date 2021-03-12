@@ -3806,7 +3806,6 @@ public class meptl {
 					}					
 				}
 			}
-			
 			nodStudent.getAttributs().put("nombre_correspondance", String.valueOf(compteurnombreCorrespondance));
 			verif.getNodes().add(nodStudent);
 			
