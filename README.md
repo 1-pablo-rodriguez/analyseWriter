@@ -1,7 +1,7 @@
 # analyseWriter
 
 ## Tutorials videos
-These tutorials are intended for French computer teachers.
+These tutorials are intended for computer science teachers. 
 
 ### French
 
