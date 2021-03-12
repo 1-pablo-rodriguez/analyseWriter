@@ -87,7 +87,6 @@ public class meptl {
 		
 		//chargement et verification du CVS fourni
 		if(commandes.fourniCSV) nodeCSV = chargementFichierCSV(a, commandes.nameCSV);
-
 		
 		// vérification des historiques
 		node verif  = new node();
