@@ -704,7 +704,7 @@ public class meptl {
 		node b = a.retourneName(nod.retourneFirstEnfantsByName("office:meta"),"meta:user-defined","meta:name","Sujet");
 		if(b!=null) { nod.getAttributs().put("metaSujet", b.getContenu());}else {nod.getAttributs().put("metaSujet", "?");}
 		b = nod.retourneFirstEnfantsByName("office:meta").retourneFirstEnfantsByName("meta:creation-date");
-		if(b!=null) nod.getAttributs().put("creationDate", b.getContenu());
+		if(b!=null) nod.getAttributs().put("creationDate", b.getContenu().substring(0, b.getContenu().lastIndexOf(".")));
 		nod.getAttributs().put("auteur", "pablo rodriguez");
 		nod.getAttributs().put("affichecommentaire", "false");
 		nod.setContenu("Commentaire sur cet exercice");

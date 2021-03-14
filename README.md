@@ -6,7 +6,7 @@ These tutorials are intended for computer science teachers.
 ### French
 
  1. [Presentation](https://artoistv.univ-artois.fr/video/3112-presentation-de-lapplication-analysewriter/)
- 2. [Create an analyze file](https://artoistv.univ-artois.fr/video/3098-creer-un-fichier-danalyse-pour-analysewriter/)
+ 2. [Create an analyze file](https://artoistv.univ-artois.fr/video/3179-comment-realiser-un-fichier-analyse-pour-evaluer-les-fichiers-dun-traitement-de-texte/)
  3. [How do I import student feedbacks and grades into Moodle?](https://artoistv.univ-artois.fr/video/3164-analysewriter-comment-importer-des-feedbacks-et-les-notes-dans-moodle/)
 
 ### English
