@@ -21,7 +21,9 @@ This application allows you to analyze and evaluate layout files in Open Documen
 analyseWriter allows:
 
      1. Analyze files created by (LibreOffice or OpenOffice) Writer and evaluate them.
-     2. Compare the modifications in the files. This makes it possible to match in different files the same changes that took place at the same time.
+     2. Compare the modifications in the files.
+        This makes it possible to match in different files the same changes that took place at the same time.
      3. Generate reports for each file. The reports allow students to identify their mistakes.
-     4. Import student grades and various information into a CSV file. The grades can then be imported into the CMS Moodle gradebook.
+     4. Import student grades and various information into a CSV file.
+        The grades can then be imported into the CMS Moodle gradebook.
      5. Generate analysis files to create your own assessments. 
