@@ -706,7 +706,7 @@ public class meptl {
 		b = nod.retourneFirstEnfantsByName("office:meta").retourneFirstEnfantsByName("meta:creation-date");
 		if(b!=null) nod.getAttributs().put("creationDate", b.getContenu().substring(0, b.getContenu().lastIndexOf(".")));
 		nod.getAttributs().put("auteur", "Your first name and last name");
-				nod.setContenu("Commentaire sur cet exercice");
+				nod.setContenu("Commentaire sur cet exercice.-NewLine-Seconde ligne de commentaire.");
 		nod.getAttributs().remove("dossier");
 		
 		

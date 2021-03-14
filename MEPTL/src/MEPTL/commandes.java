@@ -298,7 +298,7 @@ public class commandes {
 		System.out.println(" -licence     : \t Affiche le texte de la licence de l'application.");
 		System.out.println();
 		
-		System.out.println(" -aide     : \t Affiche l'aide de l'application en français.");
+		System.out.println(" -help        : \t Affiche l'aide de l'application en Anglais.");
 		System.out.println();
 		
 		System.out.println();
@@ -403,6 +403,9 @@ public class commandes {
 		System.out.println();
 		
 		System.out.println(" -licence     : \t Displays the text of the application license. ");
+		System.out.println();
+		
+		System.out.println(" -aide        : \t Display application help in French.");
 		System.out.println();
 		
 		System.out.println();
