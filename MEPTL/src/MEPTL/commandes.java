@@ -93,7 +93,12 @@ public class commandes {
 				}
 				if(args[i].equals("-help")) {
 					if(args.length>1) {System.out.println("\n\n***\nThe -help command should be the only command.\n***");clotureWithError();}
-					help();
+					helpEN();
+					clotureWithHelp();
+				}
+				if(args[i].equals("-aide")) {
+					if(args.length>1) {System.out.println("\n\n***\nThe -aide command should be the only command.\n***");clotureWithError();}
+					helpFR();
 					clotureWithHelp();
 				}
 				if(args[i].equals("-licence")) {
@@ -151,7 +156,7 @@ public class commandes {
 				}
 				Matcher m = Pattern.compile("^\\./.{1,}/$").matcher(args[i]);
 				if(!args[i].equals("-use")&&!args[i].equals("-write")&&!args[i].equals("-csv")&&!args[i].equals("-verif")&&!args[i].equals("-verifcsv")
-						&&!args[i].contains(".csv")&&!args[i].contains(".xml")&&!args[i].contains("-nofeedback")&&!args[i].contains("-help")
+						&&!args[i].contains(".csv")&&!args[i].contains(".xml")&&!args[i].contains("-nofeedback")&&!args[i].contains("-help")&&!args[i].equals("-aide")
 						&&!args[i].equals("-about")&&!args[i].equals("-nonote") &&!args[i].equals("-dest")&&!args[i].equals("-sujet")&&!args[i].equals("-nologo")
 						&&!args[i].equals("-licence")&&!args[i].equals("-zipfeedback")&&!m.find()) {
 					badCommand=true; System.out.println("the command " + args[i] + " is unknown.");System.out.println("You can type the -help command to get help.");
@@ -201,7 +206,7 @@ public class commandes {
 	 * @throws IOException 
 	 * @throws InterruptedException 
 	 */
-	private static void help() throws InterruptedException, IOException {
+	private static void helpFR() throws InterruptedException, IOException {
 		CLS();
 		System.out.println();
 		System.out.println("***************************************");
@@ -239,7 +244,7 @@ public class commandes {
 		System.out.println();
 		
 		System.out.println(" -verifcvs    : \t Permet de comparer toutes les modifications entre les historiques du suivi de modification.");
-		System.out.println("              : \t Permet d'importer toutes les notes dans un fichier au format CSV (séparateur le point virgule)");
+		System.out.println("              : \t Permet d'importer toutes les notes dans un fichier au format CSV (séparateur le point virgule).");
 		System.out.println("              : \t La commande -use file.xml doit être placé avant la commande -verifcsv.");
 		System.out.println("              : \t Dans le dossier courant, vous trouverez le fichier Verif.xml.");
 		System.out.println("              : \t La commande -verifcsv peut être suivi d'un fichier au format CSV contenant la liste des étudiants.");
@@ -287,15 +292,13 @@ public class commandes {
 		System.out.println("              : \t Le fichier \"sujet.xml\" se trouve dans le dossier courant de l'application.");
 		System.out.println();
 		
-		System.out.println(" -doc         : \t Permet de générer la documentation de l'application.");
-		System.out.println("              : \t Le fichier doc.pdf se trouve dans le dossier courant*.");
-		System.out.println("              : \t Comment réaliser un fichier d'analyse au format XML?");
-		System.out.println();
-		
-		System.out.println(" -about       : \t Affiche la version, la date du build, l'auteur, la licence.");
+		System.out.println(" -about       : \t Affiche la version, l'auteur et la licence.");
 		System.out.println();
 		
 		System.out.println(" -licence     : \t Affiche le texte de la licence de l'application.");
+		System.out.println();
+		
+		System.out.println(" -aide     : \t Affiche l'aide de l'application en français.");
 		System.out.println();
 		
 		System.out.println();
@@ -306,6 +309,111 @@ public class commandes {
 		System.out.println("P. Rodriguez");
 		
 	}
+	
+	/**
+	 * Message dans la console
+	 * @throws IOException 
+	 * @throws InterruptedException 
+	 */
+	private static void helpEN() throws InterruptedException, IOException {
+		CLS();
+		System.out.println();
+		System.out.println("**************************************");
+		System.out.println("*   LIST OF ANALYSEWRITER COMMANDS   * ");
+		System.out.println("**************************************");
+		System.out.println();
+		
+		System.out.println(" -use         : \t Used to indicate the analysis file.");
+		System.out.println("              : \t The analysis file (XML format) must be placed just after the command.");
+		System.out.println("              : \t Student files must be in named folders (export from moodle).");
+		System.out.println("              : \t Student files must be in ODF format with the extension .odt.");
+		System.out.println();
+		
+		System.out.println(" file.xml     : \t The analysis file in XML format.");
+		System.out.println("              : \t file.xml must be placed just after the -use command.");
+		System.out.println("              : \t The file.xml file must be located in the current folder*.");
+		System.out.println("              : \t This file must be obtained with the -write command.");
+		System.out.println("              : \t This file must be manually modified to adapt it to your analysis.");
+		System.out.println();
+		
+		System.out.println(" -verif       : \t Allows you to compare all the modifications between the modification track logs.");
+		System.out.println("              : \t If this is the only command then there is no analysis, no rating, no feedback.");
+		System.out.println("              : \t This command does not depend on an analysis file (independent of subjects).");
+		System.out.println("              : \t You can analyze the logs even if you do not have an analysis file.");
+		System.out.println("              : \t In the current folder*, you will find the \"Verif.xml\" file.");
+		System.out.println();
+		
+		System.out.println(" -cvs         : \t Allows to import all the notes in a file in CSV format (separator the semicolon).");
+		System.out.println("              : \t The -use file.xml command must be placed before the -csv command.");
+		System.out.println("              : \t The generated file is located in the current folder*.");
+		System.out.println("              : \t This command can be followed by a file in CSV format containing the list of students.");
+		System.out.println("              : \t If this command is followed by the \"file.csv\" file then retrieves the student IDs.");
+		System.out.println();
+		
+		System.out.println(" -verifcvs    : \t Allows you to compare all the modifications between the modification track logs.");
+		System.out.println("              : \t Allows to import all the notes in a file in CSV format (separator the semicolon).");
+		System.out.println("              : \t The -use file.xml command must be placed before the -verifcsv command.");
+		System.out.println("              : \t In the current folder, you will find the \"Verif.xml\" file.");
+		System.out.println("              : \t The -verifcsv command can be followed by a file in CSV format containing the list of students.");
+		System.out.println("              : \t If this command is followed by the \"file.csv\" file then retrieves the student IDs.");
+		System.out.println();
+		
+		System.out.println(" file.csv     : \t The file containing the list of students in CSV format.");
+		System.out.println("              : \t The \"file.csv\" file must be placed just after the -csv or -verifcsv command.");
+		System.out.println("              : \t The \"file.csv\" file must be in the current folder*.");
+		System.out.println("              : \t The default separator in the CSV file is the semicolon.");
+		System.out.println("              : \t In this file, there must be the columns \"First name\", \"Last name\", \"Identification number\"and \"Email\".");
+		System.out.println("              : \t You are exporting this file from the Moodle server (gradebook, exporter).");
+		System.out.println();
+		
+		System.out.println(" -write       : \t Allows you to write an analysis file.");
+		System.out.println("              : \t The generated file is located in the current folder*.");
+		System.out.println("              : \t The generated file is in XML format.");
+		System.out.println("              : \t You must adapt it by modifying the XML code to perform your own analyzes.");
+		System.out.println();
+		
+		System.out.println(" -zipfeedback : \t Allows you to generate a ZIP archive containing student feedback. ");
+		System.out.println("              : \t The archive is named \"moodleFeedback.zip\".");
+		System.out.println("              : \t  The archive respects the format for importing feedback into Moodle.");
+		System.out.println();
+		
+		System.out.println(" -nofeedback  : \t If TRUE allows you to not generate feedback for the students..");
+		System.out.println("              : \t Feedbacks are files in HTML format..");
+		System.out.println("              : \t Feedbacks can be found in the current folder*.");
+		System.out.println();
+		
+		System.out.println(" -nonote      : \t Avoid display in the feedbacks of the grade.");
+		System.out.println("              : \t Avoid placing the student's grade in the file name.");
+		System.out.println();
+		
+		System.out.println(" -dest        : \t Specifies the destination directory for feedbacks and XML and CSV files.");
+		System.out.println("              : \t Example: -dest \"./output/\" destination folder the \"output\" directory.");
+		System.out.println("              : \t The destination directory must be in the current directory of the application.");
+		System.out.println("              : \t There can only be one directory (no subdirectory). ");
+		System.out.println("              : \t The path must begin with \"./\".");
+		System.out.println("              : \t If the folder name contains the $ symbol, it is ignored by the scan. ");
+		System.out.println();
+		
+		System.out.println(" -sujet       : \t Used to retrieve the scan file containing only the evaluated nodes. ");
+		System.out.println("              : \t The \"sujet.xml\" file is generated from the \"file.xml\" analysis file. ");
+		System.out.println("              : \t The \"subject.xml\" file is located in the current application folder. ");
+		System.out.println();
+		
+		System.out.println(" -about       : \t Displays the version, author and license. ");
+		System.out.println();
+		
+		System.out.println(" -licence     : \t Displays the text of the application license. ");
+		System.out.println();
+		
+		System.out.println();
+		System.out.println("---");
+		System.out.println("* The current folder is the folder in which the application is located  \"analyseWriter.jar\".\n"
+				+"Dossier courant -> " + path);
+		System.out.println();
+		System.out.println("P. Rodriguez");
+		
+	}
+	
 	
 	/**
 	 * Message dans la console

@@ -135,8 +135,8 @@ public class meptl {
 			// commande -write 
 			if(commandes.ecritCode && ! commandes.verifHisto && !commandes.analyse) {
 				node nodSujet = nodePourEcritureSujet(nodStudent,a,i);
-				nodSujet = addSetting(nodSujet); // ajoute le node setting
-				a.ecritureNodeEnXML(nodSujet, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false);
+				nodSujet = addSetting(nodSujet); // ajoute le node setting;
+ 				a.ecritureNodeEnXML(nodSujet, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false);
 			}
 			
 			
@@ -705,9 +705,8 @@ public class meptl {
 		if(b!=null) { nod.getAttributs().put("metaSujet", b.getContenu());}else {nod.getAttributs().put("metaSujet", "?");}
 		b = nod.retourneFirstEnfantsByName("office:meta").retourneFirstEnfantsByName("meta:creation-date");
 		if(b!=null) nod.getAttributs().put("creationDate", b.getContenu().substring(0, b.getContenu().lastIndexOf(".")));
-		nod.getAttributs().put("auteur", "pablo rodriguez");
-		nod.getAttributs().put("affichecommentaire", "false");
-		nod.setContenu("Commentaire sur cet exercice");
+		nod.getAttributs().put("auteur", "Your first name and last name");
+				nod.setContenu("Commentaire sur cet exercice");
 		nod.getAttributs().remove("dossier");
 		
 		
@@ -719,7 +718,6 @@ public class meptl {
 			nodmeta.getAttributs().put("addmenu", "false");
 			nodmeta.getAttributs().put("poids", "1");
 			nodmeta.getAttributs().put("titre", "Les metadonnées");
-			nodmeta.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodmeta.retourneEnfantsByName("meta:user-defined", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodmeta.getNodes().remove(no.get(j));
@@ -740,7 +738,6 @@ public class meptl {
 			nodpage.getAttributs().put("addmenu", "false");
 			nodpage.getAttributs().put("poids", "1");
 			nodpage.getAttributs().put("titre", "Les styles de page");
-			nodpage.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodpage.retourneEnfantsByName("style:master-page", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodpage.getNodes().remove(no.get(j));
@@ -761,7 +758,6 @@ public class meptl {
 			nodparagraph.getAttributs().put("addmenu", "false");
 			nodparagraph.getAttributs().put("poids", "1");
 			nodparagraph.getAttributs().put("titre", "Les styles de paragraphe");
-			nodparagraph.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodparagraph.retourneEnfantsByName("style:style", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodparagraph.getNodes().remove(no.get(j));
@@ -782,14 +778,12 @@ public class meptl {
 			nodsequence.getAttributs().put("addmenu", "false");
 			nodsequence.getAttributs().put("poids", "1");
 			nodsequence.getAttributs().put("titre", "Les variables de séquence");
-			nodsequence.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodsequence.retourneEnfantsByName("text:sequence-decl", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodsequence.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodsequence.getNodes().addAll(no);
 			nod.getNodes().add(nodsequence);
@@ -803,14 +797,12 @@ public class meptl {
 			nodnumerotationchapitre.getAttributs().put("addmenu", "false");
 			nodnumerotationchapitre.getAttributs().put("poids", "1");
 			nodnumerotationchapitre.getAttributs().put("titre", "Numérotation des chapitres");
-			nodnumerotationchapitre.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodnumerotationchapitre.retourneEnfantsByName("text:outline-level-style", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodnumerotationchapitre.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodnumerotationchapitre.getNodes().addAll(no);
 			nod.getNodes().add(nodnumerotationchapitre);
@@ -824,14 +816,12 @@ public class meptl {
 			nodframe.getAttributs().put("addmenu", "false");
 			nodframe.getAttributs().put("poids", "1");
 			nodframe.getAttributs().put("titre", "Les frames (cadres et images)");
-			nodframe.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodframe.retourneEnfantsByName("draw:frame", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodframe.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodframe.getNodes().addAll(no);
 			nod.getNodes().add(nodframe);
@@ -846,14 +836,12 @@ public class meptl {
 			nodsection.getAttributs().put("addmenu", "false");
 			nodsection.getAttributs().put("poids", "1");
 			nodsection.getAttributs().put("titre", "Les sections");
-			nodsection.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodsection.retourneEnfantsByName("text:section", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodsection.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodsection.getNodes().addAll(no);
 			nod.getNodes().add(nodsection);
@@ -867,14 +855,13 @@ public class meptl {
 			nodbiblio.getAttributs().put("addmenu", "false");
 			nodbiblio.getAttributs().put("poids", "1");
 			nodbiblio.getAttributs().put("titre", "La bibliographie");
-			nodbiblio.getAttributs().put("styletitre", "H1");
+			//nodbiblio.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodbiblio.retourneEnfantsByName("text:bibliography", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodbiblio.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodbiblio.getNodes().addAll(no);
 			nod.getNodes().add(nodbiblio);
@@ -888,14 +875,12 @@ public class meptl {
 			nodtable.getAttributs().put("addmenu", "false");
 			nodtable.getAttributs().put("poids", "1");
 			nodtable.getAttributs().put("titre", "Les index tables des matières");
-			nodtable.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodtable.retourneEnfantsByName("text:table-of-content", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodtable.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodtable.getNodes().addAll(no);
 			nod.getNodes().add(nodtable);
@@ -909,14 +894,12 @@ public class meptl {
 			nodillustrations.getAttributs().put("addmenu", "false");
 			nodillustrations.getAttributs().put("poids", "1");
 			nodillustrations.getAttributs().put("titre", "Les index illustrations");
-			nodillustrations.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodillustrations.retourneEnfantsByName("text:illustration-index", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodillustrations.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodillustrations.getNodes().addAll(no);
 			nod.getNodes().add(nodillustrations);
@@ -932,14 +915,12 @@ public class meptl {
 			nodstructurepage.getAttributs().put("addmenu", "false");
 			nodstructurepage.getAttributs().put("poids", "1");
 			nodstructurepage.getAttributs().put("titre", "La structure du document");
-			nodstructurepage.getAttributs().put("styletitre", "H1");
 			ArrayList<node> no = nodstructurepage.retourneEnfantsByName("page", new ArrayList<node>());
 			for(int j = 0 ; j < no.size(); j++) {
 				nodstructurepage.getNodes().remove(no.get(j));
 				no.get(j).getAttributs().put("saut", "false");
 				no.get(j).getAttributs().put("evaluer", "false");
 				no.get(j).getAttributs().put("titre", "");
-				no.get(j).getAttributs().put("styletitre", "nostyle");
 			}
 			nodstructurepage.getNodes().addAll(no);
 			nod.getNodes().add(nodstructurepage);
@@ -3470,65 +3451,7 @@ public class meptl {
 		}
 		System.out.println();
  	}
- 	
-//	/**
-//	 * Ajoute au node le contenu du titre avec l'identifiants et le style
-//	 * @param nod
-//	 * @return
-//	 */
-// 	private static node placeLeTitre(node nod) {
-//		if(nod.getAttributs().get("addmenu")!=null) {
-//			if(nod.getAttributs().get("addmenu").equals("true")) {
-//				if(nod.getAttributs().get("titre")!=null) {
-//					if(!nod.getAttributs().get("titre").isEmpty()) {
-//						if(nod.getAttributs().get("styletitre")!=null) {
-//							
-//							switch (nod.getAttributs().get("styletitre")) {
-//							case "H1":
-//								nod.addContenu(HTML.H1(nod.getAttributs().get("titre"),nod.getAttributs().get("id")));
-//								break;
-//							case "H2":
-//								nod.addContenu(HTML.H2(nod.getAttributs().get("titre"),nod.getAttributs().get("id")));
-//								break;
-//							default:
-//								nod.addContenu(HTML.Paragraph_classp1(nod.getAttributs().get("titre"),nod.getAttributs().get("id")));
-//								break;
-//							}
-//							
-//						}else {
-//							nod.addContenu(HTML.H1(nod.getAttributs().get("titre"),nod.getAttributs().get("id")));
-//						}
-//					}
-//			
-//				}
-//			}
-//	
-//		}else {
-//			if(nod.getAttributs().get("titre")!=null) {
-//				if(!nod.getAttributs().get("titre").isEmpty()) {
-//					if(nod.getAttributs().get("styletitre")!=null) {
-//						
-//						switch (nod.getAttributs().get("styletitre")) {
-//						case "H1":
-//							nod.addContenu(HTML.H1(nod.getAttributs().get("titre")));
-//							break;
-//						case "H2":
-//							nod.addContenu(HTML.H2(nod.getAttributs().get("titre")));
-//							break;
-//						default:
-//							nod.addContenu(HTML.Paragraph_classp1(nod.getAttributs().get("titre")));
-//							break;
-//						}
-//						
-//					}else {
-//						nod.addContenu(HTML.H1(nod.getAttributs().get("titre")));
-//					}
-//				}
-//		
-//			}
-//		}
-//		return nod;
-//	}
+
 	
 	/**
 	 * Place au node le contenu saut de ligne<br/>
