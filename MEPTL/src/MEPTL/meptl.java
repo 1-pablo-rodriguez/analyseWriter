@@ -58,7 +58,7 @@ public class meptl {
 				
 		patch = System.getProperty("user.dir");
 //		patch = "C:/Users/pabr6/Downloads/teste/";
-//		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation4";
+//		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
 		
 		//les commandes
 		new commandes(args,patch);

@@ -12,9 +12,6 @@ import java.util.regex.Pattern;
 import cXML.Run.UserStatus;
 
 
-
-
-
 /**
  * 
  * @author pablo rodriguez
