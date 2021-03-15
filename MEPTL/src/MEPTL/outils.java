@@ -133,8 +133,7 @@ public class outils {
 		if(code.equals("text:date text:fixed")) code="La date est fixe";
 		if(code.equals("text:date style:data-style-name")) code="Style de la date";
 		if(code.equals("text:span Contenu textuel")) code="Contenu textuel";
-		if(code.equals("text:p Contenu textuel")) code="Contenu textuel";
-		if(code.equals("text:p Contenu textuel")) code="Contenu textuel";
+		if(code.equals("text:p Contenu textuel")) code="<div class=\"tooltip2\">Contenu textuel<span class=\"tooltiptext2\"><b><u>Attention :</u></b><br>Le texte de ce paragraphe n'a pas été trouvé.<br>L'application recherche le paragraphe par son contenu.<br>Il est probable que tous les autres attributs (propriétés) de ce paragraphe soient &quot;null&quot;.<br>Vérifier le contenu textuel de votre paragraphe.<br></span></div>";
 		if(code.equals("text:date text:date-value")) code="La date";
 		if(code.equals("text:section text:name")) code="Nom de la section";
 		if(code.equals("text:section text:condition")) code="<div class=\"tooltip2\">Condition de la section<span class=\"tooltiptext2\"><b><u>Attention :</u></b><br>Ne tapez pas d'espace après le dernier guillemet du texte.<br>Ne tapez pas d'espace après le dernier caractère de votre condition.</span></div>";
