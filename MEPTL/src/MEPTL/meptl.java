@@ -75,6 +75,7 @@ public class meptl {
 			commandes.culture = nodeSujet.retourneFirstEnfantsByName("setting").getAttributs().get("culture"); //récupère la culture de l'utilisateur
 			new verificationFichierAnalyse(nodeSujet);
 			if(verificationFichierAnalyse.erreur==true) verificationFichierAnalyse.clotureWithErrorInanalyzeFile();
+			
 			//a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 			if(commandes.ecritSujet) {
 				a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
@@ -83,6 +84,14 @@ public class meptl {
 				commandes.clotureApplication();
 				System.exit(0);
 			}
+			
+			// Ajoute les nouvelles tolérances du nombre de caractère et du texte pour la recherche et la comparaison des textes.
+			if(nodeSujet.containElementByName("text:similarity")) {
+				node similarity = nodeSujet.retourneFirstEnfantsByName("text:similarity");
+				if(similarity.getAttributs().get("tolerance_characters")!=null) commandes.tolerance_characters =  Integer.valueOf(similarity.getAttributs().get("tolerance_characters"));
+				if(similarity.getAttributs().get("tolerance_text")!=null) commandes.tolerance_text =  Double.valueOf(similarity.getAttributs().get("tolerance_text"));
+			}
+			
 		}
 		
 		//chargement et verification du CVS fourni
@@ -95,6 +104,7 @@ public class meptl {
 			node verification = new node();
 			verification.setNomElt("verification");
 			verification.getAttributs().put("nombre_fichier", String.valueOf(a.getLectDossiers().getEC().getListeFichierodt().size()));
+			// place le nombre de match limite dans le node verification
 			if(nodeSujet.containElementByName("plagiarism")) {
 				node plagiarism = nodeSujet.retourneFirstEnfantsByName("plagiarism");
 				if(plagiarism.getAttributs().get("number_match") != null) verification.getAttributs().put("number_match", plagiarism.getAttributs().get("number_match"));
@@ -147,12 +157,12 @@ public class meptl {
 					node ana = analyse(nodStudent, nodeSujet, i, a);
 					//a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false); //écriture du node analyse de l'étudiant
 					
-					// création des feedbacks avace des tailles défini
+					// création des feedbacks avec des tailles définies
 					if(!commandes.sansFeeback) if(!commandes.zipfeedback) feedback(ana, verif); //classique directement dans le répertoire
 					if(!commandes.sansFeeback) if(commandes.zipfeedback) { // Dans une archive pour Moodle
 						try {
 							long size = 48000000; //valeur par défaut
-							String nameZip = "feedbackMoodle";
+							String nameZip = "feedbackMoodle"; //nom zip par défaut
 							node zip = nodeSujet.retourneFirstEnfantsByName("zip");
 							if(zip!=null) {
 								if(zip.getAttributs().get("size")!=null)size = Long.valueOf(zip.getAttributs().get("size"));
@@ -1973,7 +1983,7 @@ public class meptl {
 					if(nodStudent==null)if(nodSujet.retourneLesContenusEnfants("").isEmpty()) { //si il n'y a pas de contenu, passe par l'index
 						nodStudent = a.retourneFirstNodeByNameAttributValue(frameStudent, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
 					}else {
-						nodStudent = a.retourneFirstNodeByFindContent2(frameStudent.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+						nodStudent = a.retourneFirstNodeByFindContent2(frameStudent.getNodes(), nodSujet.retourneLesContenusEnfants(""), commandes.tolerance_characters,commandes.tolerance_text);
 					}
 					
 				}
@@ -2631,7 +2641,7 @@ public class meptl {
   		
   		for(int i = 0 ; i < Sujet.size();i++) {
   			String sujetContent = Sujet.get(i).retourneLesContenusEnfants("");
-  			node StudentNode = a.retourneFirstNodeByFindContent2(Student, outils.withoutCodeAndPoint(sujetContent));
+  			node StudentNode = a.retourneFirstNodeByFindContent2(Student, outils.withoutCodeAndPoint(sujetContent),commandes.tolerance_characters,commandes.tolerance_text);
   			String studentContent = "null";
   			if(StudentNode!=null) studentContent = outils.NetChiffreALaFin(StudentNode.retourneLesContenusEnfants(""));
   			
@@ -4013,12 +4023,23 @@ public class meptl {
 		node plagiarism  = new node();
 		plagiarism.setNomElt("plagiarism");
 		plagiarism.getAttributs().put("number_match", "2");
+		plagiarism.setClose(true);
+		
+		//construction node similitude
+		node similarity = new node();
+		similarity.setNomElt("text:similarity");
+		similarity.getAttributs().put("tolerance_characters", "5");
+		similarity.getAttributs().put("tolerance_text", "0.79");
+		similarity.setClose(true);
 		
 		//construction du node setting
 		csv.getNodes().add(export);
 		setting.getNodes().add(csv);
 		setting.getNodes().add(zip);
 		setting.getNodes().add(plagiarism);
+		setting.getNodes().add(similarity);
+		
+		
 		
 		// ajoute le node setting au node sujet
 		sujet.getNodes().add(setting);
@@ -4087,9 +4108,9 @@ public class meptl {
 						if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
 					}
 				}else {
-					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
+					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
+					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
 				}
 			}
 		}
@@ -4121,9 +4142,9 @@ public class meptl {
 		
 		//recherche par le contenu enfant du node
 		if(nameNode.equals("text:h")) {
-			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""));
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
 		}
 		
 		//recherche par text:name

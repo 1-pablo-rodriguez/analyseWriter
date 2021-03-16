@@ -18,7 +18,7 @@ These tutorials are intended for computer science teachers.
 analyseWriter is a free application released under the GNU GPL3 license. It is a console application.
 This application allows you to analyze and evaluate layout files in Open Document Format 1.2. (native format of LibreOffice and OpenOffice Writer).
 
-analyseWriter allows:
+analyseWriter allow you to:
 
      1. Analyze files created by (LibreOffice or OpenOffice) Writer and evaluate them.
      2. Compare the modifications in the files.
