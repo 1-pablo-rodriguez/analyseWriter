@@ -302,8 +302,8 @@ public class verificationFichierAnalyse {
 		  	  	  		System.out.println();
 		  	  	  		erreur=true;
 			        }
+				}
 			}
-		}
 		
 		if(setting.containElementByName("plagiarism")) {
 			node plagiarism = setting.retourneFirstEnfantsByName("plagiarism");
@@ -328,6 +328,52 @@ public class verificationFichierAnalyse {
 				
 			}
 		}
+		
+		if(setting.containElementByName("text:similarity")) {
+			node similarity = setting.retourneFirstEnfantsByName("text:similarity");
+			if(similarity.getAttributs().get("tolerance_characters")!=null) {
+				int tolerance_characters = -1;
+				try {
+					tolerance_characters = Integer.valueOf(similarity.getAttributs().get("tolerance_characters"));
+				}catch (Exception e) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The tolerance_characters is not an integer.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				if(tolerance_characters<0) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The tolerance_characters must be a positive numeric value.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+			}
+			if(similarity.getAttributs().get("tolerance_text")!=null) {
+				double tolerance_text = 0.0;
+				try {
+					tolerance_text = Double.valueOf(similarity.getAttributs().get("tolerance_text"));
+				}catch (Exception e) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The tolerance_text is not a numeric.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				if(tolerance_text<0 || tolerance_text>1) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The tolerance_text must be between 0 and 1.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				
+			}
+			
+		}
+				
+		
 		
 		
 		
