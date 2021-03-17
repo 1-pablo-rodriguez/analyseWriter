@@ -3619,7 +3619,7 @@ public class meptl {
 		
 		
 		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
-		fichier.write("prénom nom;date modification;producteur;durée edition;sujet;note\n");
+		fichier.write("prénom nom;date modification;producteur;durée edition;sujet;nbr modification;nbr modification date unique;nbr match;note\n");
 		
 		for (int i = 0 ; i < ana.getNodes().size() ; i++) {
 			node nodouverture =  ana.getNodes().get(i).retourneFirstEnfantsByName("ouverture");
@@ -3641,7 +3641,12 @@ public class meptl {
 				if(nbrDateModificationUnique<commandes.mini_number_modification) {
 					note = note+" probable copy";
 				}
-			fichier.write(identification + ";" + dateModif + ";" + producteur + ";" + traitementDureeEdition(dureeEdition) + ";"+ sujet + ";" + traitementNote(note) + "\n");
+				
+				String nbrModification = verifStudent.getAttributs().get("nombre_modification");
+				String nombre_modifications_date_unique = verifStudent.getAttributs().get("nombre_modifications_date_unique");
+				
+				
+				fichier.write(identification + ";" + dateModif + ";" + producteur + ";" + traitementDureeEdition(dureeEdition) + ";"+ sujet + ";" + nbrModification + ";" + nombre_modifications_date_unique + ";" + nbreCorrespondance + ";" + traitementNote(note) + "\n");
 			}
 
 		}
@@ -3699,7 +3704,7 @@ public class meptl {
 		if(commandes.fourniDossierDestination) System.out.println(patch +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
 		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, encoding);
-		fichier.write("prénom nom;email;identifiant;date modification;producteur;durée edition;sujet;note\n");
+		fichier.write("prénom nom"+separator+"email"+separator+"identifiant"+separator+"date modification"+separator+"producteur"+separator+"durée edition"+separator+"sujet"+separator+"nbr modification" + separator + "nbr modifications date unique" + separator+ "nbr match" + separator +"note\n");
 		
 		for (int i = 0 ; i < ana.getNodes().size() ; i++) {
 			node nodouverture =  ana.getNodes().get(i).retourneFirstEnfantsByName("ouverture");
@@ -3798,12 +3803,15 @@ public class meptl {
 					note = note + " probable copy";
 				}
 				
-				fichier.write(identification + separator + mail + separator + numeroEtudiant + separator + dateModif + separator + producteur + separator + traitementDureeEdition(dureeEdition) + separator + sujet + separator + traitementNote(note) + "\n");
+				String nbrModification = verifStudent.getAttributs().get("nombre_modification");
+				String nombre_modifications_date_unique = verifStudent.getAttributs().get("nombre_modifications_date_unique");
+				
+				fichier.write(identification + separator + mail + separator + numeroEtudiant + separator + dateModif + separator + producteur + separator + traitementDureeEdition(dureeEdition) + separator + sujet + separator + nbrModification +separator + nombre_modifications_date_unique + separator + nbreCorrespondance + separator +  traitementNote(note) + "\n");
 			}
 			
 			if(!commandes.verifHisto2) {
 				note = ana.getNodes().get(i).retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note");
-				fichier.write(identification + separator + mail + separator + numeroEtudiant + separator + dateModif + separator + producteur + separator + traitementDureeEdition(dureeEdition) + separator + sujet + separator + traitementNote(note) + "\n");
+				fichier.write(identification + separator + mail + separator + numeroEtudiant + separator + dateModif + separator + producteur + separator + traitementDureeEdition(dureeEdition) + separator + sujet + separator + "" + separator + "" + "" + separator + "" + separator + traitementNote(note) + "\n");
 			}
 			
 
