@@ -364,7 +364,7 @@ public class verificationFichierAnalyse {
 				if(tolerance_text<0 || tolerance_text>1) {
 					System.out.println();
 	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
-	  	  	  		System.out.println("The tolerance_text must be between 0 and 1.");
+	  	  	  		System.out.println("The tolerance_text must be between 0.01 and 0.99.");
 	  	  	  		System.out.println();
 	  	  	  		erreur=true;
 				}

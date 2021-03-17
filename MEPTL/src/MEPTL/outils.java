@@ -252,11 +252,11 @@ public class outils {
 			Sujet = NetTexte(Sujet);
 			A = NetTexte(A);
 			if(A==null) A="null";
-			if(A.contains(Sujet)) {
-				IncrementPointClass(pointEnJeu); 
-				return "Correct : +" + pointString;
-			}
-			if(similirudeString(A, Sujet)) {
+//			if(A.contains(Sujet)) {
+//				IncrementPointClass(pointEnJeu); 
+//				return "Correct : +" + pointString;
+//			}
+			if(similitudeString2(A, Sujet,commandes.tolerance_text)) {
 				IncrementPointClass(pointEnJeu); 
 				return "Correct : +" + pointString;
 			}
@@ -591,7 +591,7 @@ public class outils {
 			TextB[i] = NetTexte(TextB[i]);
 			if(A.equals(TextB[i])) return "Correct : ";
 			if(A.contains(TextB[i])) return "Correct : ";
-			if(similirudeString(A, TextB[i])) return "Correct : ";
+			if(similitudeString2(A, TextB[i],commandes.tolerance_text)) return "Correct : ";
 		}
 		
 		return "Erreur : ";
@@ -775,19 +775,6 @@ public class outils {
 				
 	}
 
-//	/**
-//	 * La proportion ne doit pas être linéaire sinon c'est trop facile
-//	 * @return
-//	 */
-//	public double getPropClass() {
-//		double a = (double) this.pointsClass;
-//		double b = (double) this.pointTotal;
-//		
-//		if(b!=0) {
-//			return (double) Math.pow(a/b, 3);
-//		}
-//		 return 0;
-//	}
 	
 	/**
 	 * Similitudes des chaînes de caractères
@@ -796,7 +783,7 @@ public class outils {
 	 * @param Modele
 	 * @return
 	 */
-	private static boolean similirudeString(String A, String Modele) {
+	private static boolean similitudeString(String A, String Modele) {
 		byte[] N1 = Modele.getBytes();
 		byte[] N2 = A.getBytes();
 		int Compteur = 0;
@@ -820,6 +807,73 @@ public class outils {
 		return false;
 		
 	}
+	
+	
+	private static boolean similitudeString2(String A, String Modele, Double tolerance_text) {
+		Modele = NetTexte(Modele);
+		
+		if(tolerance_text==null) {
+			tolerance_text = 0.79 ;
+		}
+		
+		A = NetTexte(A);
+		
+		if(A.length()<8 || Modele.length()<8) return false;
+
+		int compteur2 = 0 ;
+		int total2 = 0;
+		
+		String B = "";
+		
+	
+		
+		int step = 3; //valeur par défaut du pas	
+		if(Modele.length()>=13 && Modele.length()<200) step=4;  
+		if(Modele.length()>=200) step = 5; 
+		
+
+		
+		for(int i = 0 ; i < Modele.length()-step;i=i+step) {
+			B = Modele.substring(i, i+step);
+			if(A.contains(B)) compteur2++;
+			total2++;
+			if(i+step>Modele.length()-step) {
+				B = Modele.substring(i+step, Modele.length());
+				if(A.contains(B)) compteur2++;
+				total2++;
+			}
+		}
+		
+	
+		int compteur2b = 0 ;
+		int total2b = 0;
+		
+		for(int i = 0 ; i < A.length()-step;i=i+step) {  //i=i+step
+			B = A.substring(i, i+step);
+			if(Modele.contains(B)) compteur2b++;
+			total2b++;
+			if(i+step>A.length()-step) {
+				B = A.substring(i+step, A.length());
+				if(Modele.contains(B)) compteur2b++;
+				total2b++;
+			}
+		}
+		
+		
+		double rapport1 = ((double)compteur2/(double)total2);
+		double rapport2 = ((double)compteur2b/(double)total2b);
+		
+		if(rapport1<tolerance_text){ // groupe de 2 caractères
+			return  false;
+		}
+
+		if(rapport2<tolerance_text){ // groupe de 2 caractères
+			return  false;
+		}
+
+		return true;
+	}
+	
 	
 	
 	static String NetTexte2(String A) {
