@@ -18,6 +18,7 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,7 +59,7 @@ public class meptl {
 				
 		patch = System.getProperty("user.dir");
 //		patch = "C:/Users/pabr6/Downloads/teste/";
-//		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation";
+//		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation2";
 		
 		//les commandes
 		new commandes(args,patch);
@@ -91,6 +92,12 @@ public class meptl {
 				if(similarity.getAttributs().get("tolerance_characters")!=null) commandes.tolerance_characters =  Integer.valueOf(similarity.getAttributs().get("tolerance_characters"));
 				if(similarity.getAttributs().get("tolerance_text")!=null) commandes.tolerance_text =  Double.valueOf(similarity.getAttributs().get("tolerance_text"));
 			}
+			// place le nombre de match limite et le nombre minimal de modification dans le node verification
+			if(nodeSujet.containElementByName("plagiarism")) {
+				node plagiarism = nodeSujet.retourneFirstEnfantsByName("plagiarism");
+				if(plagiarism.getAttributs().get("number_match") != null) commandes.number_match = Integer.valueOf(plagiarism.getAttributs().get("number_match"));
+				if(plagiarism.getAttributs().get("mini_number_modification") != null) commandes.mini_number_modification = Integer.valueOf(plagiarism.getAttributs().get("mini_number_modification"));
+			}
 			
 		}
 		
@@ -104,18 +111,13 @@ public class meptl {
 			node verification = new node();
 			verification.setNomElt("verification");
 			verification.getAttributs().put("nombre_fichier", String.valueOf(a.getLectDossiers().getEC().getListeFichierodt().size()));
-			// place le nombre de match limite dans le node verification
-			if(nodeSujet.containElementByName("plagiarism")) {
-				node plagiarism = nodeSujet.retourneFirstEnfantsByName("plagiarism");
-				if(plagiarism.getAttributs().get("number_match") != null) verification.getAttributs().put("number_match", plagiarism.getAttributs().get("number_match"));
-			}
 			for(int i = 0 ; i < nbFichierWriter ; i++) {
 				node nod = a.XMLContent(a.getLectDossiers().getEC().getListeContentWriter().get(i));
 				node nodStudent = LectureFichierEtudiantPourVerification(nod,a,i);
 				verification.getNodes().add(nodStudent);
 			}
 			//a.ecritureNodeEnXML(verification, "VerificationHistorique","",false); //écriture du node de l'étudiant
-			verif = verificationHistorique(verification, a);  // vérification des correspondance entre les fichiers
+			verif = verificationHistorique(verification, a);  // vérification des correspondances entre les fichiers
 			a.ecritureNodeEnXML(verif, "Verif",commandes.pathDestination,commandes.fourniDossierDestination); //écriture du node de vérification
 			if(!commandes.analyse) {commandes.clotureApplication();System.exit(0);}
 		}
@@ -3495,6 +3497,8 @@ public class meptl {
 		node verif = new node();
 		verif.setNomElt("verification");
 		verif.setAttributs(verification.getAttributs());
+		verif.getAttributs().put("number_match", String.valueOf(commandes.number_match));
+		verif.getAttributs().put("mini_number_modification", String.valueOf(commandes.mini_number_modification));
 		
 		ArrayList<node> LesFichiers = verification.retourneLesEnfantsByName("fichier", new ArrayList<node>());
 		
@@ -3507,6 +3511,7 @@ public class meptl {
 			
 			ArrayList<node> HitoriqueDuFichier = LesFichiers.get(i).retourneEnfantsByName("text:changed-region", new ArrayList<node>());
 			int nombreModifications = HitoriqueDuFichier.size();
+			
 			nodStudent.getAttributs().put("nombre_modification", String.valueOf(nombreModifications));
 			
 			int compteurnombreCorrespondance = 0 ;
@@ -3516,12 +3521,17 @@ public class meptl {
 			@SuppressWarnings("unchecked")
 			ArrayList<node> LesFichiers2 = (ArrayList<node>) LesFichiers.clone();
 			LesFichiers2.remove(i);
+			List<String> list1 = new ArrayList<String>();
 			
 			for(int j = 0 ; j < HitoriqueDuFichier.size(); j++) {
+				
 				String dcdate1 = HitoriqueDuFichier.get(j).retourneFirstEnfantsByName("dc:date").getContenu();
 				String dccreator = HitoriqueDuFichier.get(j).retourneFirstEnfantsByName("dc:creator").getContenu();
 				
+				if(!list1.contains(dcdate1)) list1.add(dcdate1);
+				
 				node N1 = HitoriqueDuFichier.get(j).getNodes().get(0);
+				
 				
 				for(int i2 = 0 ; i2 < LesFichiers2.size(); i2++) {
 					String nameStudent2 = LesFichiers2.get(i2).getAttributs().get("dossier");
@@ -3531,7 +3541,7 @@ public class meptl {
 						String dccreator2 = HitoriqueDuFichier2.get(j2).retourneFirstEnfantsByName("dc:creator").getContenu();
 						node N2 = HitoriqueDuFichier2.get(j2).retourneFirstEnfantsByName(N1.getNomElt());
 						if(dcdate1.equals(dcdate2) && N1.getNomElt().equals(N2.getNomElt()) && dccreator.equals(dccreator2)) {
-							if(nodStudent.retourneFirstNodeByNameAndAttributValue("correspondance", "date", dcdate2)==null) {
+							if(nodStudent.retourneFirstNodeByNameAndAttributValueExactStrict("correspondance", "date", dcdate2)==null) {
 								//affinage du match
 								compteurnombreCorrespondance++;
 								node correspondance = new node();
@@ -3541,7 +3551,7 @@ public class meptl {
 								correspondance.getAttributs().put("Avec_etudiant", nameStudent2);
 								correspondance.getAttributs().put("dc:creator", dccreator2);
 								nodStudent.getNodes().add(correspondance);
-								System.out.println("** Find a match ** " + dcdate1);
+								System.out.println("\t** Find a match ** " + dcdate1);
 								break;
 							}
 						}
@@ -3549,7 +3559,10 @@ public class meptl {
 				}
 			}
 			nodStudent.getAttributs().put("nombre_correspondance", String.valueOf(compteurnombreCorrespondance));
+			nodStudent.getAttributs().put("nombre_modifications_date_unique", String.valueOf(list1.size()));
 			verif.getNodes().add(nodStudent);
+			System.out.println("\tDate de modification date unique " + String.valueOf(list1.size()));
+			
 		}
 		
 		return verif;
@@ -3620,8 +3633,13 @@ public class meptl {
 			String note = "plagiat";
 			if(verifStudent!=null) {
 				int nbreCorrespondance = Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondance"));
-				if(nbreCorrespondance<=2) {
+				int nbrDateModificationUnique = Integer.valueOf(verifStudent.getAttributs().get("nombre_modifications_date_unique"));
+				
+				if(nbreCorrespondance<=commandes.number_match) {
 					note = ana.getNodes().get(i).retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note");
+				}
+				if(nbrDateModificationUnique<commandes.mini_number_modification) {
+					note = note+" probable copy";
 				}
 			fichier.write(identification + ";" + dateModif + ";" + producteur + ";" + traitementDureeEdition(dureeEdition) + ";"+ sujet + ";" + traitementNote(note) + "\n");
 			}
@@ -3772,9 +3790,14 @@ public class meptl {
 			
 			if(commandes.verifHisto2) if(verifStudent!=null) {
 				int nbreCorrespondance = Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondance"));
-				if(nbreCorrespondance<=2) {
+				int nbrDateModificationUnique = Integer.valueOf(verifStudent.getAttributs().get("nombre_modifications_date_unique"));
+				if(nbreCorrespondance<=commandes.number_match) {
 					note = ana.getNodes().get(i).retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note");
 				}
+				if(nbrDateModificationUnique<=commandes.mini_number_modification) {
+					note = note + " probable copy";
+				}
+				
 				fichier.write(identification + separator + mail + separator + numeroEtudiant + separator + dateModif + separator + producteur + separator + traitementDureeEdition(dureeEdition) + separator + sujet + separator + traitementNote(note) + "\n");
 			}
 			
@@ -4023,6 +4046,7 @@ public class meptl {
 		node plagiarism  = new node();
 		plagiarism.setNomElt("plagiarism");
 		plagiarism.getAttributs().put("number_match", "2");
+		plagiarism.getAttributs().put("mini_number_modification", "0");
 		plagiarism.setClose(true);
 		
 		//construction node similitude

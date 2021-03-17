@@ -327,6 +327,28 @@ public class verificationFichierAnalyse {
 				}
 				
 			}
+			if(plagiarism.getAttributs().get("mini_number_modification") != null) {
+				int mini_number_modification = -1;
+				try {
+					mini_number_modification = Integer.valueOf(plagiarism.getAttributs().get("mini_number_modification"));
+				}catch (Exception e) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The minimum number of modifications must be a numeric value.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				if(mini_number_modification<0) {
+					System.out.println();
+	  	  	  		System.out.println("**-** ERROR in analysis file at node \"setting\".");
+	  	  	  		System.out.println("The minimum number of modifications must be a positive numeric value.");
+	  	  	  		System.out.println();
+	  	  	  		erreur=true;
+				}
+				
+			}
+			
+			
 		}
 		
 		if(setting.containElementByName("text:similarity")) {

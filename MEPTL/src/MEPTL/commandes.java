@@ -41,8 +41,11 @@ public class commandes {
 	public static String version ="3.5.1";
 	public static String Command ="";
 	public static String culture = "FR";
+	//setting valeur par défaut
 	public static int tolerance_characters = 5;
 	public static double tolerance_text = 0.79;
+	public static int number_match = 2;
+	public static int mini_number_modification = 0;
 	
 	/**
 	 * 
