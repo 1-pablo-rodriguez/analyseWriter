@@ -110,8 +110,14 @@ public class outils {
 		if(code.equals("style:columns fo:column-gap")) code="Espacement entre les colonnes<br><i>Gouttière</i>";
 		if(code.equals("style:header-footer-properties fo:border")) code="Les 4 bordures du pied de page<br><i>droite gauche bas haut</i>";
 		if(code.equals("style:header-footer-properties fo:border")) code="Les 4 bordures de l'entête<br><i>droite gauche bas haut</i>";
-		
-		
+		if(code.equals("text:tab name")) code="Tabulation";
+		if(code.equals("text:tab Contenu textuel")) code="Contenu textuel après tabulation";
+		if(code.equals("text:initial-creator Contenu textuel")) code="Champ auteur (premier auteur)";
+		if(code.equals("text:creator Contenu textuel")) code="Champ auteur (modifié)";
+		if(code.equals("style:page-layout-properties style:num-format")) code="Format de la numérotation";
+		if(code.equals("text:page-number text:select-page")) code="Champ numérotation de la page";
+		if(code.equals("style:page-layout-properties style:print-orientation")) code="Orientation de la page";
+		if(code.equals("style:header-footer-properties fo:min-height")) code="Hauteur minimal du pied de page";
 		
 		
 		//style structure
@@ -143,6 +149,13 @@ public class outils {
 		if(code.equals("style:text-properties fo:color")) code="Couleur de la police";
 		if(code.equals("text:h text:style-name")) code="Nom du style du paragraphe Titre";
 		if(code.equals("text:change-start Contenu textuel")) code="Insertion du texte";
+		if(code.equals("style:paragraph-properties fo:margin-right")) code="Retrait avant le paragraphe";
+		if(code.equals("style:paragraph-properties fo:margin-left")) code="Retrait après le paragraphe";
+		if(code.equals("style:paragraph-properties fo:border")) code="Style des quatre bordures";
+
+		
+		
+		
 		//if(code.equals("style:style fo:text-align")) code="Alignement du paragraphe";
 		
 		
@@ -252,10 +265,10 @@ public class outils {
 			Sujet = NetTexte(Sujet);
 			A = NetTexte(A);
 			if(A==null) A="null";
-//			if(A.contains(Sujet)) {
-//				IncrementPointClass(pointEnJeu); 
-//				return "Correct : +" + pointString;
-//			}
+			if(A.contains(Sujet)) {
+				IncrementPointClass(pointEnJeu); 
+				return "Correct : +" + pointString;
+			}
 			if(similitudeString2(A, Sujet,commandes.tolerance_text)) {
 				IncrementPointClass(pointEnJeu); 
 				return "Correct : +" + pointString;
