@@ -1,0 +1,19 @@
+Les principaux codes pour le fichier d'analyse
+▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀
+
+‽	évaluateur
+‼	évaluateur avec analyseStyle
+¢	Ignore la case, les caractères spéciaux, accentués, les chiffres
+→	Etendu (tolérance) entre 2 valeurs numériques
+¦	OU sans nettoyage du texte
+↑	OU avec ignore la case et les chiffres
+↕	OU comme ¢
+†	N'importe quelle valeur saut null, ou none, ou empty
+
+-------------
+
+evaluer="true"		évalue le node
+allContent="strict1"	évalue tous les contenus des enfants sans néttoyage du texte
+allContent="environ1"	évalue tous les contenus ignore la case, les caractères spéciaux, accentués et chiffres
+analyseStyle="true"	évalue le style du paragraphe (uniquement disponible dans le node structurepage
+evalNameNode="1"	évalue le nom du node (1 point)
