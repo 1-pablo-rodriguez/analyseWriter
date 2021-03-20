@@ -5415,3 +5415,52 @@
 #=#=#=# Syncrun started 2021-03-20T08:27:39Z
 #=#=#=#=# Propagation starts 2021-03-20T08:27:39Z (last step: 499 msec, total: 499 msec)
 #=#=#=# Syncrun finished 2021-03-20T08:27:39Z (last step: 24 msec, total: 524 msec)
+#=#=#=# Syncrun started 2021-03-20T10:27:44Z
+#=#=#=#=# Propagation starts 2021-03-20T10:27:44Z (last step: 319 msec, total: 319 msec)
+#=#=#=# Syncrun finished 2021-03-20T10:27:44Z (last step: 23 msec, total: 343 msec)
+#=#=#=# Syncrun started 2021-03-20T11:08:45Z
+#=#=#=#=# Propagation starts 2021-03-20T11:08:45Z (last step: 271 msec, total: 271 msec)
+11:08:43||bin/MEPTL/commandes.class|64|1|1616238523|bcd9714d432297c483907ed7a963da61|26603|00443495ocewbpcc848y|4||204|26585|1616228781|73cf4ae5-f8ea-43d1-8212-c6f3792b7712|
+11:08:43||src/MEPTL/commandes.java|64|1|1616238523|f2f69229dd316cc9e0dba4fb874b1560|32899|00443496ocewbpcc848y|4||204|32889|1616228780|eb696c38-a512-4b36-ab1e-eb0868d7793f|
+#=#=#=# Syncrun finished 2021-03-20T11:08:46Z (last step: 278 msec, total: 549 msec)
+#=#=#=# Syncrun started 2021-03-20T11:09:11Z
+#=#=#=#=# Propagation starts 2021-03-20T11:09:12Z (last step: 448 msec, total: 448 msec)
+11:09:10||bin/MEPTL/fenetre$1.class|64|1|1616238550|59f59c51bf568ae1ab3b412a74af6af3|602|00400338ocewbpcc848y|4||204|602|1616226915|99e9a7dd-f521-41c8-826f-0e2265a02a92|
+11:09:10||bin/MEPTL/fenetre.class|64|1|1616238550|e8e5060e8d9001fe356aaa27048e207b|1211|00400339ocewbpcc848y|4||204|1211|1616226915|b792b020-c229-4333-9ff3-a911320d54a8|
+11:09:10||bin/MEPTL/commandes.class|64|1|1616238550|8405cebc2dee9de09cdc022721167aea|26603|00443495ocewbpcc848y|4||204|26603|1616238523|85e2c47c-1881-4cd5-b50c-4a23944b7d4e|
+11:09:10||bin/MEPTL/outils.class|64|1|1616238550|1d04807843164f7adfd9b58891fccab4|34137|00400342ocewbpcc848y|4||204|34137|1616226915|b86b5d5e-905a-4026-b49d-cf1e945389c1|
+11:09:10||bin/MEPTL/meptl.class|64|1|1616238550|9b524c183969879b2b5d1c63a68ba1df|98078|00400341ocewbpcc848y|4||204|98078|1616228814|68a99dee-b908-484a-b653-92a186c8abbe|
+11:09:10||bin/MEPTL/HTML.class|64|1|1616238549|fb853b639a708988dd9ea4cb403334f7|153641|00400340ocewbpcc848y|4||204|153641|1616226915|72c473cb-42ac-4f55-9821-5210c0d0aae0|
+11:09:10||bin/MEPTL/verificationFichierAnalyse.class|64|1|1616238550|9c50bc946e90eb3aafb722996aa09f3d|11916|00450946ocewbpcc848y|4||204|11916|1616226915|bf4f817c-cc94-4ce6-9efe-35655cd2e6fd|
+#=#=#=# Syncrun finished 2021-03-20T11:09:12Z (last step: 554 msec, total: 1003 msec)
+#=#=#=# Syncrun started 2021-03-20T11:09:24Z
+#=#=#=#=# Propagation starts 2021-03-20T11:09:25Z (last step: 421 msec, total: 421 msec)
+11:09:23||bin/MEPTL/meptl.class|64|1|1616238562|a0045819822ff9ab1cb42b5cae291ece|98057|00400341ocewbpcc848y|4||204|98078|1616238550|e31453cb-7ec8-4b36-bafd-e9305c5a761e|
+11:09:23||src/MEPTL/meptl.java|64|1|1616238562|1a60cbf152cfa9e6d93a959147d82704|226219|00400347ocewbpcc848y|4||204|226219|1616228813|88d4c3fb-d1a9-4ad8-ae63-f8ce4c659961|
+#=#=#=# Syncrun finished 2021-03-20T11:09:25Z (last step: 337 msec, total: 758 msec)
+#=#=#=# Syncrun started 2021-03-20T11:10:09Z
+#=#=#=#=# Propagation starts 2021-03-20T11:10:09Z (last step: 512 msec, total: 512 msec)
+#=#=#=# Syncrun finished 2021-03-20T11:10:09Z (last step: 25 msec, total: 537 msec)
+#=#=#=# Syncrun started 2021-03-20T11:17:52Z
+#=#=#=#=# Propagation starts 2021-03-20T11:17:52Z (last step: 205 msec, total: 205 msec)
+11:17:50||bin/MEPTL/HTML.class|64|1|1616239070|cd9c998be5ab874cd518865d8099e7a4|153641|00400340ocewbpcc848y|4||204|153641|1616238549|e0772f1f-e102-4870-bb89-d7e604e05446|
+11:17:50||bin/MEPTL/commandes.class|64|1|1616239070|028b84fa738bc60e2a7d3d5b2317831b|26603|00443495ocewbpcc848y|4||204|26603|1616238550|3daecfd7-38fb-4db5-93eb-86d99b9fdd0f|
+11:17:50||bin/MEPTL/fenetre.class|64|1|1616239070|458c41a61535f5a5f20eec4329de408f|1211|00400339ocewbpcc848y|4||204|1211|1616238550|56ad52c8-f40f-4c6e-bec9-98ea2f0d58f1|
+11:17:50||bin/MEPTL/meptl.class|64|1|1616239070|a692d494712773688bbfd7ad7502846c|98057|00400341ocewbpcc848y|4||204|98057|1616238562|b38bd550-91d2-4f0c-9416-1ee05c04fba3|
+11:17:50||bin/MEPTL/fenetre$1.class|64|1|1616239070|3c4e4692017aeb3f148adc2622208004|602|00400338ocewbpcc848y|4||204|602|1616238550|b29ed97b-eb9d-47c9-aeb8-08819b39955c|
+11:17:50||bin/MEPTL/outils.class|64|1|1616239070|08299a56fd9b33da6a4cd1307dec083b|34137|00400342ocewbpcc848y|4||204|34137|1616238550|99953912-7668-436b-91aa-a1e1d8ea711e|
+11:17:50||bin/MEPTL/verificationFichierAnalyse.class|64|1|1616239070|cdbca4f3fd87c280fa726cde3a805fdd|11916|00450946ocewbpcc848y|4||204|11916|1616238550|500f57f6-834e-41d4-8b14-2bb6feb4ff5e|
+#=#=#=# Syncrun finished 2021-03-20T11:17:53Z (last step: 569 msec, total: 774 msec)
+#=#=#=# Syncrun started 2021-03-20T11:18:12Z
+#=#=#=#=# Propagation starts 2021-03-20T11:18:12Z (last step: 356 msec, total: 356 msec)
+11:18:10||bin/MEPTL/commandes.class|64|1|1616239090|b90e1ec317f87d2f470ec8e8b993626b|26585|00443495ocewbpcc848y|4||204|26603|1616239070|e773fae7-58ce-4014-a646-9a7b77e2c3eb|
+11:18:10||src/MEPTL/commandes.java|64|1|1616239090|13358db55e882d4907ffb42783a06b29|32889|00443496ocewbpcc848y|4||204|32899|1616238523|140ef091-60d4-460d-baf4-4e6e4e1cc324|
+#=#=#=# Syncrun finished 2021-03-20T11:18:13Z (last step: 229 msec, total: 586 msec)
+#=#=#=# Syncrun started 2021-03-20T11:18:25Z
+#=#=#=#=# Propagation starts 2021-03-20T11:18:26Z (last step: 556 msec, total: 556 msec)
+11:18:24||bin/MEPTL/meptl.class|64|1|1616239104|4f15f6a0158cc2203847bce9323da840|98078|00400341ocewbpcc848y|4||204|98057|1616239070|2be38b8d-5d1e-4102-9a9a-af62f5c1b4fb|
+11:18:24||src/MEPTL/meptl.java|64|1|1616239103|fea6fdf4ef6ef17fbdd53d26a7789e96|226219|00400347ocewbpcc848y|4||204|226219|1616238562|db9c1b63-dbea-4b58-82ec-2dbab57de1b2|
+#=#=#=# Syncrun finished 2021-03-20T11:18:26Z (last step: 237 msec, total: 794 msec)
+#=#=#=# Syncrun started 2021-03-20T11:19:09Z
+#=#=#=#=# Propagation starts 2021-03-20T11:19:09Z (last step: 463 msec, total: 463 msec)
+#=#=#=# Syncrun finished 2021-03-20T11:19:09Z (last step: 28 msec, total: 492 msec)
