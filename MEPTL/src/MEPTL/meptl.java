@@ -142,7 +142,7 @@ public class meptl {
 			node nodStudent = LectureFichierEtudiantSousFormeDeNode(nod,a,i);
 			//a.ecritureNodeEnXML(nodStudent, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false); //écriture du node de l'étudiant
 
-			
+	
 			// ecriture d'une fichier d'analyse.
 			// commande -write 
 			if(commandes.ecritCode && ! commandes.verifHisto && !commandes.analyse) {
@@ -150,7 +150,6 @@ public class meptl {
 				nodSujet = addSetting(nodSujet); // ajoute le node setting;
  				a.ecritureNodeEnXML(nodSujet, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false);
 			}
-			
 			
 			// analyse des fichiers student
 			if(commandes.analyse) {
@@ -1609,10 +1608,18 @@ public class meptl {
 				String nameNode = nodSujet.getNomElt();
 				page = addNodeSautTitre(nodSujet, page); // ajoute des saut de page s'il y a des sauts avec des titres
 
+				//recherche le node correspondant de l'étudiant
 				node nodStudent = null;	
 				if(pageStudent!=null) if(pageStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
 					nodStudent = pageStudent.retourneFirstEnfantsByName(nameNode);
 				}
+				
+				//analyse le nom du node
+				if(nodSujet.getAttributs().get("evalNameNode")!=null) {
+					String point = nodSujet.getAttributs().get("evalNameNode");
+					page =analyseNameNode(page,nodStudent,nodSujet.getNomElt(),point, nodSujet.getNomElt());
+				}
+				
 				
 				// analyse attribut et contenu des enfants du premier niveau
 				page = analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, page, "ana:page",pageSujet.getNodes().get(j).getNomElt());
@@ -1625,12 +1632,20 @@ public class meptl {
 						String nameNode2 = nod2Sujet.getNomElt();
 						page = addNodeSautTitre(nod2Sujet, page); // ajoute des sauts s'il y a des sauts avec des titres
 
+						
+						//recherche le node correspondant de l'étudiant
 						node nod2Student = null;	
 						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
-//							nod2Student = nodStudent.retourneFirstEnfantsByName(nameNode2);
+							//nod2Student = nodStudent.retourneFirstEnfantsByName(nameNode2);
 							nod2Student = rechercheLeNodeEnCascade(nameNode2,nod2Sujet,null,null,nodStudent,a);
 						}
 						
+						
+						//analyse le nom du node
+						if(nod2Sujet.getAttributs().get("evalNameNode")!=null) {
+							String point = nod2Sujet.getAttributs().get("evalNameNode");
+							page =analyseNameNode(page,nod2Student,nod2Sujet.getNomElt(),point, nod2Sujet.getNomElt());
+						}
 					
 						//analyse style du paragraphe
 						if(nod2Sujet.getAttributs().get("analyseStyle")!=null) {
@@ -1652,6 +1667,7 @@ public class meptl {
 							String nameNode3 = nod3Sujet.getNomElt();
 							//page = addNodeSautTitre(nod3Sujet, page);
 							
+							//recherche du node correspondant de l'étudiant
 							node nod3Student = null;	
 							if(nod2Student!=null) if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
 								nod3Student = rechercheLeNodeEnCascade(nameNode3,nod3Sujet,null,nodStudent,nod2Student,a);
@@ -1662,7 +1678,6 @@ public class meptl {
 								String point = nod3Sujet.getAttributs().get("evalNameNode");
 								page =analyseNameNode(page,nod3Student,nod3Sujet.getNomElt(),point, nod3Sujet.getNomElt());
 							}
-							
 						
 							// analyse attribut et contenu des enfants du troisième niveau
 							page = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, page, "ana:page", nod2Sujet.getNodes().get(l).getNomElt());
@@ -1718,7 +1733,7 @@ public class meptl {
 				paragraph.setNomElt("paragraph");
 				paragraph.getAttributs().put("name", nomDuParagraph);
 				if(paragraphSujet.getAttributs().get("titre")!=null) paragraph.getAttributs().put("titre", nodSujetParagraph.getNodes().get(i).getAttributs().get("titre"));
-				
+							
 				// trouve le node de l'étudiant
 				node paragraphStudent = a.retourneFirstNodeByNameAttributValue(nodStudentParagraph, "style:style", "style:name", nomDuParagraph);
 				
@@ -2381,6 +2396,11 @@ public class meptl {
 							page =analyseNameNode(page,nod2Student,nod2Sujet.getNomElt(),point, nod2Sujet.getNomElt());
 						}
 						
+						// méthode analyseStyle
+						if(nameNode.equals("text:p") && nodSujetParagraphs!=null) {
+							page = analyseStyle(page, nod2Sujet,nod2Student, nodSujetParagraphs,nodStudentParagraphs);
+						}
+						
 						// analyse attribut et contenu des enfants du second niveau
 						page = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, page, "ana:page",nod2Sujet.getNomElt() );
 						
@@ -2403,6 +2423,10 @@ public class meptl {
 								page =analyseNameNode(page,nod3Student,nod3Sujet.getNomElt(),point, nod3Sujet.getNomElt());
 							}
 							
+							// méthode analyseStyle
+							if(nameNode.equals("text:p") && nodSujetParagraphs!=null) {
+								page = analyseStyle(page, nod3Sujet,nod3Student, nodSujetParagraphs,nodStudentParagraphs);
+							}
 							
 							// analyse attribut et contenu des enfants du troisième niveau
 							page = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, page, "ana:page", nod3Sujet.getNomElt());
@@ -2419,6 +2443,17 @@ public class meptl {
 								//insère un saut s'il y a un titre avec un saut=true
 								page = addNodeSautTitre(nod4Sujet, page);
 
+								//analyse le nom du node
+								if(nod3Sujet.getAttributs().get("evalNameNode")!=null) {
+									String point = nod4Sujet.getAttributs().get("evalNameNode");
+									page =analyseNameNode(page,nod4Student,nod4Sujet.getNomElt(),point, nod4Sujet.getNomElt());
+								}
+								
+								// méthode analyseStyle
+								if(nameNode.equals("text:p") && nodSujetParagraphs!=null) {
+									page = analyseStyle(page, nod4Sujet,nod4Student, nodSujetParagraphs,nodStudentParagraphs);
+								}
+								
 								// analyse attribut et contenu des enfants du troisième niveau
 								page = analyseLesAttributEtContenuDuNode(nod4Student, nod4Sujet, page, "ana:page", nod4Sujet.getNomElt());
 							
@@ -2435,6 +2470,17 @@ public class meptl {
 									//insère un saut s'il y a un titre avec un saut=true
 									page = addNodeSautTitre(nod5Sujet, page);
 
+									//analyse le nom du node
+									if(nod5Sujet.getAttributs().get("evalNameNode")!=null) {
+										String point = nod5Sujet.getAttributs().get("evalNameNode");
+										page =analyseNameNode(page,nod5Student,nod5Sujet.getNomElt(),point, nod5Sujet.getNomElt());
+									}
+									
+									// méthode analyseStyle
+									if(nameNode.equals("text:p") && nodSujetParagraphs!=null) {
+										page = analyseStyle(page, nod5Sujet,nod5Student, nodSujetParagraphs,nodStudentParagraphs);
+									}
+									
 									// analyse attribut et contenu des enfants du troisième niveau
 									page = analyseLesAttributEtContenuDuNode(nod5Student, nod5Sujet, page, "ana:page", nod5Sujet.getNomElt());
 								
@@ -3493,7 +3539,6 @@ public class meptl {
 	 * @return
 	 */
 	private static node addNodeSautTitre(node nodSujet, node nodanalyse) {
-		
 		if(nodSujet.getAttributs().get("saut")!=null) if(Boolean.valueOf(nodSujet.getAttributs().get("saut"))) {
 			if(nodSujet.getAttributs().get("titre")!=null) {
 				node N = new node();
@@ -4285,22 +4330,25 @@ public class meptl {
 				String NameStyleParagrapheSujet = nodSujet.getAttributs().get("text:style-name");
 				StyleParagraphSujet = nodSujetParagraphs.retourneFirstNodeStyleByValueAttribut("style:style", "style:name", NameStyleParagrapheSujet);
 			}
-			if(nodStudent!=null) {
+			if(nodStudent!=null && StyleParagraphSujet!=null) {
 				if(nodStudent.getAttributs().get("text:style-name")!=null && StyleParagraphSujet!=null) {
 					String NameStyleParagrapheStudent = nodStudent.getAttributs().get("text:style-name");
 					StyleParagraphStudent = nodStudentParagraphs.retourneFirstNodeStyleByValueAttribut("style:style", "style:name",NameStyleParagrapheStudent);
 				}
 			}
 			// ajoute les valeurs par héritage.
-			//StyleParagraphSujet = ajouteValeurLesValeursDuStyleParagraphParent(nodSujetParagraphs , StyleParagraphSujet);
-			if(StyleParagraphStudent!=null) StyleParagraphStudent = ajouteValeurLesValeursDuStyleParagraphParent(nodStudentParagraphs , StyleParagraphStudent);
 			
-			//ajoute les valeurs par défaut.
-			if(StyleParagraphStudent!=null) StyleParagraphStudent = ajouteValeurParDefautAuStyleParagraph(nodStudentParagraphs , StyleParagraphStudent);
+			if(StyleParagraphSujet!=null) {
+				if(StyleParagraphStudent!=null) StyleParagraphStudent = ajouteValeurLesValeursDuStyleParagraphParent(nodStudentParagraphs , StyleParagraphStudent);
+				
+				//ajoute les valeurs par défaut.
+				if(StyleParagraphStudent!=null) StyleParagraphStudent = ajouteValeurParDefautAuStyleParagraph(nodStudentParagraphs , StyleParagraphStudent);
+				
+				
+				// analyse attribut et contenu des enfants du premier niveau
+				page = analyseLesAttributAnalyseStyle(StyleParagraphStudent, StyleParagraphSujet, page, "ana:page","style:style");
+			}
 			
-			
-			// analyse attribut et contenu des enfants du premier niveau
-			page = analyseLesAttributAnalyseStyle(StyleParagraphStudent, StyleParagraphSujet, page, "ana:page","style:style");
 		}
 		return page;
 	}
