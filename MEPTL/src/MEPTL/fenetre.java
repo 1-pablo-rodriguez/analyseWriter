@@ -16,7 +16,7 @@ public class fenetre extends JFrame {
 	
 
 	fenetre(){
-		setTitle("analyseWriter");
+		setTitle("analyseWriter-WRITE");
 		setSize(400,300);
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

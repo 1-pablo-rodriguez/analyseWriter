@@ -726,30 +726,17 @@ public class outils {
 	}
 	
 	
+	/**
+	 * Netoyage des chiffres à la fin des textes.<br>
+	 * <br>
+	 * @param A
+	 * @return
+	 */
 	public static String NetChiffreALaFin(String A) {
 		A=A.replaceAll("{1,}[0-9]", "");
 	    return A;
 	}
 	
-	
-//	/**
-//	 * Nettoyage des digites en fin de ligne juste avant le symbol $
-//	 * Permet de supprimer les numéros de page dans les index
-//	 * Puis nettoyage de la chaîne avec la fonction NetText
-//	 * @param A
-//	 * @return
-//	 */
-//	private static String Net2Texte(String A) {
-//		// rechercher un digite une ou plusieur fois en fin.
-//		Pattern p = Pattern.compile("[0-9]+$");
-//		// création du moteur associé à la regex sur la chaîne A
-//		Matcher m = p.matcher(A);
-//		// remplacement de toutes les occurrences par ""
-//		A= m.replaceAll("");
-//		
-//		A = NetTexte(A);
-//		return A;
-//	}
 	
 	
 	/**

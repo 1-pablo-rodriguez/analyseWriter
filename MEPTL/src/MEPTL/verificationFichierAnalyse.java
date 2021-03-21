@@ -158,9 +158,9 @@ public class verificationFichierAnalyse {
 	}
 	
 	/**
-	 * Vérification de la présence de l'attribut addmenu=true lorsque l'attribut evaluer=true.<br/>
-	 * Uniquement pour les nodes principaux.<br/>
-	 * <br/>
+	 * Vérification de la présence de l'attribut addmenu=true lorsque l'attribut evaluer=true.<br>
+	 * Uniquement pour les nodes principaux.<br>
+	 * <br>
 	 * @param attribut
 	 * @param nameNode
 	 */

@@ -44,8 +44,8 @@ public class meptl {
 	static double progression = 1.0;
 	
 	/**
-	 * Start of application.<br/>
-	 * <br/>
+	 * Démarrage de l'application.<br>
+	 * <br>
 	 * @param args
 	 * @throws ParserConfigurationException
 	 * @throws SAXException
@@ -203,8 +203,8 @@ public class meptl {
 
 
 	/**
-	 * Lecture du fichier Student pour vérification.<br/>
-	 * <br/>
+	 * Lecture du fichier Student pour vérification.<br>
+	 * <br>
 	 * @param nod node
 	 * @param a
 	 * @param i
@@ -235,11 +235,11 @@ public class meptl {
 	
 	/**
 	 * Lecture du fichier Writer des étudiants et fournir tous les nodes de la lecture dans un node nommé "fichier".
-	 * @param nod : le node Writer de l'étudiant.
-	 * @param a : objet de la class Run package cXML
-	 * @param i : index de l'étudiant dans la liste EC de l'objet a.
+	 * @param nod Le node Writer de l'étudiant.
+	 * @param a Objet de la class Run package cXML
+	 * @param i Index de l'étudiant dans la liste EC de l'objet a.
 	 * @return le node contenant tous les nodes de la lectures.
-	 * @throws IOException
+	 * @throws IOException Input Output exception file.
 	 */
 	@SuppressWarnings("unchecked")
  	private static node LectureFichierEtudiantSousFormeDeNode(node nod, Run a, Integer i) throws IOException {
@@ -941,9 +941,9 @@ public class meptl {
 	}
 	
 	/**
-	 * Chargement du sujet.<br/>
+	 * Chargement du sujet.<br>
 	 * Retourne l'ensemble des nodes qui possédent l'attribut evaluer="true".
-	 * <br/>
+	 * <br>
 	 * @param a
 	 * @return le node du sujet qui contient les partie à analyser
 	 * @throws IOException 
@@ -998,8 +998,8 @@ public class meptl {
 	
 	
 	/**
-	 * Vérification du node sujet (premier node <b>fichier</b> et des paramètres.<br/>
-	 * <br/>
+	 * Vérification du node sujet (premier node <b>fichier</b> et des paramètres.<br>
+	 * <br>
 	 * @param nodSujet
 	 * @return
 	 */
@@ -1215,7 +1215,7 @@ public class meptl {
 	 * <br><b> manqueValeurMetaSujet</b> si VRAI, la valeur de la méta données <b>Sujet</b> n'est pas la bonne.
 	 * <br><b> manqueCreationDate</b> si VRAI, il n'y a pas de méta données <b>creationDate</b>.
 	 * <br><b> manqueValeurCreationDate</b> si VRAI, la date de la méta données <b>creationDate</b> n'est pas la bonne.
-	 * <br><b> manqueHistorique</b> si VRAI, il n'y a pas d'historique des modifications.<br/>
+	 * <br><b> manqueHistorique</b> si VRAI, il n'y a pas d'historique des modifications.<br>
 	 * @param nodStudent : node de l'étudiants.
 	 * @param nodSujet : node du sujet.
 	 * @param a : objet Run de cXML.
@@ -1296,8 +1296,8 @@ public class meptl {
 	
 	
 	/**
-	 * Assemblage du node annalyse à partir des différents nodes de l'analyse.<br/>
-	 * <br/>
+	 * Assemblage du node annalyse à partir des différents nodes de l'analyse.<br>
+	 * <br>
 	 * @param nodouverture
 	 * @param nodbodyetnotation
 	 * @param nodmenu
@@ -2302,9 +2302,9 @@ public class meptl {
 	}
 	
 	/**
-	 * Cette méthode permet d'analyse la structure du document.<br/>
-	 * La structure de l'étudiant est comparé avec la structure du sujet.<br/>
-	 * <br/>
+	 * Cette méthode permet d'analyse la structure du document.<br>
+	 * La structure de l'étudiant est comparé avec la structure du sujet.<br>
+	 * <br>
 	 * @param nodStudentS : node de la structure de l'étudiant.
 	 * @param nodSujetS : node de la structure du sujet.
 	 * @param a : Objet de la class cXML
@@ -2510,9 +2510,9 @@ public class meptl {
 	}
 	
 	/**
-	 * Analyse toutes les attributs et du contenu d'un node.<br/>
-	 * Les attributs et les contenus doivent posséder la carcatère ‽.<br/>
-	 * <br/>
+	 * Analyse toutes les attributs et du contenu d'un node.<br>
+	 * Les attributs et les contenus doivent posséder la carcatère ‽.<br>
+	 * <br>
 	 * @param nodeStudent : le node de l'étudiant.
 	 * @param sujet : le node du sujet
 	 * @param retour : le node à retourner avec les enfants nommés nameItem.
@@ -2575,9 +2575,9 @@ public class meptl {
 	}
   	
   	/**
-  	 * Analyse tous les attributs des styles de paragraphes.<br/>
-	 * Formatage direct des style de paragraphe. Les attribut doivenet contenir le code ‼.<br/>
-	 * <br/>
+  	 * Analyse tous les attributs des styles de paragraphes.<br>
+	 * Formatage direct des style de paragraphe. Les attribut doivenet contenir le code ‼.<br>
+	 * <br>
 	 * @param nodeStudent : le node de l'étudiant.
 	 * @param sujet : le node du sujet
 	 * @param retour : le node à retourner avec les enfants nommés nameItem.
@@ -2695,9 +2695,9 @@ public class meptl {
   	
   	
   	/**
-  	 * Analyse toutes les contenus des enfants et les compares.<br/>
-  	 * Utiliser pour les nodes <text:p><br/>
-  	 * <br/>
+  	 * Analyse toutes les contenus des enfants et les compares.<br>
+  	 * Utiliser pour les nodes <text:p><br>
+  	 * <br>
   	 * @param Student
   	 * @param Sujet
   	 * @param retour
@@ -2724,8 +2724,8 @@ public class meptl {
   	
 	
 	/**
-	 * Retourne le node avec les résultats de la comparaison entre les deux valeurs (étudiant et sujet).<br/>
-	 * <br/>
+	 * Retourne le node avec les résultats de la comparaison entre les deux valeurs (étudiant et sujet).<br>
+	 * <br>
 	 * @param nameNode
 	 * @param Tst (résultat de la comparaison)
 	 * @param property
@@ -2743,8 +2743,8 @@ public class meptl {
 	}
 	
  	/**
- 	 * Création du feedback (compte-rendu) au format HTML.<br/>
- 	 * <br/>
+ 	 * Création du feedback (compte-rendu) au format HTML.<br>
+ 	 * <br>
  	 * @param nodana
  	 * @throws IOException
  	 */
@@ -2870,10 +2870,10 @@ public class meptl {
 		fichier.write("<div class=\"header\">");
 		if(!commandes.noLogo) {
 			fichier.write("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/>"+HTML.imgLogos()+"</font></h1>\r");
+					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br>"+HTML.imgLogos()+"</font></h1>\r");
 		}else {
 			fichier.write("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/></font></h1>\r");
+					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br></font></h1>\r");
 		}
 		
 		
@@ -2881,8 +2881,8 @@ public class meptl {
 		node ouvre = nodana.retourneFirstEnfantsByName("ouverture");
 		String noteFrom = ouvre.getAttributs().get("notefrom");
 		if(noteFrom ==null) noteFrom="20";
-		if(!commandes.noNote) if(!plagiat) fichier.write("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-		if(!commandes.noNote) if(plagiat) fichier.write("<p><spanpablo> Plagiat / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+		if(!commandes.noNote) if(!plagiat) fichier.write("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+		if(!commandes.noNote) if(plagiat) fichier.write("<p><spanpablo> Plagiat / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
 		 
 		
 		//informations
@@ -2895,28 +2895,28 @@ public class meptl {
 			dateModif = dateTimeModif.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
 		}
 		
-		fichier.write("<h4>Date d'analyse : "+ mediumDateFormat.format(aujourdhui) + "<br/>");
-	    fichier.write("Dossier étudiant : <span style=\"color:blue\">"+ ouvre.getAttributs().get("dossier") + "</span><br/>");
-	    fichier.write("Nom du fichier analysé et évalué : <span style=\"color:blue\">"+ ouvre.getAttributs().get("filename") + "</span><br/>");
-	    fichier.write("Date de la dernière modification du fichier analysé : <span style=\"color:purple\">"+ dateModif + "</span><br/>");
-	    fichier.write("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br/>"));
-	    if(!auteurSujet.isEmpty()) {fichier.write("Sujet créé par : <span style=\"color:blue\">"+ auteurSujet + "</span><br/>");}else {fichier.write("<br/>");}
+		fichier.write("<h4>Date d'analyse : "+ mediumDateFormat.format(aujourdhui) + "<br>");
+	    fichier.write("Dossier étudiant : <span style=\"color:blue\">"+ ouvre.getAttributs().get("dossier") + "</span><br>");
+	    fichier.write("Nom du fichier analysé et évalué : <span style=\"color:blue\">"+ ouvre.getAttributs().get("filename") + "</span><br>");
+	    fichier.write("Date de la dernière modification du fichier analysé : <span style=\"color:purple\">"+ dateModif + "</span><br>");
+	    fichier.write("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br>"));
+	    if(!auteurSujet.isEmpty()) {fichier.write("Sujet créé par : <span style=\"color:blue\">"+ auteurSujet + "</span><br>");}else {fichier.write("<br>");}
 		   
-	    if(!commandes.noNote) if(!plagiat) fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br/>");
-	    if(!commandes.noNote) if(plagiat) fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : plagiat <br/>");
+	    if(!commandes.noNote) if(!plagiat) fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br>");
+	    if(!commandes.noNote) if(plagiat) fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : plagiat <br>");
 	    	
 	    if(ouvre.getAttributs().get("link_sujet")!=null) {
 			String linkSujet= ouvre.getAttributs().get("link_sujet");
 			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.write("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br/>");}
+			if(m.find()) {fichier.write("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br>");}
 		}
   	  if(ouvre.getAttributs().get("link_help")!=null) {
 			String linkSujet= ouvre.getAttributs().get("link_help");
 			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.write("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le support</a><br/>");}
+			if(m.find()) {fichier.write("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le support</a><br>");}
 		}
   	    
-  	    fichier.write("<br/><font color=\"#808080\" style=\"font-size: 9pt\"><i>Analysé avec la version : " + commandes.version + "<br/></h4>");
+  	    fichier.write("<br><font color=\"#808080\" style=\"font-size: 9pt\"><i>Analysé avec la version : " + commandes.version + "<br></h4>");
 		
 		
 	    fichier.write(HTML.SautLigne());
@@ -3025,7 +3025,7 @@ public class meptl {
 			 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("structurepage")));
 		 }		 
 		 
-		 fichier.write("<p><br/><br/></p>");
+		 fichier.write("<p><br><br></p>");
 		 
 		 //footer
 		 fichier.write("<div class=\"footer\">");
@@ -3113,7 +3113,7 @@ public class meptl {
 
  	
  	/**
- 	 * Retourne le nom du fichier de l'étudiant pour le Zip de Moodle.<br/>
+ 	 * Retourne le nom du fichier de l'étudiant pour le Zip de Moodle.<br>
  	 * </br>
  	 * @param filename
  	 * @param nodana
@@ -3154,8 +3154,8 @@ public class meptl {
  	
  	
  	/**
- 	 * Ecriture du fichier pour l'archive ZIP de moodle.<br/>
- 	 * <br/>
+ 	 * Ecriture du fichier pour l'archive ZIP de moodle.<br>
+ 	 * <br>
  	 * @param nodana
  	 * @return
  	 * @throws IOException
@@ -3265,18 +3265,18 @@ public class meptl {
 		fichier.append("<div class=\"header\">");
 		if(!commandes.noLogo) {
 			fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/>"+HTML.imgLogos()+"</font></h1>\r");
+					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br>"+HTML.imgLogos()+"</font></h1>\r");
 		}else {
 			fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br/></font></h1>\r");
+					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br></font></h1>\r");
 		}
 		
 		//Note
 		node ouvre = nodana.retourneFirstEnfantsByName("ouverture");
 		String noteFrom = ouvre.getAttributs().get("notefrom");
 		if(noteFrom ==null) noteFrom="20";
-		if(!commandes.noNote) if(!plagiat) fichier.append("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-		if(!commandes.noNote) if(plagiat) fichier.append("<p><spanpablo> Plagiat / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+		if(!commandes.noNote) if(!plagiat) fichier.append("<p><spanpablo>" +  nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + " / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
+		if(!commandes.noNote) if(plagiat) fichier.append("<p><spanpablo> Plagiat / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
 
 		 
 		//informations
@@ -3289,28 +3289,28 @@ public class meptl {
 			dateModif = dateTimeModif.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
 		}
 		
-		fichier.append("<h4>Date d'analyse : "+ mediumDateFormat.format(aujourdhui) + "<br/>");
-	    fichier.append("Dossier étudiant : <span style=\"color:blue\">"+ ouvre.getAttributs().get("dossier") + "</span><br/>");
-	    fichier.append("Nom du fichier analysé et évalué : <span style=\"color:blue\">"+ ouvre.getAttributs().get("filename") + "</span><br/>");
-	    fichier.append("Date de la dernière modification du fichier analysé : <span style=\"color:purple\">"+ dateModif + "</span><br/>");
-	    fichier.append("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br/>"));
-	    if(!auteurSujet.isEmpty()) {fichier.append("Sujet créé par : <span style=\"color:blue\">"+ auteurSujet + "</span><br/>");}else {fichier.append("<br/>");}
+		fichier.append("<h4>Date d'analyse : "+ mediumDateFormat.format(aujourdhui) + "<br>");
+	    fichier.append("Dossier étudiant : <span style=\"color:blue\">"+ ouvre.getAttributs().get("dossier") + "</span><br>");
+	    fichier.append("Nom du fichier analysé et évalué : <span style=\"color:blue\">"+ ouvre.getAttributs().get("filename") + "</span><br>");
+	    fichier.append("Date de la dernière modification du fichier analysé : <span style=\"color:purple\">"+ dateModif + "</span><br>");
+	    fichier.append("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br>"));
+	    if(!auteurSujet.isEmpty()) {fichier.append("Sujet créé par : <span style=\"color:blue\">"+ auteurSujet + "</span><br>");}else {fichier.append("<br>");}
 		   
-	    if(!commandes.noNote) if(!plagiat) fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br/>");
-	    if(!commandes.noNote) if(plagiat) fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : Plagiat <br/>");
+	    if(!commandes.noNote) if(!plagiat) fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br>");
+	    if(!commandes.noNote) if(plagiat) fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : Plagiat <br>");
 	    
 	    if(ouvre.getAttributs().get("link_sujet")!=null) {
 			String linkSujet= ouvre.getAttributs().get("link_sujet");
 			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.append("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br/>");}
+			if(m.find()) {fichier.append("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br>");}
 		}
   	  if(ouvre.getAttributs().get("link_help")!=null) {
 			String linkSujet= ouvre.getAttributs().get("link_help");
 			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.append("<br/><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le support</a><br/>");}
+			if(m.find()) {fichier.append("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le support</a><br>");}
 		}
   	    
-  	    fichier.append("<br/><font color=\"#808080\" style=\"font-size: 9pt\"><i>Analysé avec la version : " + commandes.version + "<br/></h4>");
+  	    fichier.append("<br><font color=\"#808080\" style=\"font-size: 9pt\"><i>Analysé avec la version : " + commandes.version + "<br></h4>");
 		
 		
 	    fichier.append(HTML.SautLigne());
@@ -3420,7 +3420,7 @@ public class meptl {
 			 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("structurepage")));
 		 }		 
 		 
-		 fichier.append("<p><br/><br/></p>");
+		 fichier.append("<p><br><br></p>");
 		 
 		 //footer
 		 fichier.append("<div class=\"footer\">");
@@ -3533,8 +3533,8 @@ public class meptl {
 
 	
 	/**
-	 * Place au node le contenu saut de ligne<br/>
-	 * <br/>
+	 * Place au node le contenu saut de ligne<br>
+	 * <br>
 	 * @param nod
 	 * @return
 	 */
@@ -3721,7 +3721,7 @@ public class meptl {
 	
 	
 	/**
-	 * Ecriture du fichier CSV avec ou sans vérification mais avec rechercher des identifiants des étudiants.<br/>
+	 * Ecriture du fichier CSV avec ou sans vérification mais avec rechercher des identifiants des étudiants.<br>
 	 * @param ana
 	 * @param verif
 	 * @param a
@@ -3886,8 +3886,8 @@ public class meptl {
 	}
 	
 	/**
-	 * Traitement de la durée d'édition.<br/>
-	 * <br/>
+	 * Traitement de la durée d'édition.<br>
+	 * <br>
 	 * @param dureeEdition
 	 * @return
 	 */
@@ -3902,8 +3902,8 @@ public class meptl {
 	}
 	
 	/**
-	 * Remplace la virgule par un point.<br/>
-	 * <br/>
+	 * Remplace la virgule par un point.<br>
+	 * <br>
 	 * @param note
 	 * @return
 	 */
@@ -3913,7 +3913,7 @@ public class meptl {
 	}
 	
 	/**
-	 * Chargement dans un node du fichier CSV.<br/>
+	 * Chargement dans un node du fichier CSV.<br>
 	 * @param a
 	 * @param nameCSV
 	 * @return
@@ -3957,8 +3957,8 @@ public class meptl {
 	
 	
 	/**
-	 * Ajoute les valeurs par défauts pour les styles de paragraphes.<br/>
-	 * <br/>
+	 * Ajoute les valeurs par défauts pour les styles de paragraphes.<br>
+	 * <br>
 	 * @param LesStyleStudents : Tous les styles de paragraphes du fichiers de l'étudiants.
 	 * @param styleParagraph : le node dont il faut ajouter les valerus par défauts.
 	 * @return le node styleParagraph.
@@ -4018,9 +4018,9 @@ public class meptl {
 	}
 	
 	/**
-	 * Même méthode que "ajouteValeurParDefautAuStyleParagraph".<br/>
-	 * <br/>
-	 * @param parent
+	 * Même méthode que "ajouteValeurParDefautAuStyleParagraph".<br>
+	 * <br>
+	 * @param ensembleDesParagraphes
 	 * @param styleParagraph
 	 * @return
 	 */
@@ -4079,11 +4079,11 @@ public class meptl {
 	}
 	
 	/**
-	 * Ce node permet la configuration personnalisé de l'application.<br/>
-	 * Ajoute le node setting avec les différentes valeurs.<br/>
-	 * <br/>
-	 * @param sujet : le node du sujet
-	 * @return retourne le node du sujet avec le node setting
+	 * Ce node permet la configuration personnalisé de l'application.<br>
+	 * Ajoute le node setting avec les différentes valeurs.<br>
+	 *
+	 * @param sujet Le node du sujet.
+	 * @return Le node du sujet avec le node setting ajouté.
 	 */
 	private static node addSetting(node sujet) {
 		//node setting
