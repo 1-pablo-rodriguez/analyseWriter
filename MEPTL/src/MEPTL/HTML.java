@@ -232,7 +232,10 @@ public class HTML {
 				 if(nod.getNodes().get(k).getAttributs().get("niveau")!=null) {
 					 
 					 String Tst = nod.getNodes().get(k).getAttributs().get("resultat");
-					 String Key = outils.Traduction(nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut")));
+					// String Key = outils.Traduction(nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut")));
+					 String Key = outils.traduction.get(nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut")));
+					if(Key==null) Key = nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut"));
+					
 					 String valueStudent = nod.getNodes().get(k).getAttributs().get("valueStudent");
 					 String valueSujet = outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("valueSujet"));
 					 int niveau = Integer.valueOf(nod.getNodes().get(k).getAttributs().get("niveau"));
@@ -255,12 +258,14 @@ public class HTML {
 						 for(int l = 0 ; l < nod.getNodes().get(k).getNodes().size() ; l++) {
 							if(!nod.getNodes().get(k).getNodes().get(l).getNomElt().equals("saut")){
 								 String Tst = nod.getNodes().get(k).getNodes().get(l).getAttributs().get("resultat");
-								 String Key = outils.Traduction(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("attribut")));
+								// String Key = outils.Traduction(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("attribut")));
+								 String Key2 = outils.traduction.get(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("attribut")));
+								 if(Key2==null) Key2 = nod.getNodes().get(k).getNodes().get(l).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("attribut"));
 								 String valueStudent = nod.getNodes().get(k).getNodes().get(l).getAttributs().get("valueStudent");
 								 String valueSujet = outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("valueSujet"));
 								 int niveau = Integer.valueOf(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("niveau"));
 								 
-								 code = code + HTML.Table(Tst, Key, valueStudent, valueSujet, niveau);
+								 code = code + HTML.Table(Tst, Key2, valueStudent, valueSujet, niveau);
 							 }else {
 								 code = code + HTML.SautLigneOnduleBleu(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre"));
 							 }

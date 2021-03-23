@@ -9,7 +9,7 @@ These tutorials are intended for computer science teachers.
  2. [Create an analyze file](https://artoistv.univ-artois.fr/video/3179-comment-realiser-un-fichier-analyse-pour-evaluer-les-fichiers-dun-traitement-de-texte/)
  3. [How to check for possible fraud and export the grades?](https://artoistv.univ-artois.fr/video/3226-comment-verifier-eventuelles-fraudes-et-exporter-les-notes/)
  4. [How do I import student feedbacks and grades into Moodle?](https://artoistv.univ-artois.fr/video/3164-analysewriter-comment-importer-des-feedbacks-et-les-notes-dans-moodle/)
- 5. [Where can I download analyWriter?](https://artoistv.univ-artois.fr/video/3180-ou-telecharger-analysewriter-et-la-documentationmp4/)
+ 5. [Where can I download analyseWriter?](https://artoistv.univ-artois.fr/video/3180-ou-telecharger-analysewriter-et-la-documentationmp4/)
 
 ### English
  1. [Presentation](https://artoistv.univ-artois.fr/video/3113-presentation-analysewriter/)

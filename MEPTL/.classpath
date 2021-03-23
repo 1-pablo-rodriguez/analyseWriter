@@ -4,10 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="lib" path="C:/Users/pabr6/eclipse-workspace/zip4j-1.2.7.jar"/>
-	<classpathentry kind="lib" path="C:/Users/pabr6/eclipse-workspace/cXML.jar" sourcepath="C:/Users/pabr6/eclipse-workspace/cXML.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:file:/C:/Users/pabr6/eclipse-workspace/cXML.jar!/doc"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="lib" path="C:/Users/pabr6/eclipse-workspace/cXML.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

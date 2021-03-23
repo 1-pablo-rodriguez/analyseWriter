@@ -76,7 +76,6 @@ public class meptl {
 			commandes.culture = nodeSujet.retourneFirstEnfantsByName("setting").getAttributs().get("culture"); //récupère la culture de l'utilisateur
 			new verificationFichierAnalyse(nodeSujet);
 			if(verificationFichierAnalyse.erreur==true) verificationFichierAnalyse.clotureWithErrorInanalyzeFile();
-			
 			//a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 			if(commandes.ecritSujet) {
 				a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
@@ -85,6 +84,8 @@ public class meptl {
 				commandes.clotureApplication();
 				System.exit(0);
 			}
+			//chargement du node translation qui se trouve dans le node setting
+			outils.chargeTraduction(nodeSujet.retourneFirstEnfantsByName("translation"));
 			
 			// Ajoute les nouvelles tolérances du nombre de caractère et du texte pour la recherche et la comparaison des textes.
 			if(nodeSujet.containElementByName("text:similarity")) {
@@ -147,8 +148,8 @@ public class meptl {
 			// commande -write 
 			if(commandes.ecritCode && ! commandes.verifHisto && !commandes.analyse) {
 				node nodSujet = nodePourEcritureSujet(nodStudent,a,i);
-				nodSujet = addSetting(nodSujet); // ajoute le node setting;
- 				a.ecritureNodeEnXML(nodSujet, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false);
+				nodSujet = addSetting(nodSujet); // ajoute le node setting et translation
+				a.ecritureNodeEnXML(nodSujet, a.getLectDossiers().getEC().getListeNomDossier().get(i),"",false);
 			}
 			
 			// analyse des fichiers student
@@ -2819,8 +2820,8 @@ public class meptl {
 				+ ".triche p {color:white; font-size:16px;margin-left:10px;margin-bottom:6px;margin-top:6px}"
 				+ ".header h4 {text-align:left;font-family: \"Arial\"; font-size: 12pt; font-weight: bold; line-height: 110%;}"
 				+ "h4.western { font-family: \"Arial\"; font-size: 14pt; font-style: italic; font-weight: bold; line-height: 40%}"
-				+ "a:link { color: #0000ff; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
-				+ "a:visited { color: #800000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
+				+ "a:link { color: #000099; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
+				+ "a:visited { color: #990000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
 				+ "hr { display: block; margin-top: 0.5em; margin-bottom: 8em; margin-left: 2em; margin-right: 2em; border-style: inset; border-width: 4px;}"
 				+ "spanpablo { float: right; width: 8em; font-size: 250%; font-family: algerian, courier; line-height: 80%; margin-right: 1%; color: red; text-align: center}"
 				+ "p.p1{margin-bottom: 0cm; margin-top: 0cm; line-height: 100%; background: transparent;  margin-left: 0cm; white-space: pre;}"
@@ -2857,8 +2858,12 @@ public class meptl {
 				+ ".tooltip .tooltiptext {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -30px; width: 260px;top: 100%;left: 10%;}"
 				+ ".tooltip .tooltiptext::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
 				+ ".tooltip:hover .tooltiptext {visibility: visible;}"
+				+ ".tooltip1 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
+				+ ".tooltip1 .tooltiptext1 {visibility: hidden;background-color: #0000CC;color: #fff;text-align: left;border-radius: 4px;padding: 10px;position: absolute;z-index: 1;margin-left: -40px; width: 280px;top: 100%;left: 10%;}"
+				+ ".tooltip1 .tooltiptext1::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent #0000CC transparent;}"
+				+ ".tooltip1:hover .tooltiptext1 {visibility: visible;}"
 				+ ".tooltip2 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
+				+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 8px;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
 				+ ".tooltip2 .tooltiptext2::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
 				+ ".tooltip2:hover .tooltiptext2 {visibility: visible;}"
 				+ ".footer {position: fixed;left: 0;bottom: 0;width: 100%;background-color: white;color: black;text-align: center;}"
@@ -3214,8 +3219,8 @@ public class meptl {
 				+ ".triche p {color:white; font-size:16px;margin-left:10px;margin-bottom:6px;margin-top:6px}"
 				+ ".header h4 {text-align:left;font-family: \"Arial\"; font-size: 12pt; font-weight: bold; line-height: 110%;}"
 				+ "h4.western { font-family: \"Arial\"; font-size: 14pt; font-style: italic; font-weight: bold; line-height: 40%}"
-				+ "a:link { color: #0000ff; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
-				+ "a:visited { color: #800000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
+				+ "a:link { color: #000099; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
+				+ "a:visited { color: #99000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
 				+ "hr { display: block; margin-top: 0.5em; margin-bottom: 8em; margin-left: 2em; margin-right: 2em; border-style: inset; border-width: 4px;}"
 				+ "spanpablo { float: right; width: 8em; font-size: 250%; font-family: algerian, courier; line-height: 80%; margin-right: 1%; color: red; text-align: center}"
 				+ "p.p1{margin-bottom: 0cm; margin-top: 0cm; line-height: 100%; background: transparent;  margin-left: 0cm; white-space: pre;}"
@@ -3252,8 +3257,12 @@ public class meptl {
 				+ ".tooltip .tooltiptext {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -30px; width: 260px;top: 100%;left: 10%;}"
 				+ ".tooltip .tooltiptext::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
 				+ ".tooltip:hover .tooltiptext {visibility: visible;}"
+				+ ".tooltip1 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
+				+ ".tooltip1 .tooltiptext1 {visibility: hidden;background-color: #0000CC;color: #fff;text-align: left;border-radius: 4px;padding: 10px;position: absolute;z-index: 1;margin-left: -40px; width: 280px;top: 100%;left: 10%;}"
+				+ ".tooltip1 .tooltiptext1::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent #0000CC transparent;}"
+				+ ".tooltip1:hover .tooltiptext1 {visibility: visible;}"
 				+ ".tooltip2 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
+				+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 8px;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
 				+ ".tooltip2 .tooltiptext2::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
 				+ ".tooltip2:hover .tooltiptext2 {visibility: visible;}"
 				+ ".footer {position: fixed;left: 0;bottom: 0;width: 100%;background-color: white;color: black;text-align: center;}"
@@ -4137,6 +4146,9 @@ public class meptl {
 		setting.getNodes().add(plagiarism);
 		setting.getNodes().add(similarity);
 		
+		
+		//ajoute la node translation
+		setting.getNodes().add(Run.translation());
 		
 		
 		// ajoute le node setting au node sujet

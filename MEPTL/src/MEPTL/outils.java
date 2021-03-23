@@ -3,6 +3,8 @@ package MEPTL;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,10 +16,11 @@ import cXML.node;
  */
 public class outils {
 	
+	public static Dictionary<String, String> traduction = new Hashtable<String, String>();
+	
 	private static int pointsClass = 0;
 	private static int pointTotal=0;
 	private static int pointEnJeu = 0;
-
 	
 	
 	/**
@@ -25,11 +28,9 @@ public class outils {
 	 * @param code
 	 * @return
 	 */
-	public static String Traduction(String code) {
+	public static String Traduction2(String code) {
 
-		//**************************************************************
-		//**  PARAGRAPHE
-		//**************************************************************
+		//paragraphe
 		String colorPo = "#FF0000";
 		//Nom des styles de paragraphe
 		if(code.equals("Heading_20_1")) code="<b>Titre 1</b>";
@@ -46,8 +47,6 @@ public class outils {
 		if(code.equals("meta:user-defined Groupe")) code="<div class=\"tooltip2\">La méta donnée Groupe<span class=\"tooltiptext2\">Menu Fichier/Propriétés<br>Onglet Propriétés personnalisées<br>Clique sur le bouton \"Ajouter une propriété\" pour ajouter une méta données.<br><br><b><u>ATTENTION</u></b>: Vous devez tapez comme nom de la méta donnée <b>Groupe<b><br>Exactement ces caractères, ne tapez pas d'espace après le dernier caractère.<br>Sinon vous aurez une valeur <b>null</b></span></div>";
 		
 		if(code.equals("text:user-defined text:name")) code="<div class=\"tooltip2\">La méta donnée personnalisée<span class=\"tooltiptext2\">Menu Fichier/Propriétés<br>Onglet Propriétés personnalisées<br>Clique sur le bouton \"Ajouter une propriété\" pour ajouter une méta données.</span></div>";
-		
-		
 		
 		//style de paragraphe
 		if(code.equals("style:style style:master-page-name")) code="Enchaînement insère le style de page";
@@ -82,7 +81,6 @@ public class outils {
 		if(code.equals("style:text-properties style:text-underline-type")) code="Style du trait de soulignage";
 		if(code.equals("style:paragraph-properties style:tab-stop-distance")) code="Distance du stop de la tabulation";
 		if(code.equals("style:text-properties fo:font-weight")) code="Style texte GRAS";
-		
 		
 		//style de page
 		if(code.equals("style:master-page style:name")) code="Nom du style de page";
@@ -119,14 +117,12 @@ public class outils {
 		if(code.equals("style:page-layout-properties style:print-orientation")) code="Orientation de la page";
 		if(code.equals("style:header-footer-properties fo:min-height")) code="Hauteur minimal du pied de page";
 		
-		
 		//style structure
 		if(code.equals("page style:master-page-name")) code="Nom du style de page";
 		if(code.equals("page numeroabsolue")) code="<div class=\"tooltip2\">Position (numéro) absolue de la page<br>par rapport à l'ensemble des pages<span class=\"tooltiptext2\">C'est l'ordre d'apparition de la page lorsque le mode \"<b>Livre</b>\" est utilisé.<br>Dans le mode d'affichage \"<b>Livre</b>\" toutes les pages s'affichent, y compris les pages vides.";
 		if(code.equals("text:title Contenu textuel")) code="Valeur de la méta donnée \"<b>Titre</b>\"";
 		if(code.equals("text:subject Contenu textuel")) code="Valeur de la méta donnée \"<b>Sujet</b>\"";
 		if(code.equals("draw:frame draw:name")) code="<div class=\"tooltip2\" style=\"color:>" + colorPo + "\">Nom de l'objet indiqué dans<br>l'onglet \"<b>Options</b>\"<br>de la boite \"<b><u>Propriétés</u></b>\" de l'objet.<span class=\"tooltiptext2\">Si l'objet ne se nomme pas <b><u>EXACTEMENT</u></b> comme indiqué dans la consigne.<br><br>L'algorithme d'analyse ne pourra pas trouver l'objet.Vous aurez que des valeurs <b><u>NULL</u></b><br><br>Faites attention à la case (majuscule et minuscule). Ne tapez pas d'espace après le dernier caractère. Ne tapez pas de guillemet, etc.</span></div>";
-		if(code.equals("text:description Contenu textuel")) code="<div class=\"tooltip2\" style=\"color:>" + colorPo + "\">Champ <b>Commentaires</b><span class=\"tooltiptext2\">Pour insérer le champ \"<b>Commentaires</b>\".<br>Sélectionner le menu Insertion/Champ/Autres champs...<br><br>Dans la boite de dialogue \"Champ\"<br>Onglet \"Info document\"</span></div>";
 		if(code.equals("text:description Contenu textuel")) code="<div class=\"tooltip2\" style=\"color:>" + colorPo + "\">Champ <b>Commentaires</b><span class=\"tooltiptext2\">Pour insérer le champ \"<b>Commentaires</b>\".<br>Sélectionner le menu Insertion/Champ/Autres champs...<br><br>Dans la boite de dialogue \"Champ\"<br>Onglet \"Info document\"</span></div>";
 		if(code.equals("page style:page-usage")) code="<div class=\"tooltip2\">Mise en page de la page<span class=\"tooltiptext2\">Dans les <b>Propriétés</b> du style de page<br>Onglet <b>Page</b><br><b>Mise en page</b></span></div>";
 		if(code.contains("text:illustration-index-source") && code.contains("text:caption-sequence-name")) code="Catégorie de la légende";
@@ -152,13 +148,6 @@ public class outils {
 		if(code.equals("style:paragraph-properties fo:margin-right")) code="Retrait avant le paragraphe";
 		if(code.equals("style:paragraph-properties fo:margin-left")) code="Retrait après le paragraphe";
 		if(code.equals("style:paragraph-properties fo:border")) code="Style des quatre bordures";
-
-		
-		
-		
-		//if(code.equals("style:style fo:text-align")) code="Alignement du paragraphe";
-		
-		
 		
 		//frame
 		if(code.equals("draw:frame text:anchor-type")) code="Ancrage de l'objet";
@@ -200,41 +189,99 @@ public class outils {
 		if(code.equals("style:list-level-label-alignment text:label-followed-by")) code="<div class=\"tooltip2\">Numérotation suivi d'un(e)<span class=\"tooltiptext2\">Dans la boite de dialogue \"Numérotation des chapitres\"<br>Onglet Position<br>Numerotation suivi par.</span></div>";
 		if(code.equals("text:outline-level-style text:display-levels")) code="<div class=\"tooltip2\">Nombre de niveau affiché par la numérotation<span class=\"tooltiptext2\">Dans la boite de dialogue \"Numérotation des chapitre\"<br>Afficher les sous-niveaux.</span></div>";
 		
-		
 		//Table, index, bibliographie
 		if(code.equals("txt:p Contenu textuel")) code="<div class=\"tooltip2\">Texte recherché<span class=\"tooltiptext2\"><b><u>Attention</u></b>, il suffit qu'un seul caractère soit différent avec la consigne pour que l'algorithme ne trouve pas le texte.<br>S'il ne trouve pas votre texte alors la valeur est \"<b>null</b>\".<br>L'algorithme peut trouver votre texte, mais s'il y a trop de différence, il n'accorde pas les points.</span></div>";
-		
 		
 		//variable de séquence
 		if(code.equals("text:sequence-decl text:name")) code="<div class=\"tooltip2\">Variable de séquence<span class=\"tooltiptext2\">La variable de séquence permet de légender et de créer des index.<br>Pour ajouter une variable de séquence, vous devez sélectionner le menu<br>Insertion/Champ/Autres champs...<br>Onglet \"<b>Variables</b>\".</span></div>";
 		
-		
-		
-		// style paragraphe police
-//		if(code.equals("style:font-name")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Nom de la police de caractères</p>";
-//		if(code.equals("fo:font-size")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Taille des caractères</p>";
-//		if(code.equals("style:font-style-name")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Style de la police</p>";
-//		if(code.equals("fo:font-family")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Famille de police de caractères</p>";
-//		if(code.equals("fo:font-weight")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Style <b>\"Gras\"</b></p>";
-//		if(code.equals("fo:font-style")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Style de la font</b></p>";
-//		if(code.equals("style:font-size-asian")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Taille des caractères</b></p>";
-
-		
-		
-		
-		
+		// 	style paragraphe police
+		//	if(code.equals("style:font-name")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Nom de la police de caractères</p>";
+		//	if(code.equals("fo:font-size")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Taille des caractères</p>";
+		//	if(code.equals("style:font-style-name")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Style de la police</p>";
+		//	if(code.equals("fo:font-family")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Famille de police de caractères</p>";
+		//	if(code.equals("fo:font-weight")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Style <b>\"Gras\"</b></p>";
+		//	if(code.equals("fo:font-style")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Style de la font</b></p>";
+		//	if(code.equals("style:font-size-asian")) code="<b><u><span style=\"color:"+ colorPo +"\">Police</span></u></b><p class=\"p2\">Taille des caractères</b></p>";
 		
 		return code;
 	}
 	
 	
+	/**
+	 * Chargement des traductions des éléments de l'exercice an utilsant le node "<b>translation</b>" du fichier d'analyse.<br>
+	 * Les noms des éléments sont placés dans un dictionnaire la key et la valeur est le code HTML.
+	 * 
+	 * @param translation Le node "<b>translation</b>" qui se trouve dans le node "<b>setting</b>" du fichier d'analyse.
+	 */
+	public static void chargeTraduction(node translation) {
+		if(translation!=null) {
+			
+			String classText = "";
+			if(translation.getAttributs().get("classtext")!=null) if(!translation.getAttributs().get("classtext").isEmpty()) classText = "</span><span class=\""+ translation.getAttributs().get("classtext") +"\">";
+			
+			String className = "";
+			if(translation.getAttributs().get("class")!=null) if(!translation.getAttributs().get("class").isEmpty())  className = "<div class=\"" + translation.getAttributs().get("class") + "\">";
+			
+			for(int i = 0 ; i < translation.getNodes().size();i++) {
+				String translate = "";
+				String contenu ="";
+				String link = "";
+				String color = "";
+				String  codeHTML = "";
+				
+				if(translation.getNodes().get(i).getAttributs().get("translate")!=null) if(!translation.getNodes().get(i).getAttributs().get("translate").isEmpty())  translate=translation.getNodes().get(i).getAttributs().get("translate");
+				if(!translation.getNodes().get(i).getContenu().isEmpty()) contenu = translation.getNodes().get(i).getContenu().replace("-!", "<").replace("!-", ">");
+				if(translation.getNodes().get(i).getAttributs().get("link")!=null) if(!translation.getNodes().get(i).getAttributs().get("link").isEmpty())  link="<p><a href=\"" + translation.getNodes().get(i).getAttributs().get("link") + "\"  target=\"_blank\">Lien</a></p>";
+				if(translation.getNodes().get(i).getAttributs().get("color")!=null) if(!translation.getNodes().get(i).getAttributs().get("color").isEmpty())  color="<span style=\"color:" + translation.getNodes().get(i).getAttributs().get("color") + "\">";
+				
+				
+				if(!contenu.isEmpty() && !className.isEmpty() && !classText.isEmpty()) {
+					if(!link.isEmpty()) {
+						if(!color.isEmpty()) {
+							codeHTML = className + color + translate + "</span>" + classText   + contenu + link + "</span></div>" ;
+						}else {
+							codeHTML = className + translate + "</span>" + classText  + contenu + link + "</span></div>" ;
+						}
+					}else {
+						if(!color.isEmpty()) {
+							codeHTML = className + color +  translate + "</span>"+ classText + contenu  + "</span></div>" ;
+						}else {
+							codeHTML = className +   translate + classText + contenu  + "</span></div>" ;
+						}
+					}
+				}else {
+					if(!link.isEmpty()) {
+						if(!color.isEmpty()) {
+							codeHTML = color + translate+ "</span>" + link;
+						}else {
+							codeHTML =  translate + link;
+						}
+					}else {
+						if(!color.isEmpty()) {
+							codeHTML = color + translate+ "</span>";
+						}else {
+							codeHTML =  translate;
+						}
+					}
+				}
+				codeHTML = codeHTML.replace("-!", "<").replace("!-", ">");
+				if(!codeHTML.isEmpty()) {
+					traduction.put(translation.getNodes().get(i).getNomElt().replace("..", " "),codeHTML);
+				}
+			}
+		}
+	}
+	
+	
+	
 	
 	/**
-	 * Compare les chaîne de caractères A et sujet en fonction des 7 fonctions ‽ † ¢ → ¦ ↕ ↑ †
+	 * Compare les chaîne de caractères A et sujet en fonction des 7 fonctions ‽ † ¢ → ¦ ↕ ↑ †<br>
 	 * 
-	 * @param A le texte de l'étudaint
-	 * @param Sujet le tetxte du sujet
-	 * @return une chaine de caractère contenant "Correct" ou "Erreur"
+	 * @param A le texte de l'étudiant.
+	 * @param Sujet le tetxte du sujet.
+	 * @return Une chaine de caractère contenant "Correct" ou "Erreur".
 	 */
 	public static String Compare(String A, String Sujet ) {
 		
@@ -269,7 +316,7 @@ public class outils {
 				IncrementPointClass(pointEnJeu); 
 				return "Correct : +" + pointString;
 			}
-			if(similitudeString2(A, Sujet,commandes.tolerance_text)) {
+			if(similitudeString(A, Sujet,commandes.tolerance_text)) {
 				IncrementPointClass(pointEnJeu); 
 				return "Correct : +" + pointString;
 			}
@@ -363,7 +410,6 @@ public class outils {
 			if(A!=null) if(A.equals("false")) A=null;
 			if(Sujet!=null) if(Sujet.equals("false")) Sujet=null;
 			
-			
 			if(A!=null) if(Sujet==null) if(!pointString.isEmpty()) { return "Erreur : -" + pointString;}
 			if(A!=null) if(Sujet==null) if(pointString.isEmpty()) {return "Erreur";}
 			if(A==null) if(Sujet==null) if(!pointString.isEmpty()){IncrementPointClass(pointEnJeu); return "Correct : +" + pointString;}
@@ -371,8 +417,6 @@ public class outils {
 			
 			if(A==null) if(Sujet!=null) if(!pointString.isEmpty()) return "Erreur : -" + pointString;
 			if(A==null) if(Sujet!=null) if(pointString.isEmpty()) return "Erreur";
-			
-			
 			
 			if(!pointString.isEmpty()) {
 				if(A.equals(Sujet)){
@@ -392,7 +436,6 @@ public class outils {
 		}else {
 			 return "Erreur combinaison †¢→¦↕↑";
 		}
-
 	}
 	
 	
@@ -594,17 +637,15 @@ public class outils {
 		if(A==null) A="none";
 		if(A.isEmpty()) A="none";
 		
-		
 		A = NetTexte(A);
-		
-		
+	
 		
 		String TextB[] = B.split("↕");
 		for(int i=0;i<TextB.length;i++) {
 			TextB[i] = NetTexte(TextB[i]);
 			if(A.equals(TextB[i])) return "Correct : ";
 			if(A.contains(TextB[i])) return "Correct : ";
-			if(similitudeString2(A, TextB[i],commandes.tolerance_text)) return "Correct : ";
+			if(similitudeString(A, TextB[i],commandes.tolerance_text)) return "Correct : ";
 		}
 		
 		return "Erreur : ";
@@ -702,35 +743,39 @@ public class outils {
 	
 	
 	/**
-	 * Supprime les caracatères spéciaux etc...
-	 * @param A
-	 * @return
+	 * Supprime les caracatères spéciaux, la pontuaction, tous les espaces, et les chiffres<br>
+	 * Bascule  le texte en minuscule.<br>
+	 * @param Le texte qui doit être nettoyé.
+	 * @return Le texte nettoyé.
 	 */
 	private static String NetTexte(String A) {
-	if (A!=null) {
-		A=A.toLowerCase().trim();
-        A = A.replace("&apos;", "");
-        A = A.replace("&quot;", "");
-        
-        Pattern pt = Pattern.compile("[^a-zA-Z0-9]"); // avec les chiffres "[^a-zA-Z0-9]"
-        Matcher match= pt.matcher(A);
-        while(match.find()){
-            String s= match.group();
-            A=A.replaceAll("\\"+s, "");
-        }
-        
-        A=A.replaceAll("[0-9]", "");
-        A=A.replace(" ", "");
-	}
-	return A;
-	}
+		if (A!=null) {
+			A=A.toLowerCase().trim();
+	        A = A.replace("&apos;", "");
+	        A = A.replace("&quot", "");
+	        
+	        Pattern pt = Pattern.compile("[^a-zA-Z0-9]"); // avec les chiffres "[^a-zA-Z0-9]"
+	        Matcher match= pt.matcher(A);
+	        while(match.find()){
+	            String s= match.group();
+	            A=A.replaceAll("\\"+s, "");
+	        }
+		        
+	        A=A.replaceAll("[0-9]", "");
+	        A=A.replace(" ", "");
+	        
+	        A=A.toLowerCase();
+	        
+		}
+		return A;
+		}
 	
 	
 	/**
-	 * Netoyage des chiffres à la fin des textes.<br>
-	 * <br>
-	 * @param A
-	 * @return
+	 * Netoyage les chiffres placés à la fin du texte.<br>
+	 * Cette méthode est utilisée pour supprimer les numéros de page dans les index (table de matières par exemple).<br>
+	 * @param A Le texte.
+	 * @return Le texte A sans chiffre à la fin du texte.
 	 */
 	public static String NetChiffreALaFin(String A) {
 		A=A.replaceAll("{1,}[0-9]", "");
@@ -776,40 +821,24 @@ public class outils {
 	}
 
 	
+
 	/**
-	 * Similitudes des chaînes de caractères
-	 * Tolérance un caractère de différence
-	 * @param A
-	 * @param Modele
-	 * @return
+	 * Compare deux chaînes de caractères avec un seuil de similitude (79% par défaut).<br>
+	 * Lorsque les deux chaînes de caractères partages 79% des caractères comparés par groupe de 2 ou 3 ou 4. Alors retourne TRUE.<br>
+	 * Lorsque les deux chaînes de caractères partages moins de 79% des caractères comparés par groupe de 2 ou 3 ou 4. Alors retourne FALSE.<br>
+	 * Les Chaînes de caractères doivent avoir au moins 8 caractères, après néttoyage du texte avec la méthode NetTexte().<br>
+	 * <ul>
+	 * <li>Lorsque la longueur de la chaîne de caractères est inférieure à 50 caractères alors compare par groupe de 2 caractères.</li>
+	 * <li>Lorsque la longueur de la chaîne de caractères est entre à 50 et 200 caractères alors compare par groupe de 3 caractères.</li>
+	 * <li>Lorsque la longueur de la chaîne de caractères est supérieure à 200 caractères alors compare par groupe de 4 caractères.</li>
+	 * </ul>
+	 * <br>
+	 * @param A Chaîne de caracatères de l'étudiant.
+	 * @param Modele Chaîne de caractères du sujet.
+	 * @param tolerance_text Le seuil de tolérance pour la comparaison (valeur comprise entre 0 et 1).
+	 * @return TRUE ou FALSE en fonction de la comparaison et du seuil de tolérance.
 	 */
-	private static boolean similitudeString(String A, String Modele) {
-		byte[] N1 = Modele.getBytes();
-		byte[] N2 = A.getBytes();
-		int Compteur = 0;
-		int index2 = 0;
-		for(int i = 0 ; i < N1.length;i++) {
-			if(index2<N2.length) {
-				if(N1[i]==N2[index2]) {
-						Compteur++;
-				}else {
-					if(index2+1<N2.length) {
-						if(N1[i]==N2[index2+1]) {
-							Compteur++;
-							index2++;
-						}
-					}
-				}
-			}
-			index2++;
-		}
-		if(Compteur==N1.length) return true;
-		return false;
-		
-	}
-	
-	
-	private static boolean similitudeString2(String A, String Modele, Double tolerance_text) {
+	private static boolean similitudeString(String A, String Modele, Double tolerance_text) {
 		Modele = NetTexte(Modele);
 		
 		if(tolerance_text==null) {
@@ -827,9 +856,9 @@ public class outils {
 		
 	
 		
-		int step = 3; //valeur par défaut du pas	
-		if(Modele.length()>=13 && Modele.length()<200) step=4;  
-		if(Modele.length()>=200) step = 5; 
+		int step = 2; //valeur par défaut du pas	
+		if(Modele.length()>=50 && Modele.length()<200) step=3;  
+		if(Modele.length()>=200) step = 4; 
 		
 
 		
@@ -848,7 +877,7 @@ public class outils {
 		int compteur2b = 0 ;
 		int total2b = 0;
 		
-		for(int i = 0 ; i < A.length()-step;i=i+step) {  //i=i+step
+		for(int i = 0 ; i < A.length()-step;i=i+step) {
 			B = A.substring(i, i+step);
 			if(Modele.contains(B)) compteur2b++;
 			total2b++;
@@ -863,11 +892,11 @@ public class outils {
 		double rapport1 = ((double)compteur2/(double)total2);
 		double rapport2 = ((double)compteur2b/(double)total2b);
 		
-		if(rapport1<tolerance_text){ // groupe de 2 caractères
+		if(rapport1<tolerance_text){
 			return  false;
 		}
 
-		if(rapport2<tolerance_text){ // groupe de 2 caractères
+		if(rapport2<tolerance_text){
 			return  false;
 		}
 
