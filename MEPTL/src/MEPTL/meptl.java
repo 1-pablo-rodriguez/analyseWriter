@@ -58,11 +58,11 @@ public class meptl {
 		node nodeCSV = null; //Permet de convertir le fichier contenant la liste des étudiants en node
 				
 		patch = System.getProperty("user.dir");
-//		patch = "C:/Users/pabr6/Downloads/teste/";
+		patch = "C:/Users/pabr6/Downloads/teste/";
 //		patch = "C:/Users/pabr6/OneDrive/Desktop/presentation5";
 		
 		//les commandes
-		new commandes(args,patch);
+//		new commandes(args,patch);
 		
 		//Lancement des lectures des dossiers
 		Run a = new Run(patch,commandes.Profil);
@@ -1232,16 +1232,37 @@ public class meptl {
 		boolean manqueHistorique = false;
 		boolean oneError=false;
 		
-		node b = a.retourneFirstNodeByNameAttributValue(nodStudent, "meta:user-defined", "meta:name", "Sujet");
-		if(b==null) {
-			manqueMetaSujet=true;
-			oneError=true;
+		node b = null;
+		
+		
+		if(nodSujet.getAttributs().get("presenceMetaSujet")!=null) {
+			if(nodSujet.getAttributs().get("presenceMetaSujet").equals("true")) {
+				b = a.retourneFirstNodeByNameAttributValue(nodStudent, "meta:user-defined", "meta:name", "Sujet");
+				if(b==null) {
+					manqueMetaSujet=true;
+					oneError=true;
+				}else {
+					if(!nodSujet.getAttributs().get("metaSujet").equals(b.getContenu())) {
+						manqueValeurMetaSujet=true;
+						oneError=true;
+					}
+				}
+			}else {
+				
+			}
 		}else {
-			if(!nodSujet.getAttributs().get("metaSujet").equals(b.getContenu())) {
-				manqueValeurMetaSujet=true;
+			b = a.retourneFirstNodeByNameAttributValue(nodStudent, "meta:user-defined", "meta:name", "Sujet");
+			if(b==null) {
+				manqueMetaSujet=true;
 				oneError=true;
+			}else {
+				if(!nodSujet.getAttributs().get("metaSujet").equals(b.getContenu())) {
+					manqueValeurMetaSujet=true;
+					oneError=true;
+				}
 			}
 		}
+
 		
 		b =  nodStudent.retourneFirstEnfantsByName("meta:creation-date");
 		if(!b.getNomElt().equals("meta:creation-date")) {
