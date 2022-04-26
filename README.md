@@ -1,7 +1,10 @@
 # analyseWriter
-Analyse et note les fichiers de traitement de texte au format ODF (suite de bureautique LibreOffice, OpenOffice, TRio Office, ...).
-Cette application permet d’évaluer un très grand nombre de fichier en suivant les consignes du fichier d’analyse.
+L'application analyse et note les fichiers de traitement de texte au format ODF des étudiants. Le format natif des suites de bureautique, LibreOffice, OpenOffice, Trio Office).
+
+Cette application permet d’évaluer un très grand nombre de fichiers réalisés par des étudiant en suivant les consignes du fichier d’analyse. Elle permet de facilité l'importation des notes et des feedbacks des étudiants sur Moodle.
+
 C’est une application console (sans interface) écrite en java.
+
 
 ## analyseWriter permet :
 
