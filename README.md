@@ -1,5 +1,5 @@
 # analyseWriter
-Analyse et notation des fichiers traitement de texte au format ODF.
+Analyse et note les fichiers de traitement de texte au format ODF (suite de bureautique LibreOffice, OpenOffice, TRio Office, ...).
 Cette application permet d’évaluer un très grand nombre de fichier en suivant les consignes du fichier d’analyse.
 C’est une application console (sans interface) écrite en java.
 
