@@ -22,8 +22,8 @@ public class commandes {
 	//** Les commandes par défaut
 	static String nameSujet = "";  //sujet par défaut
 	public static boolean analyse = false; //analyse des fichiers étudiants
-	public static boolean ecritCode = false; // ecriture du code du sujet
-	public static boolean ecritSujet = false; // ecriture 2 du code du sujet, uniquement les nodes évalués
+	public static boolean ecritCode = false; // -write : ecriture du code du sujet
+	public static boolean ecritSujet = false; // -sujet : ecriture 2 du code du sujet, uniquement les nodes évalués
 	public static boolean ecritNoteCSV = false; // ecriture note.csv
 	public static boolean sansFeeback = false; // pas de feedback étudiant
 	public static boolean verifHisto = false; // vérification des historiques correspond à la commande -verif

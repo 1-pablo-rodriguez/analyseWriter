@@ -1,7 +1,6 @@
 package MEPTL;
 
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -311,7 +310,7 @@ public class outils {
 			try {
 				point = Integer.valueOf(B.substring(B.indexOf("‽")+1,B.length()));
 			}catch (Exception e) {
-				System.out.println("erreur sur un point : " +B);
+				System.out.println("ERREUR sur la ventillation des points : " +B);
 				e.getMessage();
 			}
 		}else {
@@ -680,11 +679,12 @@ public class outils {
 	 */
 	public static String withoutCodeAndPointPourRechercheContenuExact(String B) {
 		if(B!=null) {
-			if(B.contains("‽")) B=B.substring(0, B.indexOf("‽"));
+			if(B.contains("‽")) B=B.replaceAll("‽[0-9]{0,}", ""); //B=B.substring(0, B.indexOf("‽"));
 			if(B.contains("↑")) B=B.replace("↑", "");
 			if(B.contains("↕")) B=B.replace("↕", "");
 			if(B.contains("≡")) B=B.replace("≡", "");
 			if(!B.isEmpty()) B=B.replace("¢", "");
+			 B=B.replaceAll("‽[0-9]{1,}", "");
 		}
 		return B;
 	}
@@ -696,13 +696,13 @@ public class outils {
 	 * @param A Le texte qui doit être nettoyé.
 	 * @return Le texte nettoyé.
 	 */
-	private static String NetTexte(String A) {
+	public static String NetTexte(String A) {
 		if (A!=null) {
 			A=A.toLowerCase().trim();
 	        A = A.replace("&apos;", "");
 	        A = A.replace("&quot", "");
 	        
-	        Pattern pt = Pattern.compile("[^a-z]"); // avec les chiffres "[^a-zA-Z0-9]"
+	        Pattern pt = Pattern.compile("[^a-z0-9]"); // avec les chiffres "[^a-zA-Z0-9]"
 	        Matcher match= pt.matcher(A);
 	        while(match.find()){
 	            String s= match.group();
@@ -866,133 +866,133 @@ public class outils {
 	}
 	
 	
-	/**
-	 * Nettoyage (suppression) des caractères spéciaux
-	 * @param A
-	 * @return
-	 */
-	static String NetTexte2(String A) {
-		if (A!=null) {
-			A=A.toLowerCase().trim();
-			
-			ArrayList<Integer> table1 = new ArrayList<Integer>();
-			byte[] V = A.getBytes();
-		
-			byte[] W = new byte[V.length];
-			int c =0;
-			for(int i = 0 ; i < V.length;i++) {
-				if(V[i]>0) {
-					//if (V[i]!=63 && V[i]!=-128 && V[i]!=-103) {  //63 les accents é ; -128 le symbole € -30,-128,-103 l'apostrophe
-					W[c]=V[i];
-					table1.add((int) W[c]);
-					c++;
-				}
-			}
-			try {
-				A = new String(W,"UTF-8");
-
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			A=A.replace("@", "");
-			A=A.replace("?", "");
-			A=A.replace("!", "");
-			A=A.replace("α", "");
-			A=A.replace("β", "");
-			A=A.replace("γ", "");
-			A=A.replace("δ", "");
-			A=A.replace("ε", "");
-			A=A.replace("σ", "");
-			A=A.replace("τ", "");
-			A=A.replace("ζ", "");
-			A=A.replace("η", "");
-			A=A.replace("θ", "");
-			A=A.replace("ι", "");
-			A=A.replace("’", "");
-			A=A.replace("'", "");
-					
-			A=A.replace(" ", "");
-			A=A.replace("'", ""); 
-			A=A.replace("«", "");
-			A=A.replace("»", "");
-			A=A.replace("&apos;", "");
-			A=A.replace("d&apos;", "");
-			
-			
-			A=A.replace("’", "");
-			A=A.replace("e", "");
-			A=A.replace("é", "");
-			A=A.replace("é", ""); // pas le même encodage
-			
-			A=A.replace("è", "");
-			A=A.replace("è", ""); // pas le même encodage
-			A=A.replace("ê", "");
-			
-			
-			A=A.replace("o", "");
-			A=A.replace("ô", "");
-			
-			A=A.replace("a", "");
-			A=A.replace("â", "");
-			A=A.replace("â", ""); // pas le même encodage
-			
-			A=A.replace("à", "");
-			A=A.replace("à", ""); // pas le même encodage
-			
-			A=A.replace("u", "");
-			A=A.replace("ù", "");
-			A=A.replace("û", "");
-			
-			A=A.replace("c", "");
-			A=A.replace("ç", "");
-			
-			A=A.replace("i", "");
-			A=A.replace("î", "");
-			A=A.replace("ï", "");
-			A=A.replace("ï", ""); // pas le même encodage
-			
-			A=A.replace("0", "");
-			A=A.replace("1", "");
-			A=A.replace("2", "");
-			A=A.replace("3", "");
-			A=A.replace("4", "");
-			A=A.replace("5", "");
-			A=A.replace("6", "");
-			A=A.replace("7", "");
-			A=A.replace("8", "");
-			A=A.replace("9", "");
-			
-			
-			A=A.replace(":", "");
-			A=A.replace("-", "");
-			A=A.replace(".", "");
-			A=A.replace(",", "");
-			A=A.replace("_", "");
-			A=A.replace("_", "");
-			A=A.replace("(", "");
-			A=A.replace(")", "");
-			A=A.replace("\"", "");
-			A=A.replace("+", "");
-			A=A.replace("Œ", "");
-			A=A.replace("œ", "");
-			A=A.replace("oe", "");
-			A=A.replace("\r", "");
-			A=A.replace("\n", "");
-			A=A.replace("\t", "");
-			A=A.replace("/", "");
-			A=A.replace("(", "");
-			A=A.replace(")", "");
-			A=A.replace(" ","");
-			
-			
-			
-			A=A.trim();
-
-		}
-		return A;
-	}
+//	/**
+//	 * Nettoyage (suppression) des caractères spéciaux
+//	 * @param A
+//	 * @return
+//	 */
+//	static String NetTexte21(String A) {
+//		if (A!=null) {
+//			A=A.toLowerCase().trim();
+//			
+//			ArrayList<Integer> table1 = new ArrayList<Integer>();
+//			byte[] V = A.getBytes();
+//		
+//			byte[] W = new byte[V.length];
+//			int c =0;
+//			for(int i = 0 ; i < V.length;i++) {
+//				if(V[i]>0) {
+//					//if (V[i]!=63 && V[i]!=-128 && V[i]!=-103) {  //63 les accents é ; -128 le symbole € -30,-128,-103 l'apostrophe
+//					W[c]=V[i];
+//					table1.add((int) W[c]);
+//					c++;
+//				}
+//			}
+//			try {
+//				A = new String(W,"UTF-8");
+//
+//			} catch (UnsupportedEncodingException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			
+//			A=A.replace("@", "");
+//			A=A.replace("?", "");
+//			A=A.replace("!", "");
+//			A=A.replace("α", "");
+//			A=A.replace("β", "");
+//			A=A.replace("γ", "");
+//			A=A.replace("δ", "");
+//			A=A.replace("ε", "");
+//			A=A.replace("σ", "");
+//			A=A.replace("τ", "");
+//			A=A.replace("ζ", "");
+//			A=A.replace("η", "");
+//			A=A.replace("θ", "");
+//			A=A.replace("ι", "");
+//			A=A.replace("’", "");
+//			A=A.replace("'", "");
+//					
+//			A=A.replace(" ", "");
+//			A=A.replace("'", ""); 
+//			A=A.replace("«", "");
+//			A=A.replace("»", "");
+//			A=A.replace("&apos;", "");
+//			A=A.replace("d&apos;", "");
+//			
+//			
+//			A=A.replace("’", "");
+//			A=A.replace("e", "");
+//			A=A.replace("é", "");
+//			A=A.replace("é", ""); // pas le même encodage
+//			
+//			A=A.replace("è", "");
+//			A=A.replace("è", ""); // pas le même encodage
+//			A=A.replace("ê", "");
+//			
+//			
+//			A=A.replace("o", "");
+//			A=A.replace("ô", "");
+//			
+//			A=A.replace("a", "");
+//			A=A.replace("â", "");
+//			A=A.replace("â", ""); // pas le même encodage
+//			
+//			A=A.replace("à", "");
+//			A=A.replace("à", ""); // pas le même encodage
+//			
+//			A=A.replace("u", "");
+//			A=A.replace("ù", "");
+//			A=A.replace("û", "");
+//			
+//			A=A.replace("c", "");
+//			A=A.replace("ç", "");
+//			
+//			A=A.replace("i", "");
+//			A=A.replace("î", "");
+//			A=A.replace("ï", "");
+//			A=A.replace("ï", ""); // pas le même encodage
+//			
+//			A=A.replace("0", "");
+//			A=A.replace("1", "");
+//			A=A.replace("2", "");
+//			A=A.replace("3", "");
+//			A=A.replace("4", "");
+//			A=A.replace("5", "");
+//			A=A.replace("6", "");
+//			A=A.replace("7", "");
+//			A=A.replace("8", "");
+//			A=A.replace("9", "");
+//			
+//			
+//			A=A.replace(":", "");
+//			A=A.replace("-", "");
+//			A=A.replace(".", "");
+//			A=A.replace(",", "");
+//			A=A.replace("_", "");
+//			A=A.replace("_", "");
+//			A=A.replace("(", "");
+//			A=A.replace(")", "");
+//			A=A.replace("\"", "");
+//			A=A.replace("+", "");
+//			A=A.replace("Œ", "");
+//			A=A.replace("œ", "");
+//			A=A.replace("oe", "");
+//			A=A.replace("\r", "");
+//			A=A.replace("\n", "");
+//			A=A.replace("\t", "");
+//			A=A.replace("/", "");
+//			A=A.replace("(", "");
+//			A=A.replace(")", "");
+//			A=A.replace(" ","");
+//			
+//			
+//			
+//			A=A.trim();
+//
+//		}
+//		return A;
+//	}
 
 	
 	

@@ -179,6 +179,20 @@ public class ecritureSujet {
 			nod.getNodes().add(nodsection);
 		}
 		
+		//
+		//tableaux
+		node nodtableaux = nod.retourneFirstEnfantsByName("tableaux");
+		if(nodtableaux.getNomElt().equals("tableaux")) {
+			nod.getNodes().remove(nodtableaux);
+			nodtableaux.getAttributs().put("evaluer", "false");
+			nodtableaux.getAttributs().put("addmenu", "false");
+			nodtableaux.getAttributs().put("poids", "1");
+			nodtableaux.getAttributs().put("titre", "Les tableaux");
+			
+			nodtableaux = addAttributsAnalyseWriter(nodtableaux, "table:table");
+			nod.getNodes().add(nodtableaux);
+		}
+		
 		
 		//
 		//biblio
@@ -268,32 +282,37 @@ public class ecritureSujet {
 				no1.get(k).getAttributs().put("evaluer", "false");
 				if(listeDesNodesAvecEvalNode(no1.get(k).getNomElt())) no1.get(k).getAttributs().put("evalNameNode", "0");
 				if(listeDesNodesSautEtTitre(no1.get(k).getNomElt())) {no1.get(k).getAttributs().put("saut", "false"); no1.get(k).getAttributs().put("titre", ""); no1.get(k).getAttributs().put("styletitre", "nostyle");}
-				if(listeDesNodesRecherche(no1.get(k).getNomElt())) {no1.get(k).getAttributs().put("recherche_index", "false"); no1.get(k).getAttributs().put("recherche_contenu_exact", "false");}
+				if(listeDesNodesRechercheIndex(no1.get(k).getNomElt())) {no1.get(k).getAttributs().put("recherche_index", "false"); no1.get(k).getAttributs().put("recherche_contenu_exact", "false");}
 				if(listeDesNodesAnalyseStyle(no1.get(k).getNomElt())) no1.get(k).getAttributs().put("analyseStyle", "false");
+				if(listeDesNodesAllContent(no1.get(k).getNomElt())) no1.get(k).getAttributs().put("allContent", "strict0");
+				
 				
 				ArrayList<node> no2 = no1.get(k).getNodes();
 				for(int l=0 ; l < no2.size(); l++) {
 					no2.get(l).getAttributs().put("evaluer", "false");
 					if(listeDesNodesAvecEvalNode(no2.get(l).getNomElt())) no2.get(l).getAttributs().put("evalNameNode", "0");
 					if(listeDesNodesSautEtTitre(no2.get(l).getNomElt())) {no2.get(l).getAttributs().put("saut", "false"); no2.get(l).getAttributs().put("titre", "");no2.get(l).getAttributs().put("styletitre", "nostyle");}
-					if(listeDesNodesRecherche(no2.get(l).getNomElt())) {no2.get(l).getAttributs().put("recherche_index", "false"); no2.get(l).getAttributs().put("recherche_contenu_exact", "false");}
+					if(listeDesNodesRechercheIndex(no2.get(l).getNomElt())) {no2.get(l).getAttributs().put("recherche_index", "false"); no2.get(l).getAttributs().put("recherche_contenu_exact", "false");}
 					if(listeDesNodesAnalyseStyle(no2.get(l).getNomElt())) no2.get(l).getAttributs().put("analyseStyle", "false");
+					if(listeDesNodesAllContent(no2.get(l).getNomElt())) no2.get(l).getAttributs().put("allContent", "strict0");
 					
 					ArrayList<node> no3 = no2.get(l).getNodes();
 					for(int m=0 ; m < no3.size(); m++) {
 						no3.get(m).getAttributs().put("evaluer", "false");
 						if(listeDesNodesAvecEvalNode(no3.get(m).getNomElt())) no3.get(m).getAttributs().put("evalNameNode", "0");
 						if(listeDesNodesSautEtTitre(no3.get(m).getNomElt())) {no3.get(m).getAttributs().put("saut", "false"); no3.get(m).getAttributs().put("titre", "");no3.get(m).getAttributs().put("styletitre", "nostyle");}
-						if(listeDesNodesRecherche(no3.get(m).getNomElt())) {no3.get(m).getAttributs().put("recherche_index", "false"); no3.get(m).getAttributs().put("recherche_contenu_exact", "false");}
+						if(listeDesNodesRechercheIndex(no3.get(m).getNomElt())) {no3.get(m).getAttributs().put("recherche_index", "false"); no3.get(m).getAttributs().put("recherche_contenu_exact", "false");}
 						if(listeDesNodesAnalyseStyle(no3.get(m).getNomElt())) no3.get(m).getAttributs().put("analyseStyle", "false");
-						
+						if(listeDesNodesAllContent(no3.get(m).getNomElt())) no3.get(m).getAttributs().put("allContent", "strict0");
+												
 						ArrayList<node> no4 = no3.get(m).getNodes();
 						for(int n=0 ; n < no4.size(); n++) {
 							no4.get(n).getAttributs().put("evaluer", "false");
-							if(listeDesNodesAvecEvalNode(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("evalNameNode", "0");
+							if(listeDesNodesAvecEvalNode(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("evalNameNode", "strict0");
 							if(listeDesNodesSautEtTitre(no4.get(n).getNomElt())) {no4.get(n).getAttributs().put("saut", "false"); no4.get(n).getAttributs().put("titre", "");no4.get(n).getAttributs().put("styletitre", "nostyle");}
-							if(listeDesNodesRecherche(no4.get(n).getNomElt())) {no4.get(n).getAttributs().put("recherche_index", "false"); no4.get(n).getAttributs().put("recherche_contenu_exact", "false");}
+							if(listeDesNodesRechercheIndex(no4.get(n).getNomElt())) {no4.get(n).getAttributs().put("recherche_index", "false"); no4.get(n).getAttributs().put("recherche_contenu_exact", "false");}
 							if(listeDesNodesAnalyseStyle(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("analyseStyle", "false");
+							if(listeDesNodesAllContent(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("allContent", "0");
 							
 						}
 					}
@@ -335,7 +354,7 @@ public class ecritureSujet {
 	 * @param nameNode
 	 * @return
 	 */
-	private static boolean listeDesNodesRecherche(String nameNode) {
+	private static boolean listeDesNodesRechercheIndex(String nameNode) {
 		if(nameNode.contains("text:")) return true;
 		return false;
 	}
@@ -348,6 +367,18 @@ public class ecritureSujet {
 	private static boolean listeDesNodesAnalyseStyle(String nameNode) {
 		if(nameNode.equals("text:p")) return true;
 		if(nameNode.equals("text:span")) return true;
+		return false;
+	}
+	
+	/**
+	 * Liste des nodes qui peuvent contenir l'attribut allContent
+	 * @param nameNode
+	 * @return
+	 */
+	private static boolean listeDesNodesAllContent(String nameNode) {
+		if(nameNode.contains("text:")) return true;
+		if(nameNode.equals("table:table-cell")) return true;
+		if(nameNode.equals("table:table-row")) return true;
 		return false;
 	}
 	

@@ -40,51 +40,67 @@ public class verificationFichierAnalyse {
 		//Vérification des attributs du node office:meta
 		if(Sujet.retourneEnfantsByNameExist("office:meta")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("office:meta").getAttributs(),"office:meta");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("office:meta"));
 		}
 		
 		//Vérification des attributs du node style:page
 		if(Sujet.retourneEnfantsByNameExist("style:page")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("style:page").getAttributs(),"style:page");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("style:page"));
 		}
 		
 		//Vérification des attributs du node sequences
 		if(Sujet.retourneEnfantsByNameExist("sequences")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("sequences").getAttributs(),"sequences");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("sequences"));
 		}
 		
 		//Vérification des attributs du node numerotationchapitre
 		if(Sujet.retourneEnfantsByNameExist("numerotationchapitre")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("numerotationchapitre").getAttributs(),"numerotationchapitre");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("numerotationchapitre"));
 		}
 
 		//Vérification des attributs du node frames
 		if(Sujet.retourneEnfantsByNameExist("frames")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("frames").getAttributs(),"frames");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("frames"));
 		}
 		
 		//Vérification des attributs du node sections
 		if(Sujet.retourneEnfantsByNameExist("sections")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("sections").getAttributs(),"sections");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("sections"));
+		}
+		
+		//Vérification des attributs du node sections
+		if(Sujet.retourneEnfantsByNameExist("tableaux")) {
+			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("tableaux").getAttributs(),"tableaux");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("tableaux"));
 		}
 		
 		//Vérification des attributs du node biblio
 		if(Sujet.retourneEnfantsByNameExist("biblio")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("biblio").getAttributs(),"biblio");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("biblio"));
 		}
 		
 		//Vérification des attributs du node tablematieres
 		if(Sujet.retourneEnfantsByNameExist("tablematieres")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("tablematieres").getAttributs(),"tablematieres");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("tablematieres"));
 		}
 		
 		//Vérification des attributs du node tableillustrations
 		if(Sujet.retourneEnfantsByNameExist("tableillustrations")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("tableillustrations").getAttributs(),"tableillustrations");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("tableillustrations"));
 		}
 		
 		//Vérification des attributs du node structurepage
 		if(Sujet.retourneEnfantsByNameExist("structurepage")) {
 			verificationNodeEvaluate(Sujet.retourneFirstEnfantsByName("structurepage").getAttributs(),"structurepage");
+			verifLongContenuNode(Sujet.retourneFirstEnfantsByName("structurepage"));
 		}
 		
 		
@@ -240,7 +256,7 @@ public class verificationFichierAnalyse {
 	
 	
 	/**
-	 * Evaluation du node seeting
+	 * Evaluation du node setting
 	 * @param attribut
 	 * @param nameNode
 	 */
@@ -438,6 +454,51 @@ public class verificationFichierAnalyse {
 			}
 		}
 	}
+	
+	
+	/**
+	 * Le contenu d'un node doit être supérieur à 3 caractère pour qu'il puisse être évalué.
+	 * @param nod
+	 */
+	private static void verifLongContenuNode(node nod) {
+		if( nod.getContenu().contains("‽") ) {
+			if(nod.getAttributs().get("evaluer")!=null) {
+				if(nod.getAttributs().get("evaluer").equalsIgnoreCase("true")) {
+					if( outils.NetTexte(nod.getContenu()).length() <=3 ) {
+						System.out.println();
+			  			System.out.println("**-** ERREUR dans le fichier d'analyse, le node \"" + nod.getNomElt() + "\".");
+			  			System.out.println("Le contenu du node est :  " + nod.getContenu());
+			  			System.out.println("Le contenu du node doit avoir plus de 3 caractères pour qu'il puisse être évalué.");
+			  			System.out.println();
+			  			erreur=true;
+					}
+				}
+			}
+		}
+		
+		if( nod.getAttributs().get("allContent")!=null && nod.getAttributs().get("evaluer")!=null ) {
+			if(nod.getAttributs().get("evaluer").equalsIgnoreCase("true")) {
+			String A = nod.getAttributs().get("allContent");
+			 Pattern pt = Pattern.compile("[1-9]$|[1-9][0-9]$");
+		     Matcher match= pt.matcher(A);
+		     if(match.find()) {
+		    	if(nod.retourneLesContenusEnfants(nod, "").contains("‽")){
+			    	System.out.println();
+		  			System.out.println("**-** ERREUR dans le fichier d'analyse, le node \"" + nod.getNomElt() + "\".");
+		  			System.out.println("Le node possède l'attribut allContent=\"" + nod.getAttributs().get("allContent")+"\"");
+		  			System.out.println("Et un des nodes enfants possède un contenu évalué directement par l'évaluateur ‽");
+		  			System.out.println();
+		  			erreur=true;
+				 }
+		     }	     
+			}	  
+		}
+		
+		for(int i = 0 ; i < nod.getNodes().size();i++) {
+			verifLongContenuNode(nod.getNodes().get(i));
+		}
+	}
+	
 	
 	/**
 	 * Clôture lorsqu'il y a une erreur dans le fichier d'analyse
