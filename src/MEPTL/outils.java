@@ -46,7 +46,7 @@ public class outils {
 				boolean T = false;
 				
 				if(translation.getNodes().get(i).getAttributs().get("translate")!=null) if(!translation.getNodes().get(i).getAttributs().get("translate").isEmpty()) translate=translation.getNodes().get(i).getAttributs().get("translate");
-				if(!translation.getNodes().get(i).getContenu().isEmpty()) contenu = translation.getNodes().get(i).getContenu().replace("-!", "<").replace("!-", ">");
+				if(!translation.getNodes().get(i).getContenu().isEmpty()) contenu = translation.getNodes().get(i).getContenu().get(0).replace("-!", "<").replace("!-", ">");
 				if(translation.getNodes().get(i).getAttributs().get("link")!=null) if(!translation.getNodes().get(i).getAttributs().get("link").isEmpty())  link="<p><a href=\"" + translation.getNodes().get(i).getAttributs().get("link") + "\"  target=\"_blank\">Lien</a></p>";
 				if(translation.getNodes().get(i).getAttributs().get("color")!=null) if(!translation.getNodes().get(i).getAttributs().get("color").isEmpty())  color="<span style=\"color:" + translation.getNodes().get(i).getAttributs().get("color") + "\">";
 				if(translation.getNodes().get(i).getAttributs().get("image")!=null) if(!translation.getNodes().get(i).getAttributs().get("image").isEmpty()) if(translation.getNodes().get(i).getAttributs().get("image").equals("true")) T=true;

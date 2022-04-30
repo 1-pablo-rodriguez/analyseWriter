@@ -1,5 +1,6 @@
 package MEPTL;
 
+
 import cXML.Run;
 import cXML.node;
 
@@ -29,14 +30,14 @@ public class rechercherUnNodeStudent {
 		if(nodSujet.getAttributs().get("recherche_contenu_exact")!=null){
 			if(nodSujet.getAttributs().get("recherche_index")!=null) {
 				if(nodSujet.getAttributs().get("recherche_contenu_exact").equals("true") && nodSujet.getAttributs().get("recherche_index").equals("false") ) {
-					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu());
+					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
 					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut);
 					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut);
 					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut);
 					if(nodStudent!=null) {return nodStudent;}else {return null;}
 				}
 				if(nodSujet.getAttributs().get("recherche_contenu_exact").equals("true") && nodSujet.getAttributs().get("recherche_index").equals("true") && nodSujet.getAttributs().get("index")!=null ) {
-					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu());
+					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
 					String indexSujet = nodSujet.getAttributs().get("index");
 					
 					if(!valueAttribut.isEmpty()&&!indexSujet.isEmpty()) {
@@ -52,7 +53,7 @@ public class rechercherUnNodeStudent {
 				}
 			}else {
 				if(nodSujet.getAttributs().get("recherche_contenu_exact").equals("true")) {
-					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu());
+					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
 					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut);
 					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut);
 					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut);
@@ -136,9 +137,10 @@ public class rechercherUnNodeStudent {
 						if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
 					}
 				}else {
-					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
+					String contenuSujet = nodSujet.retourneLesContenusEnfants("");
+					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(),contenuSujet ,commandes.tolerance_characters,commandes.tolerance_text);
+					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
 				}
 			}
 		}
@@ -170,11 +172,12 @@ public class rechercherUnNodeStudent {
 		}
 		
 		
-		//recherche par le contenu enfant du node
+		//recherche par le contenu enfant du node les titres par défaut
 		if(nameNode.equals("text:h")) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
+				String contenuSujet = nodSujet.retourneLesContenusEnfants("");
+				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
 		}
 		
 		//recherche par text:name
@@ -233,9 +236,9 @@ public class rechercherUnNodeStudent {
 		
 		//recherche par le nom de l'objet
 		if(nameNode.equals("style:graphic-properties")) {
-			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameContent(nod2Student, nameNode, nodSujet.getContenu());
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod1Student, nameNode, nodSujet.getContenu());
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod0Student, nameNode, nodSujet.getContenu());
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameContent(nod2Student, nameNode, nodSujet.getContenu().get(0));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod1Student, nameNode, nodSujet.getContenu().get(0));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod0Student, nameNode, nodSujet.getContenu().get(0));
 		}
 		
 		
@@ -280,18 +283,19 @@ public class rechercherUnNodeStudent {
 		
 		//recherche par contenu
 		if(nameNode.equals("text:span")) {
-			if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-		
+			String contenuSujet = nodSujet.retourneLesContenusEnfants("");
+			if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
 		}
 		
 		//recherche par contenu
 		if(nameNode.equals("text:tab")) {
-			if(!nodSujet.retourneLesContenusEnfants("").isEmpty()) {
-				if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), nodSujet.retourneLesContenusEnfants(""),commandes.tolerance_characters,commandes.tolerance_text);
+			String contenuSujet = nodSujet.retourneLesContenusEnfants("");
+			if(!contenuSujet.trim().isEmpty()) {
+				if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
 			}
 		}
 		

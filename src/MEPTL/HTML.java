@@ -228,7 +228,7 @@ public class HTML {
 			 }
 			 	 
 			 //ajoute le commentaire
-			 if(!nod.getContenu().isEmpty()) if(nod.getNodes().size()==1) code = code + HTML.Paragraph_classp6(nod.getContenu()) + HTML.SautLigne();
+			 if(!nod.getContenu().isEmpty()) if(nod.getNodes().size()==1) code = code + HTML.Paragraph_classp6(nod.getContenu().get(0)) + HTML.SautLigne();
 			
 			 code = code  + HTML.TableEntete(); //ajoute l'entête
 		
@@ -260,7 +260,7 @@ public class HTML {
 						 code = code + HTML.SautLigne();
 					 }
 						 
-						 if(!nod.getContenu().isEmpty()) code = code + HTML.Paragraph_classp6(nod.getContenu()) + HTML.SautLigne();
+						 if(!nod.getContenu().isEmpty()) code = code + HTML.Paragraph_classp6(nod.getContenu().get(0)) + HTML.SautLigne();
 						 
 						 for(int l = 0 ; l < nod.getNodes().get(k).getNodes().size() ; l++) {
 							if(!nod.getNodes().get(k).getNodes().get(l).getNomElt().equals("saut")){

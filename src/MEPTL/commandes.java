@@ -25,6 +25,7 @@ public class commandes {
 	public static boolean ecritCode = false; // -write : ecriture du code du sujet
 	public static boolean ecritSujet = false; // -sujet : ecriture 2 du code du sujet, uniquement les nodes évalués
 	public static boolean ecritNoteCSV = false; // ecriture note.csv
+	public static boolean writefiles = false; // -writefiles permet d'écrire tous les fichiers XML après la lecture en node
 	public static boolean sansFeeback = false; // pas de feedback étudiant
 	public static boolean verifHisto = false; // vérification des historiques correspond à la commande -verif
 	public static boolean verifHisto2 = false; // vérification des historiques lorsqu'il y a aussi analyse
@@ -43,7 +44,7 @@ public class commandes {
 	public static String contenuFichierSVG =""; // Le nouveau logo
 	public static String path ="";
 	public static String pathDestination ="";
-	public static String version ="3.5.1"; // La version
+	public static String version ="3.6.0"; // La version
 	public static String Command ="";
 	
 	//** setting valeur par défaut
@@ -137,6 +138,10 @@ public class commandes {
 					ecritCode=true;
 					Profil = UserStatus.STUDENT;
 				}
+				if(args[i].equals("-writefiles")) {
+					if(!(args.length==1 && Command.contains("-writefiles") || args.length==2 && Command.contains("-writefiles")&&Command.contains("-f")) ) {System.out.println("\n\n***\nThe -writefiles command should be the only command or with -f.\n***");clotureWithError();}
+					writefiles=true;
+				}
 				if(args[i].equals("-sujet")) {
 					if(!analyse) {badCommand=true;System.out.println("You must type the command -use, then  the name of analysis file, then  the  command -sujet.");}
 					if(args.length>3) {badCommand=true; System.out.println("If you use the command -sujet, you can't use other commands except -use and the filename.");}
@@ -190,7 +195,7 @@ public class commandes {
 				if(!args[i].equals("-use")&&!args[i].equals("-write")&&!args[i].equals("-csv")&&!args[i].equals("-verif")&&!args[i].equals("-verifcsv")
 						&&!args[i].contains(".csv")&&!args[i].contains(".svg")&&!args[i].contains(".xml")&&!args[i].contains("-nofeedback")&&!args[i].contains("-help")&&!args[i].equals("-aide")
 						&&!args[i].equals("-about")&&!args[i].equals("-nonote") &&!args[i].equals("-dest")&&!args[i].equals("-sujet")&&!args[i].equals("-nologo")
-						&&!args[i].equals("-licence")&&!args[i].equals("-zipfeedback")&&!args[i].equals("-newLogo")&&!args[i].equals("-f")&&!m.find()) {
+						&&!args[i].equals("-licence")&&!args[i].equals("-zipfeedback")&&!args[i].equals("-newLogo")&&!args[i].equals("-f")&&!m.find()&&!args[i].equals("-writefiles")&&!m.find()) {
 					badCommand=true; System.out.println("the command " + args[i] + " is unknown.");System.out.println("You can type the -help command to get help.");
 				}
 			}
@@ -220,6 +225,7 @@ public class commandes {
 		System.out.println("No student grade = " + noNote);
 		System.out.println("Writing an analysis file = "+ ecritCode);
 		System.out.println("Write the subject file \"sujet.xml\" = "+ ecritSujet);
+		System.out.println("Write all files = "+ writefiles);
 		System.out.println("Check historics (-verif) = " + verifHisto);
 		System.out.println("Check historics and write CSV file (-verifcsv) = " + verifHisto2);
 		System.out.println("Export in CSV format = " + ecritNoteCSV);
@@ -306,6 +312,11 @@ public class commandes {
 		System.out.println("              : \t Le fichier généré se trouve dans le dossier courant*.");
 		System.out.println("              : \t Le fichier généré est au format XML.");
 		System.out.println("              : \t Vous devez l'adapter en modifiant le code XML pour réaliser vos propres analyses.");
+		System.out.println();
+		
+		System.out.println(" -writefiles  : \t Permet d'écrire tous les fichiers en XML.");
+		System.out.println("              : \t Les fichiers générés se trouvent dans le dossier courant*.");
+		System.out.println("              : \t Les fichiers générés sont au format XML.");
 		System.out.println();
 		
 		System.out.println(" -zipfeedback : \t Permet de générer une archive ZIP contenant les feedbacks des étudiant.");
@@ -430,6 +441,11 @@ public class commandes {
 		System.out.println("              : \t The generated file is located in the current folder*.");
 		System.out.println("              : \t The generated file is in XML format.");
 		System.out.println("              : \t You must adapt it by modifying the XML code to perform your own analyzes.");
+		System.out.println();
+		
+		System.out.println(" -writefiles  : \t Allows you to write all files in XML.");
+		System.out.println("              : \t The generated files are located in the current folder*.");
+		System.out.println("              : \t The generated files are in XML format.");
 		System.out.println();
 		
 		System.out.println(" -zipfeedback : \t Allows you to generate a ZIP archive containing student feedback. ");
