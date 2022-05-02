@@ -25,6 +25,8 @@ public class commandes {
 	public static boolean ecritCode = false; // -write : ecriture du code du sujet
 	public static boolean ecritSujet = false; // -sujet : ecriture 2 du code du sujet, uniquement les nodes évalués
 	public static boolean ecritNoteCSV = false; // ecriture note.csv
+	public static boolean writefiles = false; // -writefiles permet d'écrire tous les fichiers XML après la lecture en node
+	public static boolean calculLeHashDuFichier = false; //  -hash retourne le hash du fichier d'analyse
 	public static boolean sansFeeback = false; // pas de feedback étudiant
 	public static boolean verifHisto = false; // vérification des historiques correspond à la commande -verif
 	public static boolean verifHisto2 = false; // vérification des historiques lorsqu'il y a aussi analyse
@@ -43,7 +45,7 @@ public class commandes {
 	public static String contenuFichierSVG =""; // Le nouveau logo
 	public static String path ="";
 	public static String pathDestination ="";
-	public static String version ="3.5.1"; // La version
+	public static String version ="3.6.0"; // La version
 	public static String Command ="";
 	
 	//** setting valeur par défaut
@@ -80,8 +82,14 @@ public class commandes {
 				if(args[i].contains(".xml")) {
 					Matcher m = Pattern.compile("{1,}.xml$").matcher(args[i]);
 					if(m.find()) {nameSujet = args[i];}else {badCommand=true;System.out.println("There is a problem with the extension of the analyze file. The extension must be \".xml\".");};
-					if(i-1>=0) {if(args[i-1].equals("-use")) analyse=true;}else {badCommand=true; System.out.println("The -use command must be before the name of the analyze file.");}
-					if(i-1>=0) {if(!args[i-1].equals("-use")) {badCommand=true; System.out.println("The -use command is missing in front of the name of the scan file.");}}else {badCommand=true; System.out.println("The -use command must be before the name of the analyze file.");}
+					if(i-1>=0){
+						if(args[i-1].equals("-use")) analyse=true;
+						if(args[i-1].equals("-hash")) calculLeHashDuFichier=true;
+						if(!analyse&&!calculLeHashDuFichier) {
+							badCommand=true;
+							System.out.println("The -use or -hash command must be before the analysis file name.");
+						}
+					}
 				}
 				if(args[i].contains(".csv")) {
 					Matcher m = Pattern.compile("{1,}.csv$").matcher(args[i]);
@@ -137,6 +145,14 @@ public class commandes {
 					ecritCode=true;
 					Profil = UserStatus.STUDENT;
 				}
+				if(args[i].equals("-writefiles")) {
+					if(!(args.length==1 && Command.contains("-writefiles") || args.length==2 && Command.contains("-writefiles")&&Command.contains("-f")) ) {System.out.println("\n\n***\nThe -writefiles command should be the only command or with -f.\n***");clotureWithError();}
+					writefiles=true;
+				}
+				if(args[i].equals("-hash")) {
+					if(args.length>2) {System.out.println("\n\n***\nThe -hash command should only be with file.xml\n***");clotureWithError();}
+					calculLeHashDuFichier=true;
+				}
 				if(args[i].equals("-sujet")) {
 					if(!analyse) {badCommand=true;System.out.println("You must type the command -use, then  the name of analysis file, then  the  command -sujet.");}
 					if(args.length>3) {badCommand=true; System.out.println("If you use the command -sujet, you can't use other commands except -use and the filename.");}
@@ -190,7 +206,8 @@ public class commandes {
 				if(!args[i].equals("-use")&&!args[i].equals("-write")&&!args[i].equals("-csv")&&!args[i].equals("-verif")&&!args[i].equals("-verifcsv")
 						&&!args[i].contains(".csv")&&!args[i].contains(".svg")&&!args[i].contains(".xml")&&!args[i].contains("-nofeedback")&&!args[i].contains("-help")&&!args[i].equals("-aide")
 						&&!args[i].equals("-about")&&!args[i].equals("-nonote") &&!args[i].equals("-dest")&&!args[i].equals("-sujet")&&!args[i].equals("-nologo")
-						&&!args[i].equals("-licence")&&!args[i].equals("-zipfeedback")&&!args[i].equals("-newLogo")&&!args[i].equals("-f")&&!m.find()) {
+						&&!args[i].equals("-licence")&&!args[i].equals("-zipfeedback")&&!args[i].equals("-newLogo")&&!args[i].equals("-f")&&!m.find()&&!args[i].equals("-writefiles")
+						&&!args[i].equals("-hash")&&!m.find()) {
 					badCommand=true; System.out.println("the command " + args[i] + " is unknown.");System.out.println("You can type the -help command to get help.");
 				}
 			}
@@ -220,6 +237,8 @@ public class commandes {
 		System.out.println("No student grade = " + noNote);
 		System.out.println("Writing an analysis file = "+ ecritCode);
 		System.out.println("Write the subject file \"sujet.xml\" = "+ ecritSujet);
+		System.out.println("Write all student's files to XML = "+ writefiles);
+		System.out.println("Hash = "+ calculLeHashDuFichier);
 		System.out.println("Check historics (-verif) = " + verifHisto);
 		System.out.println("Check historics and write CSV file (-verifcsv) = " + verifHisto2);
 		System.out.println("Export in CSV format = " + ecritNoteCSV);
@@ -308,6 +327,11 @@ public class commandes {
 		System.out.println("              : \t Vous devez l'adapter en modifiant le code XML pour réaliser vos propres analyses.");
 		System.out.println();
 		
+		System.out.println(" -writefiles  : \t Permet d'écrire tous les fichiers en XML.");
+		System.out.println("              : \t Les fichiers générés se trouvent dans le dossier courant*.");
+		System.out.println("              : \t Les fichiers générés sont au format XML.");
+		System.out.println();
+		
 		System.out.println(" -zipfeedback : \t Permet de générer une archive ZIP contenant les feedbacks des étudiant.");
 		System.out.println("              : \t L'archive se nomme moodleFeedback.zip.");
 		System.out.println("              : \t L'archive respecte le format pour l'importation des feedbacks dans Moodle.");
@@ -345,6 +369,10 @@ public class commandes {
 		System.out.println(" -sujet       : \t Permet de récupérer le fichier d'analyse contenant uniquement les nodes évalués.");
 		System.out.println("              : \t C'est à partir du fichier d'analyse \"file.xml\" qu'est généré le fichier \"sujet.xml\".");
 		System.out.println("              : \t Le fichier \"sujet.xml\" se trouve dans le dossier courant de l'application.");
+		System.out.println();
+		
+		System.out.println(" -hash        : \t Permet calculer le hash d'un fichier.");
+		System.out.println("              : \t Permet de vérifier qu'un fichier d'analyse n'a pas été mofidié.");
 		System.out.println();
 		
 		System.out.println(" -about       : \t Affiche la version, l'auteur et la licence.");
@@ -432,6 +460,11 @@ public class commandes {
 		System.out.println("              : \t You must adapt it by modifying the XML code to perform your own analyzes.");
 		System.out.println();
 		
+		System.out.println(" -writefiles  : \t Allows you to write all files in XML.");
+		System.out.println("              : \t The generated files are located in the current folder*.");
+		System.out.println("              : \t The generated files are in XML format.");
+		System.out.println();
+		
 		System.out.println(" -zipfeedback : \t Allows you to generate a ZIP archive containing student feedback. ");
 		System.out.println("              : \t The archive is named \"moodleFeedback.zip\".");
 		System.out.println("              : \t  The archive respects the format for importing feedback into Moodle.");
@@ -457,6 +490,10 @@ public class commandes {
 		System.out.println(" -sujet       : \t Used to retrieve the scan file containing only the evaluated nodes. ");
 		System.out.println("              : \t The \"sujet.xml\" file is generated from the \"file.xml\" analysis file. ");
 		System.out.println("              : \t The \"subject.xml\" file is located in the current application folder. ");
+		System.out.println();
+		
+		System.out.println(" -hash        : \t Allows you to calculate the hash of a file.");
+		System.out.println("              : \t Allows you to verify that an analysis file has not been mofidized.");
 		System.out.println();
 		
 		System.out.println(" -about       : \t Displays the version, author and license. ");

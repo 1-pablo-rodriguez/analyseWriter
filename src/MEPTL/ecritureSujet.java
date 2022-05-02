@@ -20,8 +20,9 @@ public class ecritureSujet {
 	 * @param a
 	 * @param i
 	 * @return
+	 * @throws CloneNotSupportedException 
 	 */
-	public static node nodePourEcritureSujet(node nod, Run a, Integer i) {
+	public static node nodePourEcritureSujet(node nod, Run a, Integer i) throws CloneNotSupportedException {
 		LocalDateTime aujourdhui = LocalDateTime.now();
 		
 		// fichier
@@ -39,17 +40,17 @@ public class ecritureSujet {
 		nod.getAttributs().put("controle_Initial_Creator", "false");
 		nod.getAttributs().put("presenceMetaSujet", "false");
 		node b = a.retourneName(nod.retourneFirstEnfantsByName("office:meta"),"meta:user-defined","meta:name","Sujet");
-		if(b!=null) { nod.getAttributs().put("metaSujet", b.getContenu());}else {nod.getAttributs().put("metaSujet", "?");}
+		if(b!=null) { nod.getAttributs().put("metaSujet", b.getContenu().get(0));}else {nod.getAttributs().put("metaSujet", "?");}
 		b = nod.retourneFirstEnfantsByName("office:meta").retourneFirstEnfantsByName("meta:creation-date");
-		if(b!=null) {
-			if(b.getContenu().contains(".")) {
-				nod.getAttributs().put("creationDate", b.getContenu().substring(0, b.getContenu().lastIndexOf(".")));
+		if(b!=null) if(b.getContenu().size()>0) {
+			if(b.getContenu().get(0).contains(".")) {
+				nod.getAttributs().put("creationDate", b.getContenu().get(0).substring(0, b.getContenu().get(0).lastIndexOf(".")));
 			}else {
-				nod.getAttributs().put("creationDate", b.getContenu());
+				nod.getAttributs().put("creationDate", b.getContenu().get(0));
 			}
 		}
 		b = nod.retourneFirstEnfantsByName("office:meta").retourneFirstEnfantsByName("meta:initial-creator");
-		if(b!=null) nod.getAttributs().put("Initial_Creator", b.getContenu());
+		if(b!=null) if(b.getContenu().size()>0) { nod.getAttributs().put("Initial_Creator", b.getContenu().get(0));}else {nod.getAttributs().put("Initial_Creator", "");}
 		nod.getAttributs().put("auteur", "votre nom et prénom");
 				nod.setContenu("Commentaire sur cet exercice.-NewLine-Seconde ligne de commentaire.");
 		nod.getAttributs().remove("dossier");
@@ -258,6 +259,10 @@ public class ecritureSujet {
 		
 		// ajoute le node setting et translation
 		nod = addSetting(nod);
+			 
+		// ajoute le hash du code
+		String hash = String.valueOf(Run.HashNode(Run.NodesAyantAttributEvaluerTRUEavecComplement(nod),0));
+		nod.getAttributs().put("hash", hash);
 		
 		return nod;
 	}
@@ -312,7 +317,7 @@ public class ecritureSujet {
 							if(listeDesNodesSautEtTitre(no4.get(n).getNomElt())) {no4.get(n).getAttributs().put("saut", "false"); no4.get(n).getAttributs().put("titre", "");no4.get(n).getAttributs().put("styletitre", "nostyle");}
 							if(listeDesNodesRechercheIndex(no4.get(n).getNomElt())) {no4.get(n).getAttributs().put("recherche_index", "false"); no4.get(n).getAttributs().put("recherche_contenu_exact", "false");}
 							if(listeDesNodesAnalyseStyle(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("analyseStyle", "false");
-							if(listeDesNodesAllContent(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("allContent", "0");
+							if(listeDesNodesAllContent(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("allContent", "strict0");
 							
 						}
 					}
@@ -365,8 +370,7 @@ public class ecritureSujet {
 	 * @return
 	 */
 	private static boolean listeDesNodesAnalyseStyle(String nameNode) {
-		if(nameNode.equals("text:p")) return true;
-		if(nameNode.equals("text:span")) return true;
+		if(nameNode.contains("text:")) return true;
 		return false;
 	}
 	
