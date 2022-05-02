@@ -26,37 +26,37 @@ public class rechercherUnNodeStudent {
 	public static node rechercheLeNodeEnCascade(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a ) {
 		
 		node nodStudent =null;
-		// recherche le node uniquement par son contenu et pas celui de ses enfants
+		// recherche le node uniquement par son contenu exact et par celui de ses enfants
 		if(nodSujet.getAttributs().get("recherche_contenu_exact")!=null){
 			if(nodSujet.getAttributs().get("recherche_index")!=null) {
 				if(nodSujet.getAttributs().get("recherche_contenu_exact").equals("true") && nodSujet.getAttributs().get("recherche_index").equals("false") ) {
-					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
-					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut);
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut);
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut);
+					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.retourneLesContenusEnfants(""));
+					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut, nodSujet.getNomElt());
 					if(nodStudent!=null) {return nodStudent;}else {return null;}
 				}
 				if(nodSujet.getAttributs().get("recherche_contenu_exact").equals("true") && nodSujet.getAttributs().get("recherche_index").equals("true") && nodSujet.getAttributs().get("index")!=null ) {
-					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
+					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.retourneLesContenusEnfants(""));
 					String indexSujet = nodSujet.getAttributs().get("index");
 					
 					if(!valueAttribut.isEmpty()&&!indexSujet.isEmpty()) {
-						if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut);
+						if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut,nodSujet.getNomElt());
 						if(nodStudent!=null) if(nodStudent.getAttributs().get("index").equals(indexSujet)) {return nodStudent;}else {nodStudent=null;}
 						
-						if(nod1Student!=null) if(nodStudent==null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut);
+						if(nod1Student!=null) if(nodStudent==null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut, nodSujet.getNomElt());
 						if(nodStudent!=null) if(nodStudent.getAttributs().get("index").equals(indexSujet)) {return nodStudent;}else {nodStudent=null;}
 						
-						if(nod0Student!=null) if(nodStudent==null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut);
+						if(nod0Student!=null) if(nodStudent==null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut, nodSujet.getNomElt());
 						if(nodStudent!=null) if(nodStudent.getAttributs().get("index").equals(indexSujet)) {return nodStudent;}else {nodStudent=null;}
 					}
 				}
 			}else {
 				if(nodSujet.getAttributs().get("recherche_contenu_exact").equals("true")) {
 					String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
-					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut);
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut);
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut);
+					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut, nodSujet.getNomElt());
 					if(nodStudent!=null) {return nodStudent;}else {return null;}
 				}
 			}
@@ -73,7 +73,7 @@ public class rechercherUnNodeStudent {
 					return nodStudent;
 				}else {
 					return null;
-					}
+				}
 			}
 		}
 		

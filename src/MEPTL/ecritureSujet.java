@@ -20,8 +20,9 @@ public class ecritureSujet {
 	 * @param a
 	 * @param i
 	 * @return
+	 * @throws CloneNotSupportedException 
 	 */
-	public static node nodePourEcritureSujet(node nod, Run a, Integer i) {
+	public static node nodePourEcritureSujet(node nod, Run a, Integer i) throws CloneNotSupportedException {
 		LocalDateTime aujourdhui = LocalDateTime.now();
 		
 		// fichier
@@ -258,6 +259,10 @@ public class ecritureSujet {
 		
 		// ajoute le node setting et translation
 		nod = addSetting(nod);
+			 
+		// ajoute le hash du code
+		String hash = String.valueOf(Run.HashNode(Run.NodesAyantAttributEvaluerTRUEavecComplement(nod),0));
+		nod.getAttributs().put("hash", hash);
 		
 		return nod;
 	}
@@ -365,8 +370,7 @@ public class ecritureSujet {
 	 * @return
 	 */
 	private static boolean listeDesNodesAnalyseStyle(String nameNode) {
-		if(nameNode.equals("text:p")) return true;
-		if(nameNode.equals("text:span")) return true;
+		if(nameNode.contains("text:")) return true;
 		return false;
 	}
 	
