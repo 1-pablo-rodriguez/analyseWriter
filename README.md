@@ -1,7 +1,7 @@
 # analyseWriter
 L'application analyse et note les fichiers de traitement de texte au format ODF des étudiants. Le format natif des suites de bureautique, LibreOffice, OpenOffice, Trio Office).
 
-Tutoriels : https://www.youtube.com/channel/UCBSfItcCVnbRJdQbVE9ppjQ
+Tutoriels : https://artoistv.univ-artois.fr/video/4334-presentation-analysewriter/
 
 Cette application permet d’évaluer un très grand nombre de fichiers réalisés par des étudiants en suivant les consignes du fichier d’analyse. Elle permet de facilité l'importation des notes et des feedbacks des étudiants sur Moodle.
 
