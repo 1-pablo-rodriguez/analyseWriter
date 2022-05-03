@@ -72,15 +72,39 @@ public class meptl {
 		//** Nouveau node qui permet de convertir le fichier contenant la liste des étudiants en node.
 		node nodeCSV = null;
 		
-		//*****************************************************
-		//** Lancement des lectures des dossiers ou fichiers **
-		//*****************************************************
-		Run a = new Run(patch,commandes.Profil, commandes.fichierStudentMoodle);
+		//** Initialisation des varaibles
+		Run a = null;
+		Run.path = commandes.path;
+		int nbFichierWriter=0;
 		
-		//*****************************************
-		//** Nombre de fichier writer à analyser **
-		//*****************************************
-		int nbFichierWriter = a.getLectDossiers().getEC().getListeContentWriter().size();
+		if(!commandes.calculLeHashDuFichier&&!commandes.ecritSujet) {
+			//*****************************************************
+			//** Lancement des lectures des dossiers ou fichiers **
+			//*****************************************************
+			a = new Run(patch,commandes.Profil, commandes.fichierStudentMoodle);
+			
+			
+			//*****************************************
+			//** Nombre de fichier writer à analyser **
+			//*****************************************
+			nbFichierWriter = a.getLectDossiers().getEC().getListeContentWriter().size();
+		}
+		
+		//************
+		//** -sujet **
+		//************
+		if(commandes.ecritSujet) {
+			verificationFichierAnalyse.ecrisLeFichierSujetXML();
+		}
+		
+		
+		//****************************************************************************
+		//** Calcul le hash du fichier d'analyse et met à jour le fichier d'analyse **
+		//****************************************************************************
+		if(commandes.calculLeHashDuFichier) {
+			verificationFichierAnalyse.MiseAJourDuHash();
+		}
+		
 		
 		//*****************
 		//** -writefiles **
@@ -111,80 +135,12 @@ public class meptl {
 			commandes.clotureApplication();
 		}
 		
-		//****************************************************************************
-		//** Calcul le hash du fichier d'analyse et met à jour le fichier d'analyse **
-		//****************************************************************************
-		if(commandes.calculLeHashDuFichier) {
-			nodeSujet = chargementsujet(a, commandes.nameSujet, false);
-			System.out.println();
-			System.out.println("fichier = " +  commandes.nameSujet);
-			String hash = String.valueOf(Run.HashNode(nodeSujet,0));
-			System.out.println("hash = " + hash);
-			boolean maj =false;
-			if(nodeSujet.getAttributs().get("hash")==null) {
-				maj=true;
-			}else {
-				if(!nodeSujet.getAttributs().get("hash").equals(hash)) {
-					maj=true;
-				}
-			}
-			if(nodeSujet.getAttributs().get("analysis_filename")==null) {
-				maj=true;
-			}else {
-				if(!nodeSujet.getAttributs().get("analysis_filename").equals(commandes.nameSujet)) {
-					maj=true;
-				}
-			}
-			if(maj) {
-				nodeSujet.getAttributs().put("hash", hash);
-				nodeSujet.getAttributs().put("analysis_filename", commandes.nameSujet);
-				Run.ecritureNodeEnXML(nodeSujet,commandes.nameSujet.substring(0, commandes.nameSujet.lastIndexOf(".")),commandes.pathDestination,false,"Sujet");
-			}else {
-				System.out.println("Verification du hash et du nom du fichier correct.");
-				System.out.println();
-			}
-			//** bye bye analyseWriter
-			commandes.clotureApplication();
-		}
-		
-		//** Mise à jour du nom du fichier d'analyse dans le node sujet **
-		boolean MAJnameAnalysusFile =false;
-		//** Mise à jour du nom du fichier d'analyse dans le node sujet **
-		boolean MAJFichierAnalyse = false;
 		
 		//***********************************************************************************
 		//** PREPARATION du node Sujet  pour analyse -use file.xml ou -use file.xml -sujet **
 		//***********************************************************************************
 		if(commandes.analyse) {
-			nodeSujet = chargementsujet(a, commandes.nameSujet, true);
-			String hash = String.valueOf(Run.HashNode(nodeSujet,0));
-
-			if(nodeSujet.getAttributs().get("analysis_filename")!=null) {
-				if(!nodeSujet.getAttributs().get("analysis_filename").equals(commandes.nameSujet)) {
-					MAJnameAnalysusFile=true;
-				}
-			}
-			
-			if(nodeSujet.getAttributs().get("hash")==null) {
-				MAJFichierAnalyse =true;
-			}else {
-				if(!nodeSujet.getAttributs().get("hash").equals(hash)) {
-					MAJFichierAnalyse=true;
-				}
-			}
-			
-			//** Nouvelle ecriture du fichier **
-			if(MAJFichierAnalyse||MAJnameAnalysusFile) {
-				nodeSujet.getAttributs().put("hash", hash);
-				nodeSujet.getAttributs().put("analysis_filename", commandes.nameSujet);
-				
-				System.out.println("** A la fin de l'évaluation.");
-				System.out.println("** Mise à jour du fichier d'analyse : " + commandes.nameSujet );
-				System.out.println("** Le nouveau hash est : " + hash );
-				System.out.println("** Le nouveau non du fichier d'analyse est : " + commandes.nameSujet );
-				System.out.println();
-
-			}
+			nodeSujet = chargementsujet(commandes.nameSujet, true);
 			
 			//** Chargement de la culture **
 			commandes.culture = nodeSujet.retourneFirstEnfantsByName("setting").getAttributs().get("culture"); //récupère la culture de l'utilisateur
@@ -195,18 +151,12 @@ public class meptl {
 			if(verificationFichierAnalyse.erreur==true) verificationFichierAnalyse.clotureWithErrorInanalyzeFile();
 			//a.ecritureNodeEnXML(nodeSujet, "sujet","",false);  // ecriture du node sujet
 			
-			//************
-			//** -sujet **
-			//************
-			if(commandes.ecritSujet) {
-				//recalcul le hash du code
-				nodeSujet.getAttributs().put("hash", String.valueOf(Run.HashNode(nodeSujet, 0)));
-				Run.ecritureNodeEnXML(nodeSujet, "sujet","",false, "Sujet");  // ecriture du node sujet. Uniquement les nodes évalués.
-				System.out.println();
-				System.out.println("\tUn nouveau fichier \"sujet.xml\" a été créé dans le dossier courant.");
-				//** bye bye analyseWriter
-				commandes.clotureApplication();
+			//** Nouvelle ecriture du fichier si MAJ fichier**
+			if(commandes.MAJFichierAnalyse||commandes.MAJnameAnalysisFile) {
+				nodeSujet.getAttributs().put("hash", commandes.hash);
+				nodeSujet.getAttributs().put("analysis_filename", commandes.nameSujet);
 			}
+
 			
 			try {
 				
@@ -386,8 +336,9 @@ public class meptl {
 		//**************************************
 		//** Mise à jour du fichier d'analyse **
 		//**************************************
-		if(MAJFichierAnalyse||MAJnameAnalysusFile) {
+		if(commandes.MAJFichierAnalyse||commandes.MAJnameAnalysisFile) {
 			Run.ecritureNodeEnXML(nodeSujet, commandes.nameSujet.substring(0, commandes.nameSujet.lastIndexOf(".")), commandes.pathDestination, false, "sujet");
+			verificationFichierAnalyse.messagMiseAJourFichierAnalyseAprèsAnalyse();
 		}
 
 		
@@ -932,15 +883,14 @@ public class meptl {
 	 * @throws IOException 
 	 * @throws CloneNotSupportedException 
 	 */
-	@SuppressWarnings("static-access")
-	private static node chargementsujet(Run a, String nameSujet, Boolean sansNodeEvaluer) throws  CloneNotSupportedException, IOException {
+	public static node chargementsujet(String nameSujet, Boolean sansNodeEvaluer) throws  CloneNotSupportedException, IOException {
 		String targetString = "";
 		//read file into stream, try-with-resources
 
 		try {
 			BufferedReader br = new BufferedReader(
 			        new InputStreamReader(
-			            new FileInputStream(a.getPatch() + "/" + nameSujet), "UTF-8")); 
+			            new FileInputStream(Run.path + "/" + nameSujet), "UTF-8")); 
 			
 			String line;
 			while ((line = br.readLine()) != null) {
@@ -949,8 +899,8 @@ public class meptl {
 			br.close();
 		}catch (Exception e) {
 			System.out.println();
-			System.out.println("** The file \"" + nameSujet + "\" is not in the current directory.");
-			System.out.println("** The current directory of the application is " + patch);
+			System.out.println("** Le fichier \"" + nameSujet + "\" n'est pas dans le dossier courant.");
+			System.out.println("** Le dossier courant de l'application est : " + patch);
 			System.out.println();
 		}
 		
@@ -969,11 +919,11 @@ public class meptl {
 			p = Pattern.compile("\" {1,}>");
 			targetString = p.matcher(targetString).replaceAll("\">");
 			
-			LeNodeSujet = a.XMLContent(targetString);
+			LeNodeSujet = Run.XMLContent(targetString);
 		}
 		
 		if(sansNodeEvaluer) {
-			LeNodeSujet = a.NodesAyantAttributEvaluerTRUEavecComplement(LeNodeSujet);
+			LeNodeSujet = Run.NodesAyantAttributEvaluerTRUEavecComplement(LeNodeSujet);
 		}
 		
 		

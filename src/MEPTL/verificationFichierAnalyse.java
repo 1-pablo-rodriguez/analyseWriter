@@ -1,10 +1,12 @@
 package MEPTL;
 
+import java.io.IOException;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import cXML.Run;
 import cXML.node;
 
 /**
@@ -18,6 +20,7 @@ public class verificationFichierAnalyse {
 	public static boolean erreur = false;
 	
 	public verificationFichierAnalyse(node Sujet) throws CloneNotSupportedException{
+		
 		if(Sujet==null) {
 			System.out.println();
 	  	  	System.out.println("**-** Erreur, le fichier d'analyse est null.");
@@ -33,6 +36,25 @@ public class verificationFichierAnalyse {
 	  	  	System.out.println("**-** Erreur, le fichier d'analyse est vide.");
 	  	  	System.out.println();
 			erreur=true;
+		}
+		
+		
+		//** Verification du hash et du nom du fichier d'analyse
+		commandes.hash = String.valueOf(Run.HashNode(Sujet,0));
+		if(Sujet.getAttributs().get("analysis_filename")!=null) {
+			if(!Sujet.getAttributs().get("analysis_filename").equals(commandes.nameSujet)) {
+				commandes.MAJnameAnalysisFile=true;
+			}
+		}
+		if(Sujet.getAttributs().get("hash")==null) {
+			commandes.MAJFichierAnalyse =true;
+		}else {
+			if(!Sujet.getAttributs().get("hash").equals(commandes.hash)) {
+				commandes.MAJFichierAnalyse=true;
+			}
+		}
+		if(commandes.MAJFichierAnalyse||commandes.MAJnameAnalysisFile) {
+			messagMiseAJourFichierAnalyse(commandes.hash);
 		}
 		
 		
@@ -517,20 +539,117 @@ public class verificationFichierAnalyse {
 	
 	
 	/**
+	 * Mise à jour du hash et du nom du fichier d'analyse.</br>
+	 * @throws CloneNotSupportedException
+	 * @throws IOException
+	 */
+	public static void MiseAJourDuHash() throws CloneNotSupportedException, IOException {
+			node nodeCalculHash = meptl.chargementsujet(commandes.nameSujet, false);
+			commandes.hash = String.valueOf(Run.HashNode(nodeCalculHash,0));
+			boolean maj =false;
+			if(nodeCalculHash.getAttributs().get("hash")==null) {
+				maj=true;
+			}else {
+				if(!nodeCalculHash.getAttributs().get("hash").equals(commandes.hash)) {
+					maj=true;
+				}
+			}
+			if(nodeCalculHash.getAttributs().get("analysis_filename")==null) {
+				maj=true;
+			}else {
+				if(!nodeCalculHash.getAttributs().get("analysis_filename").equals(commandes.nameSujet)) {
+					maj=true;
+				}
+			}
+			if(maj) {
+				int nbespace = "───────────────────────────┐".length()-commandes.hash.length();
+				if (nbespace<0) nbespace=1;
+				int nbespace2 = "────────────────────────────────┐".length()-commandes.hash.length();
+				if (nbespace2<0) nbespace2=1;
+				System.out.println("\t\t┌────────────────────────────────────────────────────────────────────┐");
+				System.out.println("\t\t│  Le hash du code de l'évaluation ou le nom du fichier d'analyse    │");
+				System.out.println("\t\t│  a été mise à jour dans le fichier d'analyse.                      │");
+				System.out.println("\t\t│                                                                    │");
+				System.out.println("\t\t│  Le hash du code de l'évaluation est : " + commandes.hash + new String(new char[nbespace]).replace("\0", " ") +"│" );  
+				System.out.println("\t\t│  Le nom du fichier d'analyse est : " + commandes.nameSujet + new String(new char[nbespace2]).replace("\0", " ") +"│" );
+				System.out.println("\t\t│                                                                    │");
+				System.out.println("\t\t└────────────────────────────────────────────────────────────────────┘");
+				System.out.println();
+				nodeCalculHash.getAttributs().put("hash", commandes.hash);
+				nodeCalculHash.getAttributs().put("analysis_filename", commandes.nameSujet);
+				Run.ecritureNodeEnXML(nodeCalculHash,commandes.nameSujet.substring(0, commandes.nameSujet.lastIndexOf(".")),commandes.pathDestination,false,"Sujet");
+			}else {
+				System.out.println("\t\t┌─────────────────────────────────────────────────────┐");
+				System.out.println("\t\t│  Vérification du hash et du nom du fichier correct. │");
+				System.out.println("\t\t└─────────────────────────────────────────────────────┘");
+				System.out.println();
+			}
+			//** bye bye analyseWriter
+			commandes.clotureApplication();
+	}
+	
+	
+	static public void ecrisLeFichierSujetXML() throws CloneNotSupportedException, IOException {
+		node nodeSujet = meptl.chargementsujet(commandes.nameSujet, true);
+		nodeSujet.getAttributs().put("hash", String.valueOf(Run.HashNode(nodeSujet, 0)));
+		nodeSujet.getAttributs().put("analysis_filename", "sujet.xml");
+		Run.ecritureNodeEnXML(nodeSujet, "sujet","",false, "Sujet");  // ecriture du node sujet. Uniquement les nodes évalués.
+		System.out.println("\t\t┌─────────────────────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│  Un nouveau fichier \"sujet.xml\" a été créé dans le dossier courant. │");
+		System.out.println("\t\t└─────────────────────────────────────────────────────────────────────┘");
+		System.out.println();
+		//** bye bye analyseWriter
+		commandes.clotureApplication();
+	}
+	
+	
+	static private void messagMiseAJourFichierAnalyse(String hash) {
+		int nbespace = "───────────────────────────┐".length()-hash.length();
+		if (nbespace<0) nbespace=1;
+		int nbespace2 = "──────────────────────────────┐".length()-hash.length();
+		if (nbespace2<0) nbespace2=1;
+		System.out.println("\t\t┌────────────────────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│  A la fin de l'évaluation.                                         │");
+		System.out.println("\t\t│  Il y aura une mise à jour du fichier d'analyse.                   │");
+		System.out.println("\t\t│                                                                    │");
+		System.out.println("\t\t│  Le hash du code de l'évaluation est : " + hash + new String(new char[nbespace]).replace("\0", " ") +"│" );  
+		System.out.println("\t\t│  Le nom du fichier d'analyse est : " + commandes.nameSujet + new String(new char[nbespace2]).replace("\0", " ") +"│" );
+		System.out.println("\t\t│                                                                    │");
+		System.out.println("\t\t└────────────────────────────────────────────────────────────────────┘");
+		System.out.println();
+	}
+	
+	static public void messagMiseAJourFichierAnalyseAprèsAnalyse() {
+		int nbespace = "───────────────────────────┐".length()-commandes.hash.length();
+		if (nbespace<0) nbespace=1;
+		int nbespace2 = "──────────────────────────────┐".length()-commandes.hash.length();
+		if (nbespace2<0) nbespace2=1;
+		System.out.println("\t\t┌────────────────────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│  Mise à jour du fichier d'analyse                                  │");
+		System.out.println("\t\t│                                                                    │");
+		System.out.println("\t\t│  Le hash du code de l'évaluation est : " + commandes.hash + new String(new char[nbespace]).replace("\0", " ") +"│" );  
+		System.out.println("\t\t│  Le nom du fichier d'analyse est : " + commandes.nameSujet + new String(new char[nbespace2]).replace("\0", " ") +"│" );
+		System.out.println("\t\t│                                                                    │");
+		System.out.println("\t\t└────────────────────────────────────────────────────────────────────┘");
+		System.out.println();
+	}
+	
+	
+	/**
 	 * Clôture lorsqu'il y a une erreur dans le fichier d'analyse
 	 */
 	public static void clotureWithErrorInanalyzeFile() {
 		System.out.println();
-		System.out.println("\t\t┌─────────────────────────────────────────────┐");
-		System.out.println("\t\t│  You made a mistake in your analyze file.   │");
-		System.out.println("\t\t│                                             │");
-		System.out.println("\t\t│  You need to look for your error in the     │");
-		System.out.println("\t\t│  analyze file. Read the information above.  │");		
-		System.out.println("\t\t│                                             │");
-		System.out.println("\t\t│  (')_(')                                    │");
-		System.out.println("\t\t│  ( `.° )                                    │");
-		System.out.println("\t\t│  (\")__(\") .. see you soon, analyseWriter.   │");
-		System.out.println("\t\t└─────────────────────────────────────────────┘");
+		System.out.println("\t\t┌───────────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│  Vous avez commis une erreur dans le fichier d'analyse.   │");
+		System.out.println("\t\t│                                                           │");
+		System.out.println("\t\t│  Vous devez rechercher l'erreur dans le fichier           │");
+		System.out.println("\t\t│  d'analyse. Lisez les informations au-dessus.             │");		
+		System.out.println("\t\t│                                                           │");
+		System.out.println("\t\t│  (')_(')                                                  │");
+		System.out.println("\t\t│  ( `.° )                                                  │");
+		System.out.println("\t\t│  (\")__(\") .. à bientôt, analyseWriter.                  │");
+		System.out.println("\t\t└───────────────────────────────────────────────────────────┘");
 		System.out.println();
 		System.exit(0);
 	}
