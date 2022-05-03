@@ -7,13 +7,6 @@ import java.util.regex.Pattern;
 
 import cXML.node;
 
-/**
- * 
- * @author pablo rodriguez
- * 
- * Vérification du fichier d'analyse.
- *
- */
 public class verificationFichierAnalyse {
 	public static boolean erreur = false;
 	
@@ -208,12 +201,7 @@ public class verificationFichierAnalyse {
 		}
 	}
 	
-	
-	/**
-	 * Vérification des nodes autorisé dans la structure.
-	 * @param structure
-	 * @throws CloneNotSupportedException
-	 */
+
 	private static void verifNodeAutoriserDansStructure(node structure) throws CloneNotSupportedException {
    		
 		String nom = structure.getNomElt();
@@ -453,11 +441,7 @@ public class verificationFichierAnalyse {
 	
 	
 	
-	/**
-	 * Avertissement sur le style de paragraphe par défaut.</br>
-	 * Ne doit pas contenir lattribut evaleur=true.
-	 * @param styleParagraphDefault
-	 */
+	
 	private static void verifcationStyleParagraphDefaut(node styleParagraphDefault) {
 		if(styleParagraphDefault.getAttributs().get("evaluer")!=null) {
 			if(styleParagraphDefault.getAttributs().get("evaluer").equals("true")) {
@@ -480,7 +464,7 @@ public class verificationFichierAnalyse {
 		if( nod.getContenu().contains("‽") ) {
 			if(nod.getAttributs().get("evaluer")!=null) {
 				if(nod.getAttributs().get("evaluer").equalsIgnoreCase("true")) {
-					if( outils.NetTexte(nod.getContenu().get(0)).length() <=3 ) {
+					if( outils.NetTexte(nod.getContenu()).length() <=3 ) {
 						System.out.println();
 			  			System.out.println("**-** ERREUR dans le fichier d'analyse, le node \"" + nod.getNomElt() + "\".");
 			  			System.out.println("Le contenu du node est :  " + nod.getContenu());
@@ -498,7 +482,7 @@ public class verificationFichierAnalyse {
 			 Pattern pt = Pattern.compile("[1-9]$|[1-9][0-9]$");
 		     Matcher match= pt.matcher(A);
 		     if(match.find()) {
-		    	if(nod.retourneLesContenusEnfants("").contains("‽")){
+		    	if(nod.retourneLesContenusEnfants(nod, "").contains("‽")){
 			    	System.out.println();
 		  			System.out.println("**-** ERREUR dans le fichier d'analyse, le node \"" + nod.getNomElt() + "\".");
 		  			System.out.println("Le node possède l'attribut allContent=\"" + nod.getAttributs().get("allContent")+"\"");
