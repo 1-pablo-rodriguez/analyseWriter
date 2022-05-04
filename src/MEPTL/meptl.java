@@ -843,13 +843,18 @@ public class meptl {
 			fichier.getAttributs().put("dossier", a.getLectDossiers().getEC().getListeNomDossier().get(i));
 		}
 		
-		
-		fichier.getAttributs().put("producteur", nodmeta.retourneFirstEnfantsByName("meta:generator").getContenu().get(0));
-		fichier.getAttributs().put("dureeEdition", nodmeta.retourneFirstEnfantsByName("meta:editing-duration").getContenu().get(0));
-		fichier.getAttributs().put("dateModification", nodmeta.retourneFirstEnfantsByName("dc:date").getContenu().get(0));
-		
+		if(!nodmeta.retourneFirstEnfantsByName("meta:generator").getContenu().isEmpty()) {
+			fichier.getAttributs().put("producteur", nodmeta.retourneFirstEnfantsByName("meta:generator").getContenu().get(0));
+		}
+		if(!nodmeta.retourneFirstEnfantsByName("meta:editing-duration").getContenu().isEmpty()) {
+			fichier.getAttributs().put("dureeEdition", nodmeta.retourneFirstEnfantsByName("meta:editing-duration").getContenu().get(0));
+		}
+		if(!nodmeta.retourneFirstEnfantsByName("dc:date").getContenu().isEmpty()) {
+			fichier.getAttributs().put("dateModification", nodmeta.retourneFirstEnfantsByName("dc:date").getContenu().get(0));
+		}
+				
 		fichier.getNodes().add(nodmeta);
-		nodstylepage = a.numeroteNameNode(nodstylepage, "0");		//ajoute les numéros d'index et des attrinuts
+		nodstylepage = a.numeroteNameNode(nodstylepage, "0");		//ajoute les numéros d'index et des attributs
 		fichier.getNodes().add(nodstylepage);
 		fichier.getNodes().add(nodstyleparagraphe);
 //		fichier.getNodes().add(nodstyleformatage);
@@ -859,14 +864,14 @@ public class meptl {
 		
 		fichier.getNodes().add(nodsection);
 		fichier.getNodes().add(nodtableaux);
-		nodbiblio = a.numeroteNameNode(nodbiblio, "0");			//ajoute les numéros d'index et des attributs
+		//nodbiblio = a.numeroteNameNode(nodbiblio, "0");			//ajoute les numéros d'index et des attributs
 		fichier.getNodes().add(nodbiblio);
-		nodtable = a.numeroteNameNode(nodtable, "0");				//ajoute les numéros d'index et des attributs
+		//nodtable = a.numeroteNameNode(nodtable, "0");				//ajoute les numéros d'index et des attributs
 		fichier.getNodes().add(nodtable);
-		nodillustrations = a.numeroteNameNode(nodillustrations, "0"); //ajoute les numéros d'index et des attributs
+		//nodillustrations = a.numeroteNameNode(nodillustrations, "0"); //ajoute les numéros d'index et des attributs
 		fichier.getNodes().add(nodillustrations);
 		
-		structurePage = a.numeroteNameNode(structurePage,"0");    //ajoute les numéros d'index et des attributs 
+		structurePage = a.numeroteNameNode(structurePage,"");    //ajoute les numéros d'index et des attributs 
 		fichier.getNodes().add(structurePage);
 		
 		fichier.getNodes().add(nodhistorique);

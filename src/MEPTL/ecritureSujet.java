@@ -54,6 +54,9 @@ public class ecritureSujet {
 		nod.getAttributs().put("auteur", "votre nom et prénom");
 				nod.setContenu("Commentaire sur cet exercice.-NewLine-Seconde ligne de commentaire.");
 		nod.getAttributs().remove("dossier");
+		b = nod.retourneFirstEnfantsByName("office:meta").retourneFirstEnfantsByName("meta:generator");
+		if(b!=null) if(!b.getContenu().isEmpty()) { nod.getAttributs().put("producteur", b.getContenu().get(0));}else {nod.getAttributs().put("producteur", "");}
+
 		
 		//
 		//metadonnées
@@ -282,50 +285,30 @@ public class ecritureSujet {
 			no.get(j).getAttributs().put("evaluer", "false");
 			no.get(j).getAttributs().put("titre", "");
 			no.get(j).getAttributs().put("styletitre", "nostyle");
-			ArrayList<node> no1 = no.get(j).getNodes();
-			for(int k=0 ; k < no1.size(); k++) {
-				no1.get(k).getAttributs().put("evaluer", "false");
-				if(listeDesNodesAvecEvalNode(no1.get(k).getNomElt())) no1.get(k).getAttributs().put("evalNameNode", "0");
-				if(listeDesNodesSautEtTitre(no1.get(k).getNomElt())) {no1.get(k).getAttributs().put("saut", "false"); no1.get(k).getAttributs().put("titre", ""); no1.get(k).getAttributs().put("styletitre", "nostyle");}
-				if(listeDesNodesRechercheIndex(no1.get(k).getNomElt())) {no1.get(k).getAttributs().put("recherche_index", "false"); no1.get(k).getAttributs().put("recherche_contenu_exact", "false");}
-				if(listeDesNodesAnalyseStyle(no1.get(k).getNomElt())) no1.get(k).getAttributs().put("analyseStyle", "false");
-				if(listeDesNodesAllContent(no1.get(k).getNomElt())) no1.get(k).getAttributs().put("allContent", "strict0");
-				
-				
-				ArrayList<node> no2 = no1.get(k).getNodes();
-				for(int l=0 ; l < no2.size(); l++) {
-					no2.get(l).getAttributs().put("evaluer", "false");
-					if(listeDesNodesAvecEvalNode(no2.get(l).getNomElt())) no2.get(l).getAttributs().put("evalNameNode", "0");
-					if(listeDesNodesSautEtTitre(no2.get(l).getNomElt())) {no2.get(l).getAttributs().put("saut", "false"); no2.get(l).getAttributs().put("titre", "");no2.get(l).getAttributs().put("styletitre", "nostyle");}
-					if(listeDesNodesRechercheIndex(no2.get(l).getNomElt())) {no2.get(l).getAttributs().put("recherche_index", "false"); no2.get(l).getAttributs().put("recherche_contenu_exact", "false");}
-					if(listeDesNodesAnalyseStyle(no2.get(l).getNomElt())) no2.get(l).getAttributs().put("analyseStyle", "false");
-					if(listeDesNodesAllContent(no2.get(l).getNomElt())) no2.get(l).getAttributs().put("allContent", "strict0");
-					
-					ArrayList<node> no3 = no2.get(l).getNodes();
-					for(int m=0 ; m < no3.size(); m++) {
-						no3.get(m).getAttributs().put("evaluer", "false");
-						if(listeDesNodesAvecEvalNode(no3.get(m).getNomElt())) no3.get(m).getAttributs().put("evalNameNode", "0");
-						if(listeDesNodesSautEtTitre(no3.get(m).getNomElt())) {no3.get(m).getAttributs().put("saut", "false"); no3.get(m).getAttributs().put("titre", "");no3.get(m).getAttributs().put("styletitre", "nostyle");}
-						if(listeDesNodesRechercheIndex(no3.get(m).getNomElt())) {no3.get(m).getAttributs().put("recherche_index", "false"); no3.get(m).getAttributs().put("recherche_contenu_exact", "false");}
-						if(listeDesNodesAnalyseStyle(no3.get(m).getNomElt())) no3.get(m).getAttributs().put("analyseStyle", "false");
-						if(listeDesNodesAllContent(no3.get(m).getNomElt())) no3.get(m).getAttributs().put("allContent", "strict0");
-												
-						ArrayList<node> no4 = no3.get(m).getNodes();
-						for(int n=0 ; n < no4.size(); n++) {
-							no4.get(n).getAttributs().put("evaluer", "false");
-							if(listeDesNodesAvecEvalNode(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("evalNameNode", "strict0");
-							if(listeDesNodesSautEtTitre(no4.get(n).getNomElt())) {no4.get(n).getAttributs().put("saut", "false"); no4.get(n).getAttributs().put("titre", "");no4.get(n).getAttributs().put("styletitre", "nostyle");}
-							if(listeDesNodesRechercheIndex(no4.get(n).getNomElt())) {no4.get(n).getAttributs().put("recherche_index", "false"); no4.get(n).getAttributs().put("recherche_contenu_exact", "false");}
-							if(listeDesNodesAnalyseStyle(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("analyseStyle", "false");
-							if(listeDesNodesAllContent(no4.get(n).getNomElt())) no4.get(n).getAttributs().put("allContent", "strict0");
-							
-						}
-					}
-				}
+			if(!no.get(j).getNodes().isEmpty()) {
+				nextNodesEnfants(no.get(j).getNodes());
 			}
+		
 		}
 		noPourPlacerEvaluer.getNodes().addAll(no);
 		return noPourPlacerEvaluer;
+	}
+	
+	
+	private static void nextNodesEnfants(ArrayList<node> no) {
+		for(int k=0 ; k < no.size(); k++) {
+			if(no.get(k)!=null) {
+				no.get(k).getAttributs().put("evaluer", "false");
+				if(listeDesNodesAvecEvalNode(no.get(k).getNomElt())) no.get(k).getAttributs().put("evalNameNode", "0");
+				if(listeDesNodesSautEtTitre(no.get(k).getNomElt())) {no.get(k).getAttributs().put("saut", "false"); no.get(k).getAttributs().put("titre", ""); no.get(k).getAttributs().put("styletitre", "nostyle");}
+				if(listeDesNodesRechercheIndex(no.get(k).getNomElt())) {no.get(k).getAttributs().put("recherche_index", "false"); no.get(k).getAttributs().put("recherche_contenu_exact", "false");}
+				if(listeDesNodesAnalyseStyle(no.get(k).getNomElt())) no.get(k).getAttributs().put("analyseStyle", "false");
+				if(listeDesNodesAllContent(no.get(k).getNomElt())) no.get(k).getAttributs().put("allContent", "strict0");
+				if(!no.get(k).getNodes().isEmpty()) {
+					nextNodesEnfants(no.get(k).getNodes());
+				}	
+			}
+		}
 	}
 	
 	
@@ -361,6 +344,7 @@ public class ecritureSujet {
 	 */
 	private static boolean listeDesNodesRechercheIndex(String nameNode) {
 		if(nameNode.contains("text:")) return true;
+		if(nameNode.equals("draw:text-box")) return true;
 		return false;
 	}
 	
