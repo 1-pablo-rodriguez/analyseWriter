@@ -10,19 +10,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
+//import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+//import java.time.LocalDateTime;
+//import java.time.format.DateTimeFormatter;
+//import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.regex.Matcher;
+//import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,7 +44,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class meptl {
 	
 	static DecimalFormat df = new DecimalFormat("###.##");
-	static String patch ="";
+	//static String patch ="";
 	static double progression = 1.0;
 	
 	/**
@@ -60,11 +60,11 @@ public class meptl {
 	public static void main(String[] args) throws ParserConfigurationException, SAXException, IOException, CloneNotSupportedException, InterruptedException {
 		System.getProperty("file.encoding","UTF-8");
 				
-		patch = System.getProperty("user.dir");
+		commandes.path = System.getProperty("user.dir");
 //		patch = "C:/Users/pabr6/OneDrive/Desktop/Nouveau dossier";
 		
 		//** les commandes
-		new commandes(args,patch);
+		new commandes(args,commandes.path);
 		
 		//** Node pour le chargement du node sujet (fichier d'analyse)
 		node nodeSujet = new node();
@@ -81,7 +81,7 @@ public class meptl {
 			//*****************************************************
 			//** Lancement des lectures des dossiers ou fichiers **
 			//*****************************************************
-			a = new Run(patch,commandes.Profil, commandes.fichierStudentMoodle);
+			a = new Run(commandes.path,commandes.Profil, commandes.fichierStudentMoodle);
 			
 			
 			//*****************************************
@@ -102,7 +102,7 @@ public class meptl {
 		//** Calcul le hash du fichier d'analyse et met à jour le fichier d'analyse **
 		//****************************************************************************
 		if(commandes.calculLeHashDuFichier) {
-			verificationFichierAnalyse.MiseAJourDuHash();
+			verificationFichierAnalyse.MiseAJourFichierAnalyse();
 		}
 		
 		
@@ -280,7 +280,8 @@ public class meptl {
 					//****************************
 					if(!commandes.sansFeeback) {
 						if(!commandes.zipfeedback) {
-							feedback(ana, verif); //classique directement dans le répertoire
+							//feedback(ana, verif); //classique directement dans le répertoire
+							feedbacks.feedback(ana,verif, false);
 						}
 						if(commandes.zipfeedback) { // Dans une archive pour Moodle
 							try {
@@ -291,7 +292,8 @@ public class meptl {
 									if(zip.getAttributs().get("size")!=null)size = Long.valueOf(zip.getAttributs().get("size"));
 									if(zip.getAttributs().get("name")!=null)nameZip = zip.getAttributs().get("name");
 								}
-									a.AddStreamToZip(feedbackForZip(ana, verif), retourneLeNomDuFeedback(a.getLectDossiers().getEC().getListeNomFichierFeedBack().get(i),ana, verif),size,nameZip);
+									//a.AddStreamToZip(feedbackForZip(ana, verif), retourneLeNomDuFeedback(a.getLectDossiers().getEC().getListeNomFichierFeedBack().get(i),ana, verif),size,nameZip);
+									a.AddStreamToZip(feedbacks.feedback(ana, verif, true), retourneLeNomDuFeedback(a.getLectDossiers().getEC().getListeNomFichierFeedBack().get(i),ana, verif),size,nameZip);
 							} catch (ZipException e) {
 								e.printStackTrace();
 							} catch (IOException e) {
@@ -337,7 +339,7 @@ public class meptl {
 		//** Mise à jour du fichier d'analyse **
 		//**************************************
 		if(commandes.MAJFichierAnalyse||commandes.MAJnameAnalysisFile) {
-			Run.ecritureNodeEnXML(nodeSujet, commandes.nameSujet.substring(0, commandes.nameSujet.lastIndexOf(".")), commandes.pathDestination, false, "sujet");
+			verificationFichierAnalyse.MiseAJourFichierAnalyse();
 			verificationFichierAnalyse.messagMiseAJourFichierAnalyseAprèsAnalyse();
 		}
 
@@ -900,7 +902,7 @@ public class meptl {
 		}catch (Exception e) {
 			System.out.println();
 			System.out.println("** Le fichier \"" + nameSujet + "\" n'est pas dans le dossier courant.");
-			System.out.println("** Le dossier courant de l'application est : " + patch);
+			System.out.println("** Le dossier courant de l'application est : " + commandes.path);
 			System.out.println();
 		}
 		
@@ -1589,15 +1591,22 @@ public class meptl {
 		nodpages.setNomElt("pages");
 		nodpages.setAttributs(nodSujetPage.getAttributs());
 		
-		//ajoute l'identifiant pour le menu
+		//***************************************
+		//** Ajoute l'identifiant pour le menu **
+		//***************************************
 		if(a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "style:page")!=null) {
 			nodpages.getAttributs().put("id", a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "style:page").getAttributs().get("id"));
 		}
 
-		//initialise les points
+		//***************************
+		//** initialise les points **
+		//***************************
 		outils.initiliseLesPoints();
 		
-		for(int i = 0 ; i < nodSujetPage.getNodes().size(); i++) { //niveau 1
+		//****************************************
+		//** Analyse tous les style:master-page **
+		//****************************************
+		for(int i = 0 ; i < nodSujetPage.getNodes().size(); i++) {
 			
 			if(nodSujetPage.getNodes().get(i).getNomElt().equals("style:master-page")) {
 				int pointDebut = outils.getPointsClass();
@@ -1614,105 +1623,19 @@ public class meptl {
 				// analyse les attributs du node style:master-page
 				page = analyseLesAttributEtContenuDuNode(pageStudent, pageSujet, page, "ana:page",pageSujet.getNomElt());
 	
-				// Les autres nodes enfants
+				//**********************************************
+				//** Analyse de tous les autres nodes enfants **
+				//**********************************************
 				page=analyseLesNodesEnants.nodeNext(page, "ana:page", pageStudent, null, null, pageSujet, nodSujetParagraphes, nodStudentParagraphes, a);
-				
-				
-				
-//				// les enfants du premier niveau du node
-//				for(int j = 0 ; j < pageSujet.getNodes().size();j++ ) { //niveau 2
-//						
-//				node nodSujet = pageSujet.getNodes().get(j);
-//				String nameNode = nodSujet.getNomElt();
-//				page = addNodeSautTitre(nodSujet, page); // ajoute des saut de page s'il y a des sauts avec des titres
-//
-//				//recherche le node correspondant de l'étudiant
-//				node nodStudent = null;	
-//				if(pageStudent!=null) if(pageStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
-//					nodStudent = pageStudent.retourneFirstEnfantsByName(nameNode);
-//				}
-//				
-//				
-//				// analyse attribut et contenu des enfants du premier niveau
-//				page = analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, page, "ana:page",pageSujet.getNodes().get(j).getNomElt());
-//				
-//					
-//					for(int k = 0 ; k < nodSujet.getNodes().size();k++) { //niveau 3
-//						// C'est à ce niveau que se trouve les nodes text:p dans les entêtes et les pieds de page
-//						
-//						node nod2Sujet = nodSujet.getNodes().get(k);
-//						String nameNode2 = nod2Sujet.getNomElt();
-//						page = addNodeSautTitre(nod2Sujet, page); // ajoute des sauts s'il y a des sauts avec des titres
-//
-//						
-//						//recherche le node correspondant de l'étudiant
-//						node nod2Student = null;	
-//						if(nodStudent!=null) if(nodStudent.containElementByName(nameNode2)) {
-//								nod2Student = rechercherUnNodeStudent.rechercheLeNodeEnCascade(nameNode2,nod2Sujet,null,null,nodStudent,a);
-//						}
-//						
-//					
-//						//analyse style du paragraphe
-//						if(nod2Sujet.getAttributs().get("analyseStyle")!=null) {
-//							if(nod2Sujet.getAttributs().get("analyseStyle").equals("true") && nod2Sujet.getNomElt().equals("text:p")) {
-//								page = analyseStyle(page, nod2Sujet, nod2Student, nodSujetParagraphes, nodStudentParagraphes);
-//							}
-//						}
-//						
-//						
-//						// analyse attribut et contenu des enfants du second niveau
-//						page = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, page, "ana:page",nodSujet.getNodes().get(k).getNomElt() );
-//						
-//						
-//						for(int l = 0 ; l < nod2Sujet.getNodes().size();l++) { //niveau 4
-//							//C'est à ce niveau qi'il peut y avoir des nodes text:tab ou text:span
-//							
-//							node nod3Sujet = nod2Sujet.getNodes().get(l);
-//							String nameNode3 = nod3Sujet.getNomElt();
-//							//page = addNodeSautTitre(nod3Sujet, page);
-//							
-//							//recherche du node correspondant de l'étudiant
-//							node nod3Student = null;
-//							
-//							if(nodStudent!=null) if(nodStudent.containElementByName(nameNode3)) {
-//									nod3Student = rechercherUnNodeStudent.rechercheLeNodeEnCascade(nameNode3,nod3Sujet,null,nodStudent,nod2Student,a);
-//								}
-//						
-//							// analyse attribut et contenu des enfants du troisième niveau
-//							page = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, page, "ana:page", nod2Sujet.getNodes().get(l).getNomElt());
-//						
-//						
-//							for(int m = 0 ; m < nod3Sujet.getNodes().size();m++) { //niveau 5
-//								node nod4Sujet = nod3Sujet.getNodes().get(m);
-//								String nameNode4 = nod4Sujet.getNomElt();
-//								
-//								//recherche du node correspondant de l'étudiant
-//								node nod4Student = null;	
-//								
-//								if(nodStudent!=null) if(nodStudent.containElementByName(nameNode4)) {
-//										nod4Student = rechercherUnNodeStudent.rechercheLeNodeEnCascade(nameNode4,nod4Sujet,nodStudent,nod2Student,nod3Student,a);
-//								}
-//								
-//								// analyse attribut et contenu des enfants du troisième niveau
-//								page = analyseLesAttributEtContenuDuNode(nod4Student, nod4Sujet, page, "ana:page", nod3Sujet.getNodes().get(m).getNomElt());
-//							
-//							} // fin du niveau 5
-//						
-//						} // fin du niveau 4
-//	
-//					} // fin du niveau 3
-//						
-//				} // fin du niveau 2
 					
 				page.getAttributs().put("point", String.valueOf(outils.getPointsClass()-pointDebut));	
 				page.getAttributs().put("pointTotal", String.valueOf(outils.getPointTotal()-pointTotalDebut));
 				nodpages.getNodes().add(page);
 
-
-			} // fin du "style:master-page"
+			}
 			
 			
-		} // fin du niveau 1
+		}
 		
 		nodpages.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
 		nodpages.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
@@ -2804,36 +2727,6 @@ public class meptl {
 		return retour;
 	}
   	
- 
-  	
-  	
-//  	/**
-//  	 * Analyse toutes les contenus des enfants et les compares.<br>
-//  	 * Utiliser pour les nodes <text:p><br>
-//  	 * <br>
-//  	 * @param Student
-//  	 * @param Sujet
-//  	 * @param retour
-//  	 * @param nameItem
-//  	 * @param nameElt
-//  	 * @param a
-//  	 * @return
-//  	 */
-//  	private static node analyseLesContenusDesArrayList(ArrayList<node> Student, ArrayList<node> Sujet, node retour, String nameItem, String nameElt, Run a) {
-//  		
-//  		for(int i = 0 ; i < Sujet.size();i++) {
-//  			String sujetContent = Sujet.get(i).retourneLesContenusEnfants("");
-//  			node StudentNode = a.retourneFirstNodeByFindContent2(Student, outils.withoutCodeAndPoint(sujetContent),commandes.tolerance_characters,commandes.tolerance_text);
-//  			String studentContent = "null";
-//  			if(StudentNode!=null) studentContent = outils.NetChiffreALaFin(StudentNode.retourneLesContenusEnfants(""));
-//  			
-//  			node item = retourneNoteAvecResultatsAnalyse(nameItem, "Contenu textuel", studentContent, sujetContent,nameElt);
-//  			retour.getNodes().add(item);
-// 			
-//  		}
-//  		
-//  		return retour;
-//  	}
   	
 	
 	/**
@@ -2861,7 +2754,8 @@ public class meptl {
  	
  	/**
   	 * Analyse tous les attributs des nodes <style:style>.<br>
-	 * Formatage direct des styles de paragraphe. Les attributs doivent contenir le code ‼.<br>
+	 * Formatage direct des styles de paragraphe.</br>
+	 * Les attributs doivent contenir le code ‼.<br>
 	 * <br>
 	 * @param nodeStudent : le node de l'étudiant.
 	 * @param sujet : le node du sujet
@@ -2968,516 +2862,8 @@ public class meptl {
 
 		return retour;
 	}
- 	
-	
- 	/**
- 	 * Création du feedback (compte-rendu) au format HTML.<br>
- 	 * <br>
- 	 * @param nodana
- 	 * @throws IOException
- 	 */
- 	private static void feedback(node nodana, node verif) throws IOException {
- 		
- 		System.getProperty("file.encoding","UTF-8");
- 		Date aujourdhui = new Date();
- 		
- 		int number_match = 2;
- 		int mini_modification = 0;
-		boolean plagiat = false;
-		boolean copiercoller = false;
-		boolean pasAssezDeModification =false;
-		boolean baremeABC = false;
-		boolean producteur = false;
-		String SuiteBureautique = "";
-		String VersionLibreOffice = "";
-		String SystemeStudent = "";
-		node verifStudent = null;
- 		if((commandes.verifHisto||commandes.verifHisto2)&&commandes.ecritNoteCSV&&commandes.fourniCSV) {
- 			if(verif.getAttributs().get("number_match") != null) number_match = Integer.valueOf(verif.getAttributs().get("number_match"));
- 			if(verif.getAttributs().get("mini_number_modification") != null) mini_modification = Integer.valueOf(verif.getAttributs().get("mini_number_modification"));
- 			
- 			//verification du plagiat
-			verifStudent = verif.retourneFirstNodeByNameAndAttributValue("fichier", "dossier", nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"));
- 			if(verifStudent != null) {
- 				if(verifStudent.getAttributs().get("filename").equals(nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("filename"))) {
- 					if(Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondances_consecutives"))>number_match) plagiat=true;
- 					if(!verifStudent.getAttributs().get("first_modification_identique").equals("null") && Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondances_consecutives"))>=number_match) plagiat=true;
- 					if(verifStudent.getAttributs().get("copier_coller")!=null) copiercoller=true;
- 					if(Integer.valueOf(verifStudent.getAttributs().get("nombre_modification"))<=mini_modification) pasAssezDeModification=true;
- 				}
- 			}
- 		}
- 		
- 		//BaremeABC
- 		if(nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("baremeABC")!=null) {
- 			try {
- 				baremeABC= Boolean.valueOf(nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("baremeABC"));
- 			}catch (Exception e) {
-				System.out.println("Problème avec la valeur binaire de l'attribut baremeABC.");
-			}
- 		}
- 		
- 		
- 		
- 		//nom du fichier feedback
- 		String metaS = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet");
- 		if(metaS.equals("?")) metaS = "metaSujet-inconnu";
- 		if(metaS.isEmpty()) metaS = "metaSujet-inconnu";
- 		String cheminFeedBack = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier") + "-DateLong" + aujourdhui.getTime()+"-"+metaS;
-  		if(!commandes.noNote&&!baremeABC) {
-  			if(!plagiat&&!copiercoller)cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("note") + ".html";
-  			if(plagiat) cheminFeedBack = cheminFeedBack + "- plagiat.html";
-  			if(copiercoller) cheminFeedBack = cheminFeedBack + "- copier-coller.html";
-  			if(pasAssezDeModification) cheminFeedBack = cheminFeedBack + "- pas assez de modification.html";
-  		}
-  		if(!commandes.noNote&&baremeABC) {
-  			if(!plagiat)cheminFeedBack = cheminFeedBack + "-" + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("noteABC") + ".html";
-  			if(copiercoller) cheminFeedBack = cheminFeedBack + "- copier-coller.html";
-  			if(plagiat) cheminFeedBack = cheminFeedBack + "- plagiat.html";
-  			if(pasAssezDeModification) cheminFeedBack = cheminFeedBack + "- pas assez de modification.html";
-  		}
-  		if(commandes.noNote) {
-  			cheminFeedBack = cheminFeedBack + ".html";
-  		}
- 		
-  		// Chemin vers le dossier de destination
-		Path outputFilePath = Paths.get(patch + "/" + cheminFeedBack);
-		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(patch + "/" + commandes.pathDestination+ "/" + cheminFeedBack);
-		
-			
-		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
-		
-		//ajoute le chemin vers le feedback dans le node d'analyse
-		nodana.retourneFirstEnfantsByName("ouverture").getAttributs().put("feedback", patch + "/" + cheminFeedBack);
-		
-		// auteur du sujet
-		String auteurSujet = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("auteur");
-		if(auteurSujet==null) auteurSujet="";
-		
-		
-		//création du feedback
-		fichier.write("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\r"
-				+ "<html>\r"
-				+ "<head>\r"
-				+ "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>\r"
-				+ "<title>Analyse LibreOffice Calc</title>\r");
-		
-		fichier.write("<meta name=\"generator\" content=\"analyseWriter V3.5.0\"/>"
-				+ "<meta name=\"author\" content=\"Pablo Rodriguez\"/>"
-				+ "<meta name=\"created\" content=\""+  nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("date") +"\"/>");
 
-		
-		fichier.write("<style type=\"text/css\">" 
-				+ "p.pablo { margin-bottom: 0.25cm; line-height: 100%; background: transparent;  margin-left: 1cm; }"
-				+ ".header {background-color: #f1f1f1;padding: 30px;text-align:center;}"
-				+ "h1 { margin-bottom: 0.25cm; background: transparent;}"
-				+ "h2 {color: blue;font-size:22pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;  margin-right: 10px; text-decoration: underline overline;}"
-				+ "h3 {font-size:18pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;}"
-				+ "header.h1.western { font-family: \"Arial\"; font-size: 18pt; font-weight: bold; backgroung: #adff2f;}"
-				+ ".header p {color:blue; font-size:30px;}"
-				+ ".triche {background: #AA0000;padding-top: 5px;padding-right: 5px;padding-bottom: 5px;padding-left: 5px;width=80%;margin-top:18px; box-shadow: 5px 10px 18px #800000;}"
-				+ ".triche p {color:white; font-size:16px;margin-left:10px;margin-bottom:6px;margin-top:6px}"
-				+ ".header h4 {text-align:left;font-family: \"Arial\"; font-size: 12pt; font-weight: bold; line-height: 110%;}"
-				+ "h4.western { font-family: \"Arial\"; font-size: 14pt; font-style: italic; font-weight: bold; line-height: 40%}"
-				+ "a:link { color: #000099; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
-				+ "a:visited { color: #990000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
-				+ "hr { display: block; margin-top: 0.5em; margin-bottom: 8em; margin-left: 2em; margin-right: 2em; border-style: inset; border-width: 4px;}"
-				+ "spanpablo { float: right; width: 8em; font-size: 250%; font-family: algerian, courier; line-height: 80%; margin-right: 1%; color: red; text-align: center}"
-				+ "p.p1{margin-bottom: 0cm; margin-top: 0cm; line-height: 100%; background: transparent;  margin-left: 0cm; white-space: pre;}"
-				+ "p.p8{font-size:14pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 8pt;  margin-right: 10px;}"
-				+ "p.p9{font-size:16pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 40pt;  margin-right: 0cm;text-decoration: underline overline wavy blue;text-shadow: 0px 1px #101010;}"
-				+ "p.p10{font-size:12pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 30pt;  margin-right: 0cm;text-decoration: underline overline wavy red;}"
-				+ ".commentaire{margin-left: 0px; margin-bottom: 24px; margin-top: 24px;font-size:1.4rem}"
-				+ "p.p2{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; line-height: 115%}"
-				+ "p.p3{margin-left: 20px; line-height: 100%; border: 1px solid black; background-color: lightcyan; margin-right: 10px;  }"
-				+ "p.p4{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; margin-right: 4px; line-height: 115%; background: darkblue; color:white; font-size: 20px; white-space: pre;}"
-				+ "p.p5{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: red; color:white; font-size: 20px;}"
-				+ "p.p6{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: beige; color:darkcyan; font-size: 20px;}"
-				+ "p.p7{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: #7FFF00; font-size: 20px;}"
-				+ "#navbar {overflow: hidden;background-color: #333;width:100%;box-shadow: 5px 10px 8px #888888;}"
-				+ "#navbar a {float: left;display: block;color: #f2f2f2;text-align: center;padding: 14px 16px;text-decoration: none;font-size: 17px;}"
-				+ "#navbar a:hover {background-color: #ddd;color: black;}" 
-				+ "#navbar a.active {background-color: #4CAF50;color: white;margin-left:0px;}"
-				+ "#navbar a.active2 {background-color: #FF8050;color: white;margin-left:0px;}"
-				+ "#navbar a.active3 {background-color: #5080FF;color: white;margin-left:0px;}"
-				+ "div.sticky {position: fixed;top: 0;width: 100%;}"
-				+ ".sticky + .content {padding-top: 60px;}"
-				+ "#navbar2 {overflow: hidden; background-color: #333;}"
-				+ "#navbar2 a {float: left; font-size: 18px; color: white; text-align: center; padding: 16px 18px; text-decoration: none;}"
-				+ ".dropdown {position: relative; display: inline-block;}"
-				+ ".dropbtn:hover, .dropbtn:focus { background-color: #3e8e41;}"
-				+ ".dropdown-content {display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);}"
-				+ ".dropdown-content a {color: black; padding: 12px 16px; text-decoration: none; display: block;}"
-				+ ".dropdown-content a:hover {background-color: #f1f1f1}"
-				+".show {display:block;}"
-				+ "#myDropdown {background-color: #508050;color: black;}"
-				+ ".menu-box{display: none;}"
-				+ ".menuopen{display: block;}"
-				+ ".tooltip {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip .tooltiptext {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -30px; width: 260px;top: 100%;left: 10%;}"
-				+ ".tooltip .tooltiptext::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
-				+ ".tooltip:hover .tooltiptext {visibility: visible;}"
-				+ ".tooltip1 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip1 .tooltiptext1 {visibility: hidden;background-color: #0000CC;color: #fff;text-align: left;border-radius: 4px;padding: 10px;position: absolute;z-index: 1;margin-left: -40px; width: 280px;top: 100%;left: 10%;}"
-				+ ".tooltip1 .tooltiptext1::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent #0000CC transparent;}"
-				+ ".tooltip1:hover .tooltiptext1 {visibility: visible;}"
-				+ ".tooltip2 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 8px;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
-				+ ".tooltip2 .tooltiptext2::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
-				+ ".tooltip2:hover .tooltiptext2 {visibility: visible;}"
-				+ ".footer {position: fixed;left: 0;bottom: 0;width: 100%;background-color: white;color: black;text-align: center;}"
-				+"</style>");
-		
-		fichier.write("</head>\r");
-		fichier.write("<body lang=\"fr-FR\" link=\"#000080\" vlink=\"#800000\" dir=\"ltr\">\r");
-		
-		fichier.write("<div class=\"header\">");
-		if(!commandes.noLogo) {
-			if(!commandes.newLogo) {
-				fichier.write("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-						"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br>"+HTML.imgLogos()+"</font></h1>\r");
-			}else {
-				
-				fichier.write("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-						"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br>"+commandes.contenuFichierSVG+"</font></h1>\r");
-			}
-		}else {
-			fichier.write("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br></font></h1>\r");
-		}
-		
-		
-		//Note
-		node ouvre = nodana.retourneFirstEnfantsByName("ouverture");
-		String noteFrom = ouvre.getAttributs().get("notefrom");
-		node notation = nodana.retourneFirstEnfantsByName("bodyetnotation");
-		if(!baremeABC) {
-			if(noteFrom ==null) noteFrom="20";
-			if(!commandes.noNote) if(!plagiat&&!copiercoller&&!pasAssezDeModification) fichier.write("<p><spanpablo>" +  notation.getAttributs().get("note") + " / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-			if(plagiat || copiercoller || pasAssezDeModification) {
-				notation.getAttributs().put("note","0");
-				String AffichageNote = "";
-				if(plagiat) AffichageNote = " Plagiat ";
-				if(copiercoller) AffichageNote = AffichageNote + " Copier Coller ";
-				if(pasAssezDeModification) AffichageNote = AffichageNote + " Pas assez de modification ";
-				if(!commandes.noNote) fichier.write("<p><spanpablo>" + AffichageNote +  " / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-			}
-		}else {
-			String imageNote = "";
-			switch (notation.getAttributs().get("noteABC")) {
-			case "A":
-				imageNote = HTML.NoteA();
-				break;
-			case "B":
-				imageNote = HTML.NoteB();
-				break;
-			case "C":
-				imageNote = HTML.NoteC();
-				break;
-			case "D":
-				imageNote = HTML.NoteD();
-				break;
-			case "E":
-				imageNote = HTML.NoteE();
-				break;
-			default:
-				imageNote = "";
-				break;
-			}
-			if(!commandes.noNote) if(!plagiat&& !copiercoller &&!pasAssezDeModification) fichier.write("<p><spanpablo>" +  imageNote +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-			if(plagiat || copiercoller || pasAssezDeModification) {
-				notation.getAttributs().put("note","0");
-				notation.getAttributs().put("noteABC","E");
-				String AffichageNote = "";
-				if(plagiat) AffichageNote = " Plagiat ";
-				if(copiercoller) AffichageNote = AffichageNote + " Copier Coller ";
-				if(pasAssezDeModification) AffichageNote = AffichageNote + " Pas assez de modification ";
-				if(!commandes.noNote) fichier.write("<p><spanpablo>" + AffichageNote + " / " + "<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-				}
-			}
-		 
-		//producteur
- 		if(ouvre.getAttributs().get("producteur")!=null) {
- 			try {
- 				producteur= true;
- 				String[] decompose = ouvre.getAttributs().get("producteur").split("/");
- 				SuiteBureautique=decompose[0];
- 				VersionLibreOffice=decompose[1].substring(0, decompose[1].lastIndexOf("$"));
- 				SystemeStudent=decompose[1].substring(decompose[1].lastIndexOf("$")+1, decompose[1].lastIndexOf(" "));
- 			}catch (Exception e) {
-				System.out.println("Problème avec l'attribut producteur.");	
-			}finally {
-				
-			}
- 		}
-		
-		//informations
-		// date d'analyse, dossier étudiant, auteur sujet, date de la dernière modificatio, lien, algorithme
-		DateFormat mediumDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
-		LocalDateTime dateTimeModif = null;
-		String dateModif="";
-		if(ouvre.getAttributs().get("dateModification")!=null) if(!ouvre.getAttributs().get("dateModification").isEmpty()) {
-			try {
-				dateTimeModif = LocalDateTime.parse(ouvre.getAttributs().get("dateModification"));
-				dateModif = dateTimeModif.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
-			}catch (Exception e) {
-				System.out.println(e.toString());
-			}
-		}
-		
-		fichier.write("<h4>Date d'analyse : "+ mediumDateFormat.format(aujourdhui) + "<br>");
-	    fichier.write("Dossier étudiant : <span style=\"color:blue\">"+ ouvre.getAttributs().get("dossier") + "</span><br>");
-	    fichier.write("Nom du fichier : <span style=\"color:blue\">"+ ouvre.getAttributs().get("filename") + "</span><br>");
-	    fichier.write("Hash du fichier analyse : <span style=\"color:red\">"+ ouvre.getAttributs().get("hash") + "</span><br>");
-	    fichier.write("Nom du fichier analyse : <span style=\"color:red\">"+ commandes.nameSujet + "</span><br>");
-	    fichier.write("Date de la dernière modification du fichier analysé : <span style=\"color:purple\">"+ dateModif + "</span><br>");
-	    fichier.write("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br>"));
-	    if(producteur) {
-	    	fichier.write("Suite de bureautique : <span style=\"color:coral;\">"+ SuiteBureautique + "</span>");
-	  	    fichier.write(" - Version : <span style=\"color:coral;\">"+ VersionLibreOffice + "</span>");
-	  	    fichier.write(" - Système : <span style=\"color:coral;\">"+ SystemeStudent + "</span><br>");
-	    }
-	    if(!auteurSujet.isEmpty()) {fichier.write("Sujet créé par : <span style=\"color:indigo\">"+ auteurSujet + "</span><br>");}else {fichier.write("<br>");}
-		
-	    if(!commandes.noNote) {
-	    	if(!plagiat&&!copiercoller&&!pasAssezDeModification) fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br>");
-	    	 if(plagiat || copiercoller || pasAssezDeModification) {
-	 			String AffichageNote = "";
-	 			if(plagiat) AffichageNote = " Plagiat ";
-	 			if(copiercoller) AffichageNote = AffichageNote + " Copier Coller ";
-	 			if(pasAssezDeModification) AffichageNote = AffichageNote + " Pas assez de modification ";
-	 			fichier.write("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : "+ AffichageNote +"<br>");
-	 		}
-	    }
-	        
-	    if(baremeABC) {
-	    	fichier.append("Barème : <div class=\"tooltip\"><font color=\"#0000ff\">0% → E → " + Math.round(Double.valueOf(notation.getAttributs().get("BorneE"))*100) + "% → D → " +  Math.round(Double.valueOf(notation.getAttributs().get("BorneD"))*100) + "% → C → " + Math.round(Double.valueOf(notation.getAttributs().get("BorneC"))*100) + "% → B → " + Math.round(Double.valueOf(notation.getAttributs().get("BorneB"))*100) + "% → A → 100%</font><span class=\"tooltiptext\">Prendre en compte le coefficient de progression.</span></div>");
-	    }
-	    
-	    if(ouvre.getAttributs().get("link_sujet")!=null) {
-			String linkSujet= ouvre.getAttributs().get("link_sujet");
-			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.write("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br>");}
-		}
-  	  if(ouvre.getAttributs().get("link_help")!=null) {
-			String linkSujet= ouvre.getAttributs().get("link_help");
-			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.write("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le support</a><br>");}
-		}
-  	    
-  	    fichier.write("<br><font color=\"#808080\" style=\"font-size: 9pt\"><i>Analysé avec la version : " + commandes.version + "<br></h4>");
-		
-		
-	    fichier.write(HTML.SautLigne());
-	   
-	    fichier.write("</div>");
-	   
-	    //ajoute le menu 
-	    fichier.write(HTML.getHTMLmenu(nodana.retourneFirstEnfantsByName("menu").getNodes()));
-	   
-		
-		//Les erreurs
-		node errors = nodana.retourneFirstEnfantsByName("erreurs");
-	    if(Boolean.valueOf(errors.getAttributs().get("oneError"))) {
-	    	fichier.write(HTML.SautLigne());
-    		if(Boolean.valueOf(errors.getAttributs().get("manqueHistorique"))) fichier.write(HTML.Paragraph_classp5("ERREUR : Il n'y a pas d'historique des modifications dans ce fichier. Le fichier n'a pas été modifié ou il a été réinitialisé.<br>L'analyse de l'historique n'a pas pu se faire."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueCreationDate"))) fichier.write(HTML.Paragraph_classp5("ERREUR : La date de création du fichier a été supprimée. Le fichier a été réïnitialisé ou ce n'est pas le fichier du sujet."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueValeurCreationDate"))) fichier.write(HTML.Paragraph_classp5("ERREUR : Ce n'est pas la bonne date de création du fichier. Le fichier a été réïnitialisé ou ce n'est pas fichier du sujet."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueMetaSujet"))) fichier.write(HTML.Paragraph_classp5("ERREUR : La méta donnée \"Sujet\" dans les propriétés du fichier a été supprimée ou renommée."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueValeurMetaSujet"))) fichier.write(HTML.Paragraph_classp5("ERREUR : La valeur de la méta donnée \"Sujet\" dans les propriétés du fichier n'est pas \"" + nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet"))+".\"");
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueInitialCreator"))) fichier.write(HTML.Paragraph_classp5("ERREUR : La valeur de la méta donnée \"initial-creator\" dans les propriétés du fichier n'est pas \"" + nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("Initial_Creator"))+".\"");
-	    }
-	    
-	    //plagiat
-	    if(plagiat) if(verifStudent!=null){
-	    	fichier.append(HTML.SautLigne());
-	    	ArrayList<node> correspondance = verifStudent.retourneEnfantsByName("correspondance", new ArrayList<node>());
-	    	for(int j = 0 ; j < correspondance.size();j++) {
-	    		fichier.write(HTML.Paragraph_classp5("Correspondance à la date=" + correspondance.get(j).getAttributs().get("date") + " avec l'étudiant " + correspondance.get(j).getAttributs().get("Avec_etudiant")));
-	    	}
-	    }
-	    
-		
-		 fichier.write(HTML.SautLigne());
-		 
-		 
-		 if(!plagiat && !copiercoller && !pasAssezDeModification) {
-			 
-			 //Ajoute de commentaire de l'exercice
-			 fichier.write(HTML.H3(nodana.getContenu().get(0)).replace("-NewLine-", "<br>"));
-			 
-			 fichier.write(HTML.SautLigne());
-			 
-			    
-			 fichier.write(HTML.H2("Synthèse"));
-			
-			 fichier.write(HTML.TableEnteteTableurSynthese());
-			 String IdError = ""; // permet de récupérer les id des menus ou la proportion correct est NaN. (à cause de l'attribut analyseStyle=true)
-			 for(int k = 0 ; k < nodana.getNodes().size();k++) {
-				 if(nodana.getNodes().get(k).getAttributs().get("addmenu")!=null) if(nodana.getNodes().get(k).getAttributs().get("addmenu").equals("true")) {
-				    if(!nodana.getNodes().get(k).getAttributs().get("proportioncorrect").equals("NaN")) {
-				    	 fichier.write(HTML.TablePointsSyntheseStyle(nodana.getNodes().get(k).getAttributs().get("titre"),Double.valueOf(nodana.getNodes().get(k).getAttributs().get("proportioncorrect")),nodana.getNodes().get(k).getAttributs().get("pointtotal") + " pt",nodana.getNodes().get(k).getAttributs().get("pointgagner") + " pt", nodana.getNodes().get(k).getAttributs().get("poids"),nodana.getNodes().get(k).getAttributs().get("id")));
-				    }else {
-				    	IdError = IdError + nodana.getNodes().get(k).getAttributs().get("id");
-				    }
-				 }
-			  }
-			
-			 
-			 //Metadonnées
-			 if(nodana.retourneFirstEnfantsByName("meta")!=null) if(nodana.retourneFirstEnfantsByName("meta").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("meta")));
-			 }
-			 
-			 //style de paragraphe
-			 if(nodana.retourneFirstEnfantsByName("paragraphs")!=null) if(nodana.retourneFirstEnfantsByName("paragraphs").isClose()) {
-				 //il est possible qu'il n'y ai aucun point car passé par analyseStyle dans le node structurepage
-				 if(!IdError.contains(nodana.retourneFirstEnfantsByName("paragraphs").getAttributs().get("id"))){
-					 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("paragraphs"))); 
-				 }
-			 }
-			 
-			 //pages
-			 if(nodana.retourneFirstEnfantsByName("pages")!=null) if(nodana.retourneFirstEnfantsByName("pages").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("pages")));
-			 }
-			 
-			 //sequences
-			 if(nodana.retourneFirstEnfantsByName("sequences")!=null) if(nodana.retourneFirstEnfantsByName("sequences").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("sequences")));
-			 }	 
 
-			 //numerotationchapitre
-			 if(nodana.retourneFirstEnfantsByName("numerotationchapitre")!=null) if(nodana.retourneFirstEnfantsByName("numerotationchapitre").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("numerotationchapitre")));
-			 }
-			 
-			 //frames
-			 if(nodana.retourneFirstEnfantsByName("frames")!=null) if(nodana.retourneFirstEnfantsByName("frames").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("frames")));
-			 }
-			 
-			//section
-			 if(nodana.retourneFirstEnfantsByName("sections")!=null) if(nodana.retourneFirstEnfantsByName("sections").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("sections")));
-			 }	
-			 
-			 //tableau
-			 if(nodana.retourneFirstEnfantsByName("tableaux")!=null) if(nodana.retourneFirstEnfantsByName("tableaux").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("tableaux")));
-			 }
-			 
-			 //bibliographies
-			 if(nodana.retourneFirstEnfantsByName("bibliographies")!=null) if(nodana.retourneFirstEnfantsByName("bibliographies").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("bibliographies")));
-			 }		 
-			 
-			 //tablematieres
-			 if(nodana.retourneFirstEnfantsByName("tablematieres")!=null) if(nodana.retourneFirstEnfantsByName("tablematieres").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("tablematieres")));
-			 }			
-
-			 //tableillustrations
-			 if(nodana.retourneFirstEnfantsByName("tableillustrations")!=null) if(nodana.retourneFirstEnfantsByName("tableillustrations").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("tableillustrations")));
-			 }
-			 
-			 //structurepage
-			 if(nodana.retourneFirstEnfantsByName("structurepage")!=null) if(nodana.retourneFirstEnfantsByName("structurepage").isClose()) {
-				 fichier.write(HTML.Table(nodana.retourneFirstEnfantsByName("structurepage")));
-			 }		
-			 
-		 }
-		 
-		 
-		 		 
-		 fichier.write("<p><br><br></p>");
-		 
-		 //footer
-		 fichier.write("<div class=\"footer\">");
-		 fichier.write("<font color=\"#808080\" style=\"font-size: 10pt\"><i>analyseWriter - P. Rodriguez (université d'Artois) - Licence GPL v3.0 - analysé avec la version : " + commandes.version + " - ");
-		 fichier.write("Fichier d'analyse créé avec la version : " + ouvre.getAttributs().get("version") + "</i></font>");  
-		 fichier.write("</div>");
-		
-		 fichier.write("<script>");
-		   
-	   	   fichier.write("window.onscroll = function() {myFunction()};");
-		   fichier.write("var navbar = document.getElementById(\"navbar\");");
-		   fichier.write("var sticky = navbar.offsetTop;");
-
-		   fichier.write("function myFunction() {");
-		   fichier.write("if (window.pageYOffset >= sticky) {");
-		   fichier.write("navbar.classList.add(\"sticky\")");
-		   fichier.write("} else {");
-		   fichier.write("navbar.classList.remove(\"sticky\");");
-		   fichier.write("}");
-		   fichier.write("}\r\n");
-		   
-		   
-		   fichier.write("function toggleMenu() {\r\n" + 
-		   		"  var menuBox0 = document.getElementById('menu-box0');    \r\n" + 
-		   		"  var menuBox1 = document.getElementById('menu-box1');    \r\n" + 
-		   		"  var menuBox2 = document.getElementById('menu-box2');    \r\n" +
-		   		"  var menuBox3 = document.getElementById('menu-box3');    \r\n" +
-		   		"  var menuBox4 = document.getElementById('menu-box4');    \r\n" +
-		   		"  var menuBox5 = document.getElementById('menu-box5');    \r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox0.style.display == \"block\") { " + 
-		   		"    menuBox0.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox0.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox1.style.display == \"block\") { " + 
-		   		"    menuBox1.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox1.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox2.style.display == \"block\") { " + 
-		   		"    menuBox2.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox2.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox3.style.display == \"block\") { " + 
-		   		"    menuBox3.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox3.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"  if(menuBox4.style.display == \"block\") { " + 
-		   		"    menuBox4.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox4.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"  if(menuBox5.style.display == \"block\") { " + 
-		   		"    menuBox5.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox5.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"}");
-		   
-		fichier.write("</script>");
-		   
-		fichier.write("</body>\r");
-		fichier.write("</html>");
-			
-		fichier.close();
-		
-		//affichage dans la console
-		if(!commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + cheminFeedBack);
-		if(commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + commandes.pathDestination + "\\" + cheminFeedBack);
-				
-		
- 	}
-
- 	
  	/**
  	 * Retourne le nom du fichier de l'étudiant pour le Zip de Moodle.<br>
  	 * </br>
@@ -3550,491 +2936,10 @@ public class meptl {
  		
  		return filename + cheminFeedBack;
  	}
- 	
+
  	
  	/**
- 	 * Ecriture du fichier pour l'archive ZIP de moodle.<br>
- 	 * <br>
- 	 * @param nodana
- 	 * @return
- 	 * @throws IOException
- 	 */
- 	private static StringBuilder feedbackForZip(node nodana, node verif) throws IOException {
- 		
- 		System.getProperty("file.encoding","UTF-8");
- 		Date aujourdhui = new Date();
- 		
- 		int number_match = 2;
- 		int mini_modification = 0;
-		boolean plagiat = false;
-		boolean copiercoller = false;
-		boolean pasAssezDeModification =false;
-		boolean baremeABC = false;
-		boolean producteur =false;
-		String SuiteBureautique="";
-		String	VersionLibreOffice="";
-		String SystemeStudent="";
-		node verifStudent = null;
- 		if((commandes.verifHisto||commandes.verifHisto2)) { //&&commandes.ecritNoteCSV&&commandes.fourniCSV
- 			if(verif.getAttributs().get("number_match") != null) number_match = Integer.valueOf(verif.getAttributs().get("number_match"));
- 			if(verif.getAttributs().get("mini_number_modification") != null) mini_modification = Integer.valueOf(verif.getAttributs().get("mini_number_modification"));
- 			
- 			//verification du plagiat
-			verifStudent = verif.retourneFirstNodeByNameAndAttributValue("fichier", "dossier", nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"));
- 			if(verifStudent != null) {
- 				if(verifStudent.getAttributs().get("filename").equals(nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("filename"))) {
- 					if(Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondances_consecutives"))>number_match) plagiat=true;
- 					if(!verifStudent.getAttributs().get("first_modification_identique").equals("null") && Integer.valueOf(verifStudent.getAttributs().get("nombre_correspondances_consecutives"))>=number_match) plagiat=true;
- 					if(verifStudent.getAttributs().get("copier_coller")!=null) copiercoller=true;
- 					if(Integer.valueOf(verifStudent.getAttributs().get("nombre_modification"))<=mini_modification) pasAssezDeModification=true;
- 				}
- 			}
- 		}
- 		if(nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("baremeABC")!=null) {
- 			try {
- 				baremeABC= Boolean.valueOf(nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("baremeABC"));
- 			}catch (Exception e) {
- 				System.out.println("Problème avec la valeur binaire de l'attribut baremeABC.");
-			}
- 		}
- 		
-		
-		StringBuilder fichier = new StringBuilder();
-		
-		//ajoute le chemin vers le feedback dans le node d'analyse
-		//nodana.retourneFirstEnfantsByName("ouverture").getAttributs().put("feedback", patch + "/" + cheminFeedBack);
-		
-		// auteur du sujet
-		String auteurSujet = nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("auteur");
-		if(auteurSujet==null) auteurSujet="";
-		
-		
-		//création du feedback
-		fichier.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\r"
-				+ "<html>\r"
-				+ "<head>\r"
-				+ "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>\r"
-				+ "<title>Analyse LibreOffice Calc</title>\r");
-		
-		fichier.append("<meta name=\"generator\" content=\"AnalyseMEPTL V1.0\"/>"
-				+ "<meta name=\"author\" content=\"Pablo Rodriguez\"/>"
-				+ "<meta name=\"created\" content=\""+  nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("date") +"\"/>");
-
-		
-		fichier.append("<style type=\"text/css\">" 
-				+ "p.pablo { margin-bottom: 0.25cm; line-height: 100%; background: transparent;  margin-left: 1cm; }"
-				+ ".header {background-color: #f1f1f1;padding: 30px;text-align:center;}"
-				+ "h1 { margin-bottom: 0.25cm; background: transparent;}"
-				+ "h2 {color: blue;font-size:22pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;  margin-right: 10px; text-decoration: underline overline;}"
-				+ "h3 {font-size:18pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;}"
-				+ "header.h1.western { font-family: \"Arial\"; font-size: 18pt; font-weight: bold; backgroung: #adff2f;}"
-				+ ".header p {color:blue; font-size:30px;}"
-				+ ".triche {background: #AA0000;padding-top: 5px;padding-right: 5px;padding-bottom: 5px;padding-left: 5px;width=80%;margin-top:18px; box-shadow: 5px 10px 18px #800000;}"
-				+ ".triche p {color:white; font-size:16px;margin-left:10px;margin-bottom:6px;margin-top:6px}"
-				+ ".header h4 {text-align:left;font-family: \"Arial\"; font-size: 12pt; font-weight: bold; line-height: 110%;}"
-				+ "h4.western { font-family: \"Arial\"; font-size: 14pt; font-style: italic; font-weight: bold; line-height: 40%}"
-				+ "a:link { color: #000099; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
-				+ "a:visited { color: #99000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
-				+ "hr { display: block; margin-top: 0.5em; margin-bottom: 8em; margin-left: 2em; margin-right: 2em; border-style: inset; border-width: 4px;}"
-				+ "spanpablo { float: right; width: 8em; font-size: 250%; font-family: algerian, courier; line-height: 80%; margin-right: 1%; color: red; text-align: center}"
-				+ "p.p1{margin-bottom: 0cm; margin-top: 0cm; line-height: 100%; background: transparent;  margin-left: 0cm; white-space: pre;}"
-				+ "p.p8{font-size:14pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 8pt;  margin-right: 10px;}"
-				+ "p.p9{font-size:16pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 40pt;  margin-right: 0cm;text-decoration: underline overline wavy blue;text-shadow: 0px 1px #101010;}"
-				+ "p.p10{font-size:12pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 30pt;  margin-right: 0cm;text-decoration: underline overline wavy red;}"
-				+ ".commentaire{margin-left: 0px; margin-bottom: 24px; margin-top: 24px;font-size:1.4rem}"
-				+ "p.p2{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; line-height: 115%}"
-				+ "p.p3{margin-left: 20px; line-height: 100%; border: 1px solid black; background-color: lightcyan; margin-right: 10px;  }"
-				+ "p.p4{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; margin-right: 4px; line-height: 115%; background: darkblue; color:white; font-size: 20px; white-space: pre;}"
-				+ "p.p5{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: red; color:white; font-size: 20px;}"
-				+ "p.p6{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: beige; color:darkcyan; font-size: 20px;}"
-				+ "p.p7{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: #7FFF00; font-size: 20px;}"
-				+ "#navbar {overflow: hidden;background-color: #333;width:100%;box-shadow: 5px 10px 8px #888888;}"
-				+ "#navbar a {float: left;display: block;color: #f2f2f2;text-align: center;padding: 14px 16px;text-decoration: none;font-size: 17px;}"
-				+ "#navbar a:hover {background-color: #ddd;color: black;}" 
-				+ "#navbar a.active {background-color: #4CAF50;color: white;margin-left:0px;}"
-				+ "#navbar a.active2 {background-color: #FF8050;color: white;margin-left:0px;}"
-				+ "#navbar a.active3 {background-color: #5080FF;color: white;margin-left:0px;}"
-				+ "div.sticky {position: fixed;top: 0;width: 100%;}"
-				+ ".sticky + .content {padding-top: 60px;}"
-				+ "#navbar2 {overflow: hidden; background-color: #333;}"
-				+ "#navbar2 a {float: left; font-size: 18px; color: white; text-align: center; padding: 16px 18px; text-decoration: none;}"
-				+ ".dropdown {position: relative; display: inline-block;}"
-				+ ".dropbtn:hover, .dropbtn:focus { background-color: #3e8e41;}"
-				+ ".dropdown-content {display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);}"
-				+ ".dropdown-content a {color: black; padding: 12px 16px; text-decoration: none; display: block;}"
-				+ ".dropdown-content a:hover {background-color: #f1f1f1}"
-				+".show {display:block;}"
-				+ "#myDropdown {background-color: #508050;color: black;}"
-				+ ".menu-box{display: none;}"
-				+ ".menuopen{display: block;}"
-				+ ".tooltip {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip .tooltiptext {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -30px; width: 260px;top: 100%;left: 10%;}"
-				+ ".tooltip .tooltiptext::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
-				+ ".tooltip:hover .tooltiptext {visibility: visible;}"
-				+ ".tooltip1 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip1 .tooltiptext1 {visibility: hidden;background-color: #0000CC;color: #fff;text-align: left;border-radius: 4px;padding: 10px;position: absolute;z-index: 1;margin-left: -40px; width: 280px;top: 100%;left: 10%;}"
-				+ ".tooltip1 .tooltiptext1::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent #0000CC transparent;}"
-				+ ".tooltip1:hover .tooltiptext1 {visibility: visible;}"
-				+ ".tooltip2 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-				+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 8px;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
-				+ ".tooltip2 .tooltiptext2::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
-				+ ".tooltip2:hover .tooltiptext2 {visibility: visible;}"
-				+ ".footer {position: fixed;left: 0;bottom: 0;width: 100%;background-color: white;color: black;text-align: center;}"
-				+"</style>");
-		
-		fichier.append("</head>\r");
-		fichier.append("<body lang=\"fr-FR\" link=\"#000080\" vlink=\"#800000\" dir=\"ltr\">\r");
-		
-		fichier.append("<div class=\"header\">");
-		if(!commandes.noLogo) {
-			if(!commandes.newLogo) {
-				fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-						"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br>"+HTML.imgLogos()+"</font></h1>\r");
-			}else {
-				
-				fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-						"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br>"+commandes.contenuFichierSVG+"</font></h1>\r");
-			}
-		}else {
-			fichier.append("<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - AnalyseWriter - format ODF 1.2<br></font></h1>\r");
-		}
-		
-		//Note
-		node ouvre = nodana.retourneFirstEnfantsByName("ouverture");
-		String noteFrom = ouvre.getAttributs().get("notefrom");
-		node notation = nodana.retourneFirstEnfantsByName("bodyetnotation");
-		if(!baremeABC) {
-			if(noteFrom ==null) noteFrom="20";
-			if(!commandes.noNote) if(!plagiat&&!copiercoller&&!pasAssezDeModification) fichier.append("<p><spanpablo>" +  notation.getAttributs().get("note") + " / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-			if(plagiat || copiercoller || pasAssezDeModification) {
-				notation.getAttributs().put("note","0");
-				String AffichageNote = "";
-				if(plagiat) AffichageNote = " Plagiat ";
-				if(copiercoller) AffichageNote = AffichageNote + " Copier Coller ";
-				if(pasAssezDeModification) AffichageNote = AffichageNote + " Pas assez de modification ";
-				if(!commandes.noNote) fichier.append("<p><spanpablo>" + AffichageNote +  " / " + noteFrom +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-			}
-		}else {
-			String imageNote = "";
-			switch (notation.getAttributs().get("noteABC")) {
-			case "A":
-				imageNote = HTML.NoteA();
-				break;
-			case "B":
-				imageNote = HTML.NoteB();
-				break;
-			case "C":
-				imageNote = HTML.NoteC();
-				break;
-			case "D":
-				imageNote = HTML.NoteD();
-				break;
-			case "E":
-				imageNote = HTML.NoteE();
-				break;
-			default:
-				imageNote = "";
-				break;
-			}
-			if(!commandes.noNote) if(!plagiat&& !copiercoller &&!pasAssezDeModification) fichier.append("<p><spanpablo>" +  imageNote +"<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-			if(plagiat || copiercoller || pasAssezDeModification) {
-				notation.getAttributs().put("note","0");
-				notation.getAttributs().put("noteABC","E");
-				String AffichageNote = "";
-				if(plagiat) AffichageNote = " Plagiat ";
-				if(copiercoller) AffichageNote = AffichageNote + " Copier Coller ";
-				if(pasAssezDeModification) AffichageNote = AffichageNote + " Pas assez de modification ";
-				if(!commandes.noNote) fichier.append("<p><spanpablo>" + AffichageNote + " / " + "<br><span style=\"color:blue; font-size:30px\">"+ ouvre.getAttributs().get("metaSujet") +"</span></spanpablo></p>\r");
-			}
-		}
-		
-		
-		//producteur
- 		if(ouvre.getAttributs().get("producteur")!=null) {
- 			try {
- 				producteur= true;
- 				String[] decompose = ouvre.getAttributs().get("producteur").split("/");
- 				SuiteBureautique=decompose[0];
- 				VersionLibreOffice=decompose[1].substring(0, decompose[1].lastIndexOf("$"));
- 				SystemeStudent=decompose[1].substring(decompose[1].lastIndexOf("$")+1, decompose[1].lastIndexOf(" "));
- 			}catch (Exception e) {
-				System.out.println("Problème avec l'attribut producteur.");
-				
-			}finally {
-				
-			}
- 		}
-		 
-		//informations
-		// date d'analyse, dossier étudiant, auteur sujet, date de la dernière modificatio, lien, algorithme
-		DateFormat mediumDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
-		LocalDateTime dateTimeModif = null;
-		String dateModif="";
-		if(!ouvre.getAttributs().get("dateModification").isEmpty()) {
-			try {
-				dateTimeModif = LocalDateTime.parse(ouvre.getAttributs().get("dateModification"));
-				dateModif = dateTimeModif.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM));
-			}catch (Exception e) {
-				System.out.println(e.toString());
-			}
-		}
-		
-		fichier.append("<h4>Date d'analyse : "+ mediumDateFormat.format(aujourdhui) + "<br>");
-	    fichier.append("Dossier étudiant : <span style=\"color:blue\">"+ ouvre.getAttributs().get("dossier") + "</span><br>");
-	    fichier.append("Nom du fichier : <span style=\"color:blue\">"+ ouvre.getAttributs().get("filename") + "</span><br>");
-	    fichier.append("Hash du fichier analyse : <span style=\"color:red\">"+ ouvre.getAttributs().get("hash") + "</span><br>");
-	    fichier.append("Nom du fichier analyse : <span style=\"color:red\">"+ commandes.nameSujet + "</span><br>");
-	    fichier.append("Date de la dernière modification du fichier analysé : <span style=\"color:purple\">"+ dateModif + "</span><br>");
-	    fichier.append("Durée d'édition du fichier analysé : <span style=\"color:purple\">"+ traitementDureeEdition(ouvre.getAttributs().get("dureeEdition") + "</span><br>"));
-	    if(producteur) {
-	    	fichier.append("Suite de bureautique : <span style=\"color:coral;\">"+ SuiteBureautique + "</span>");
-	  	    fichier.append(" - Version : <span style=\"color:coral;\">"+ VersionLibreOffice + "</span>");
-	  	    fichier.append(" - Système : <span style=\"color:coral;\">"+ SystemeStudent + "</span><br>");
-	    }
-	    if(!auteurSujet.isEmpty()) {fichier.append("Sujet créé par : <span style=\"color:indigo\">"+ auteurSujet + "</span><br>");}else {fichier.append("<br>");}
-		   
-	    if(!commandes.noNote) {
-	    	if(!plagiat&&!copiercoller&&!pasAssezDeModification) fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : " + nodana.retourneFirstEnfantsByName("bodyetnotation").getAttributs().get("proportioncorrect") +"<br>");
-	    	 if(plagiat || copiercoller || pasAssezDeModification) {
-	 			String AffichageNote = "";
-	 			if(plagiat) AffichageNote = " Plagiat ";
-	 			if(copiercoller) AffichageNote = AffichageNote + " Copier Coller ";
-	 			if(pasAssezDeModification) AffichageNote = AffichageNote + " Pas assez de modification ";
-	 			fichier.append("Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + ouvre.getAttributs().get("progression") + "</font><span class=\"tooltiptext\">Explication<br>"+ HTML.imgProgression() +"</span></div> - Pourcentage correcte : "+ AffichageNote +"<br>");
-	 		}
-	    }
-    	    
-	    if(baremeABC) {
-	    	fichier.append("Barème : <div class=\"tooltip\"><font color=\"#0000ff\">0% → E → " + Math.round(Double.valueOf(notation.getAttributs().get("BorneE"))*100) + "% → D → " +  Math.round(Double.valueOf(notation.getAttributs().get("BorneD"))*100) + "% → C → " + Math.round(Double.valueOf(notation.getAttributs().get("BorneC"))*100) + "% → B → " + Math.round(Double.valueOf(notation.getAttributs().get("BorneB"))*100) + "% → A → 100%</font><span class=\"tooltiptext\">Prendre en compte le coefficient de progression.</span></div>");
-	    }
-	    
-	    
-	    if(ouvre.getAttributs().get("link_sujet")!=null) {
-			String linkSujet= ouvre.getAttributs().get("link_sujet");
-			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.append("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le sujet</a><br>");}
-		}
-  	  if(ouvre.getAttributs().get("link_help")!=null) {
-			String linkSujet= ouvre.getAttributs().get("link_help");
-			Matcher m = Pattern.compile("^https://.{1,}|^http://.{1,}").matcher(linkSujet);
-			if(m.find()) {fichier.append("<br><a href=\"" + linkSujet + "\" target=\"_blank\">Lien vers le support</a><br>");}
-		}
-  	    
-  	    fichier.append("<br><font color=\"#808080\" style=\"font-size: 9pt\"><i>Analysé avec la version : " + commandes.version + "<br></h4>");
-		
-		
-	    fichier.append(HTML.SautLigne());
-	   
-	    fichier.append("</div>");
-	   
-	    //ajoute le menu 
-	    fichier.append(HTML.getHTMLmenu(nodana.retourneFirstEnfantsByName("menu").getNodes()));
-	   
-		
-		//Les erreurs
-		node errors = nodana.retourneFirstEnfantsByName("erreurs");
-	    if(Boolean.valueOf(errors.getAttributs().get("oneError"))) {
-	    	fichier.append(HTML.SautLigne());
-    		if(Boolean.valueOf(errors.getAttributs().get("manqueHistorique"))) fichier.append(HTML.Paragraph_classp5("ERREUR : Il n'y a pas d'historique des modifications dans ce fichier. Le fichier n'a pas été modifié ou il a été réïnitialisé.<br>L'analyse de l'historique n'a pas pu se faire."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueCreationDate"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La date de création du fichier a été supprimée. Le fichier a été réïnitialisé ou ce n'est pas le fichier du sujet."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueValeurCreationDate"))) fichier.append(HTML.Paragraph_classp5("ERREUR : Ce n'est pas la bonne date de création du fichier. Le fichier a été réïnitialisé ou ce n'est pas le fichier du sujet."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueMetaSujet"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La méta donnée \"Sujet\" dans les propriétés du fichier a été supprimée ou renommée."));
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueValeurMetaSujet"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La valeur de la méta donnée \"Sujet\" dans les propriétés du fichier n'est pas \"" + nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("metaSujet"))+".\"");
-	    	if(Boolean.valueOf(errors.getAttributs().get("manqueInitialCreator"))) fichier.append(HTML.Paragraph_classp5("ERREUR : La valeur de la méta donnée \"initial-creator\" dans les propriétés du fichier n'est pas \"" + nodana.retourneFirstEnfantsByName("ouverture").getAttributs().get("Initial_Creator"))+".\"");   
-	    }
-	    
-	    //plagiat
-	    if(plagiat) if(verifStudent!=null){
-	    	fichier.append(HTML.SautLigne());
-	    	ArrayList<node> correspondance = verifStudent.retourneEnfantsByName("correspondance", new ArrayList<node>());
-	    	for(int j = 0 ; j < correspondance.size();j++) {
-	    		fichier.append(HTML.Paragraph_classp5("Correspondance à la date=" + correspondance.get(j).getAttributs().get("date") + " avec l'étudiant " + correspondance.get(j).getAttributs().get("Avec_etudiant")));
-	    	}
-	    }
-	    
-	    
-	    fichier.append(HTML.SautLigne());
-	    
-		if(!plagiat && !copiercoller && !pasAssezDeModification) {
-			
-			 //Ajoute de commentaire de l'exercice
-			 fichier.append(HTML.H3(nodana.getContenu().get(0)).replace("-NewLine-", "<br>"));
-			 
-			 fichier.append(HTML.SautLigne());
-			 
-			    
-			 fichier.append(HTML.H2("Synthèse"));
-			
-			 fichier.append(HTML.TableEnteteTableurSynthese());
-			 String IdError = ""; // permet de récupérer les id des menu ou la proportioncorrect est NaN. (à cause de l'attribut analyseStyle=true)
-			 for(int k = 0 ; k < nodana.getNodes().size();k++) {
-				 if(nodana.getNodes().get(k).getAttributs().get("addmenu")!=null) if(nodana.getNodes().get(k).getAttributs().get("addmenu").equals("true")) {
-				    if(!nodana.getNodes().get(k).getAttributs().get("proportioncorrect").equals("NaN")) {
-				    	 fichier.append(HTML.TablePointsSyntheseStyle(nodana.getNodes().get(k).getAttributs().get("titre"),Double.valueOf(nodana.getNodes().get(k).getAttributs().get("proportioncorrect")),nodana.getNodes().get(k).getAttributs().get("pointtotal") + " pt",nodana.getNodes().get(k).getAttributs().get("pointgagner") + " pt", nodana.getNodes().get(k).getAttributs().get("poids"),nodana.getNodes().get(k).getAttributs().get("id")));
-				    }else {
-				    	IdError = IdError + nodana.getNodes().get(k).getAttributs().get("id");
-				    }
-				 }
-			  }
-			
-			 
-			 //Metadonnées
-			 if(nodana.retourneFirstEnfantsByName("meta")!=null) if(nodana.retourneFirstEnfantsByName("meta").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("meta")));
-			 }
-			 
-			 //style de paragraphe
-			 if(nodana.retourneFirstEnfantsByName("paragraphs")!=null) if(nodana.retourneFirstEnfantsByName("paragraphs").isClose()) {
-				 //il est possible qu'il n'y ai aucun point car passé par analyseStyle dans le node structurepage
-				 if(!IdError.contains(nodana.retourneFirstEnfantsByName("paragraphs").getAttributs().get("id"))){
-					 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("paragraphs"))); 
-				 }
-			 }
-			 
-			 //pages
-			 if(nodana.retourneFirstEnfantsByName("pages")!=null) if(nodana.retourneFirstEnfantsByName("pages").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("pages")));
-			 }
-			 
-			 //sequences
-			 if(nodana.retourneFirstEnfantsByName("sequences")!=null) if(nodana.retourneFirstEnfantsByName("sequences").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("sequences")));
-			 }	 
-
-			 //numerotationchapitre
-			 if(nodana.retourneFirstEnfantsByName("numerotationchapitre")!=null) if(nodana.retourneFirstEnfantsByName("numerotationchapitre").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("numerotationchapitre")));
-			 }
-			 
-			 //frames
-			 if(nodana.retourneFirstEnfantsByName("frames")!=null) if(nodana.retourneFirstEnfantsByName("frames").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("frames")));
-			 }	 
-			 
-			//section
-			 if(nodana.retourneFirstEnfantsByName("sections")!=null) if(nodana.retourneFirstEnfantsByName("sections").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("sections")));
-			 }	
-			 
-			 //tableau
-			 if(nodana.retourneFirstEnfantsByName("tableaux")!=null) if(nodana.retourneFirstEnfantsByName("tableaux").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("tableaux")));
-			 }
-			 
-			 //bibliographies
-			 if(nodana.retourneFirstEnfantsByName("bibliographies")!=null) if(nodana.retourneFirstEnfantsByName("bibliographies").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("bibliographies")));
-			 }		 
-			 
-			 //tablematieres
-			 if(nodana.retourneFirstEnfantsByName("tablematieres")!=null) if(nodana.retourneFirstEnfantsByName("tablematieres").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("tablematieres")));
-			 }			
-
-			 //tableillustrations
-			 if(nodana.retourneFirstEnfantsByName("tableillustrations")!=null) if(nodana.retourneFirstEnfantsByName("tableillustrations").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("tableillustrations")));
-			 }
-			 
-			 //structurepage
-			 if(nodana.retourneFirstEnfantsByName("structurepage")!=null) if(nodana.retourneFirstEnfantsByName("structurepage").isClose()) {
-				 fichier.append(HTML.Table(nodana.retourneFirstEnfantsByName("structurepage")));
-			 }		 
-			 
-			 fichier.append("<p><br><br></p>");
-		}
-		
-		 
-		
-		 
-		 //footer
-		 fichier.append("<div class=\"footer\">");
-		 fichier.append("<font color=\"#808080\" style=\"font-size: 10pt\"><i>analyseWriter - P. Rodriguez (université d'Artois) - Licence GPL v3.0 - analysé avec la version : " + commandes.version + " - ");
-		 fichier.append("Fichier d'analyse créé avec la version : " + ouvre.getAttributs().get("version") + "</i></font>");  
-		 fichier.append("</div>");
-		
-		 fichier.append("<script>");
-		   
-	   	   fichier.append("window.onscroll = function() {myFunction()};");
-		   fichier.append("var navbar = document.getElementById(\"navbar\");");
-		   fichier.append("var sticky = navbar.offsetTop;");
-
-		   fichier.append("function myFunction() {");
-		   fichier.append("if (window.pageYOffset >= sticky) {");
-		   fichier.append("navbar.classList.add(\"sticky\")");
-		   fichier.append("} else {");
-		   fichier.append("navbar.classList.remove(\"sticky\");");
-		   fichier.append("}");
-		   fichier.append("}\r\n");
-		   
-		   
-		   fichier.append("function toggleMenu() {\r\n" + 
-		   		"  var menuBox0 = document.getElementById('menu-box0');    \r\n" + 
-		   		"  var menuBox1 = document.getElementById('menu-box1');    \r\n" + 
-		   		"  var menuBox2 = document.getElementById('menu-box2');    \r\n" +
-		   		"  var menuBox3 = document.getElementById('menu-box3');    \r\n" +
-		   		"  var menuBox4 = document.getElementById('menu-box4');    \r\n" +
-		   		"  var menuBox5 = document.getElementById('menu-box5');    \r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox0.style.display == \"block\") { " + 
-		   		"    menuBox0.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox0.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox1.style.display == \"block\") { " + 
-		   		"    menuBox1.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox1.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox2.style.display == \"block\") { " + 
-		   		"    menuBox2.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox2.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"\r\n"+
-		   		"  if(menuBox3.style.display == \"block\") { " + 
-		   		"    menuBox3.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox3.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"  if(menuBox4.style.display == \"block\") { " + 
-		   		"    menuBox4.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox4.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"  if(menuBox5.style.display == \"block\") { " + 
-		   		"    menuBox5.style.display = \"none\";\r\n" + 
-		   		"  }\r\n" + 
-		   		"  else {" + 
-		   		"    menuBox5.style.display = \"block\";\r\n" + 
-		   		"  }\r\n" +
-		   		"}");
-		   
-		fichier.append("</script>");
-		   
-		fichier.append("</body>\r");
-		fichier.append("</html>");
-			
-		
-		//affichage dans la console
-//		if(!commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + cheminFeedBack);
-//		if(commandes.fourniDossierDestination) System.out.println("\n\t The feedback file has been written.\n\t " + patch + "\\" + commandes.pathDestination + "\\" + cheminFeedBack);
-				
-		return fichier;
- 	}
-
- 	
- 	
- 	/**
- 	 * Affichage uniquement dans la console des erreurs
+ 	 * Affichage uniquement dans la console Les erreurs.
  	 * @param nod
  	 */
  	private static void messageSystem(node nod) {
@@ -4043,30 +2948,31 @@ public class meptl {
  		node erreurs = nod.retourneFirstEnfantsByName("erreurs");
  		boolean flagError = Boolean.valueOf(erreurs.getAttributs().get("oneError"));
  		
- 		System.out.println("\t Folder analyzed : " + ouverture.getAttributs().get("dossier"));
+ 		if(!commandes.fichierStudentMoodle) {System.out.println("\t Dossier analysé : " + ouverture.getAttributs().get("dossier"));}else {System.out.println("\t Fichier analysé : " + ouverture.getAttributs().get("dossier"));}
  		if(notation.getAttributs().get("baremeABC").equals("true")) {
- 			System.out.println("\t Grade : " +  notation.getAttributs().get("noteABC"));
+ 			System.out.println("\t Note : " +  notation.getAttributs().get("noteABC"));
  		}else {
- 			System.out.println("\t Grade : " +  notation.getAttributs().get("note") + "/" + ouverture.getAttributs().get("notefrom"));
+ 			System.out.println("\t Note : " +  notation.getAttributs().get("note") + "/" + ouverture.getAttributs().get("notefrom"));
  		}
 		
 		if(flagError) {
-			System.out.println("\t ERROR in student's file.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueHistorique"))) System.out.println("\t ERROR : There is no historic in the file. Perhaps, the file has not been modified or it has been reset by the student.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueCreationDate"))) System.out.println("\t ERROR : This is the wrong file creation date. The file has been reset or it is not the correct file.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurCreationDate"))) System.out.println("\t ERROR : This is the wrong file creation date.");
+			System.out.println("\t ERREUR dans le fichier de l'étudiant.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueHistorique"))) System.out.println("\t Erreur : Il n'y a pas d'historique dans le fichier.Peut être que le fichier n'a pas été modifié ou il a été réïnitialisé par l'étudiant.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueCreationDate"))) System.out.println("\t Erreur : Ce n'est pas la bonne date de création du fichier. Le fichier a été réïnitialisé ou ce n'est pas le fichier de l'évaluation.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurCreationDate"))) System.out.println("\t Erreur : Ce n'est pas la bonne date de création du fichier.");
 			
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueMetaSujet"))) System.out.println("\t ERROR : The metadata \"Sujet\" has been deleted in the student's file. It is impossible to identify the exercise.");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurMetaSujet"))) System.out.println("\t ERROR : The metadata value of  \"Sujet \" in the student's file is not. \"" + ouverture.getAttributs().get("metaSujet")+"\"");
-			if(Boolean.valueOf(erreurs.getAttributs().get("manqueInitialCreator"))) System.out.println("\t ERROR : The initial creator value in the student's file is wrong. \"" + ouverture.getAttributs().get("metaSujet")+"\"");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueMetaSujet"))) System.out.println("\t Erreur : La propriété personnalisé \"Sujet\" a été supprimé dans le fichier de l'étudiant.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueValeurMetaSujet"))) System.out.println("\t Erreur : La propriété personnalisé \"Sujet \" a été modifié par l'étudiant.\nLa valeur de cette propriété personnalisé dans le fichier de l'étudiant est \"" + ouverture.getAttributs().get("metaSujet")+"\".\nCe n'est pas la valeur correct.");
+			if(Boolean.valueOf(erreurs.getAttributs().get("manqueInitialCreator"))) System.out.println("\t Erreur : La propriété personnalisé \"Sujet\" n'est pas correct.");
 		}
 		System.out.println();
  	}
 
 	
 	/**
-	 * Place au node le contenu saut de ligne<br>
-	 * Et place un titre1, ou titre2, ou titre3
+	 * Ajoute dans le node nodanalyse.</br>
+	 * Le node saut et son attribut titre</br>
+	 * Et place un titre1, ou titre2, ou titre3</br>
 	 * <br>
 	 * @param nod
 	 * @return
@@ -4300,11 +3206,11 @@ public class meptl {
 	 */
 	private static void ecritureCSV(node ana) throws IOException{
 		Date aujourdhui = new Date();
-		Path outputFilePath = Paths.get(patch + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
-		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(patch +"/"+ commandes.pathDestination + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		Path outputFilePath = Paths.get(commandes.path + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(commandes.path +"/"+ commandes.pathDestination + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 			
-		if(!commandes.fourniDossierDestination) System.out.println(patch +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
-		if(commandes.fourniDossierDestination) System.out.println(patch +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(!commandes.fourniDossierDestination) System.out.println(commandes.path +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(commandes.fourniDossierDestination) System.out.println(commandes.path +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
 		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, StandardCharsets.UTF_8);
 		fichier.write("prénom nom;date modification;producteur;durée edition;sujet;note\n");
@@ -4346,11 +3252,11 @@ public class meptl {
 		
 	
 		Date aujourdhui = new Date();
-		Path outputFilePath = Paths.get(patch + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
-		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(patch +"/"+ commandes.pathDestination + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		Path outputFilePath = Paths.get(commandes.path + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(commandes.path +"/"+ commandes.pathDestination + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
-		if(!commandes.fourniDossierDestination) System.out.println(patch +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
-		if(commandes.fourniDossierDestination) System.out.println(patch +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(!commandes.fourniDossierDestination) System.out.println(commandes.path +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(commandes.fourniDossierDestination) System.out.println(commandes.path +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
 		
 		
@@ -4443,11 +3349,11 @@ public class meptl {
 		
 		
 		Date aujourdhui = new Date();
-		Path outputFilePath = Paths.get(patch + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
-		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(patch +"/"+ commandes.pathDestination + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		Path outputFilePath = Paths.get(commandes.path + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(commandes.fourniDossierDestination) outputFilePath = Paths.get(commandes.path +"/"+ commandes.pathDestination + "/DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
-		if(!commandes.fourniDossierDestination) System.out.println(patch +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
-		if(commandes.fourniDossierDestination) System.out.println(patch +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(!commandes.fourniDossierDestination) System.out.println(commandes.path +"\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
+		if(commandes.fourniDossierDestination) System.out.println(commandes.path +"\\"+ commandes.pathDestination + "\\DateLong" + aujourdhui.getTime()+ "-Notes.csv");
 		
 		BufferedWriter  fichier = Files.newBufferedWriter(outputFilePath, encoding);
 		fichier.write("prénom nom"+separator+"email"+separator+"identifiant"+separator+"date modification"+separator+"producteur"+separator+"durée edition"+separator+"sujet"+separator+"nbr modification" + separator + "nbr modifications date unique" + separator+ "nbr match consecutif" + separator +"note" + separator +"commentaire\n");
@@ -4598,7 +3504,7 @@ public class meptl {
 	 * @param dureeEdition
 	 * @return
 	 */
-	private static String traitementDureeEdition(String dureeEdition) {
+	public static String traitementDureeEdition(String dureeEdition) {
 		dureeEdition = dureeEdition.replace("P", "");
 		dureeEdition = dureeEdition.replace("D", " j ");
 		dureeEdition = dureeEdition.replace("T", " ");

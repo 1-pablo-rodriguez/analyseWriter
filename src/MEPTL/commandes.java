@@ -524,19 +524,22 @@ public class commandes {
 	 */
 	private static void about() throws InterruptedException, IOException {
 		CLS();
+		int nbespace = 58-version.length();
+		if (nbespace<0) nbespace=1;
+		
 		System.out.println();
-		System.out.println("\t\t*******************************************************************");
-		System.out.println("\t\t Application: analyseWriter");
-		System.out.println();
-		System.out.println("\t\t version : " + version);
-		System.out.println("\t\t Mise à jour : https://github.com/1-pablo-rodriguez/analyseWriter\n");
-		System.out.println();
-		System.out.println("\t\t Enseignant : pablo Rodriguez");
-		System.out.println("\t\t Université d'Artois - 10 rue du temple 62000 Arras\n");
-		System.out.println();
-		System.out.println("\t\t LICENCE");
-		System.out.println("\t\t GNU GENERAL PUBLIC LICENSE\r\nVersion 3, 29 June 2007");
-		System.out.println("\t\t*******************************************************************");
+		System.out.println("\t\t┌─────────────────────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│ ANALYSEWRITER  (Origin )                                            │");
+		System.out.println("\t\t│ Version : " + version+ new String(new char[nbespace]).replace("\0", " ") +"│" );
+		System.out.println("\t\t│                                                                     │");
+		System.out.println("\t\t│ Mise à jour : https://github.com/1-pablo-rodriguez/analyseWriter    │");
+		System.out.println("\t\t│ Mise à jour : https://forge.chapril.org/pablo/analyseWriter/releases│");
+		System.out.println("\t\t│                                                                     │");
+		System.out.println("\t\t│ Développeur : pablo Rodriguez                                       │");
+		System.out.println("\t\t│                                                                     │");
+		System.out.println("\t\t│ LICENCE GNU GENERAL PUBLIC LICENSE                                  │");
+		System.out.println("\t\t│ Version 3, 29 June 2007                                             │");
+		System.out.println("\t\t└─────────────────────────────────────────────────────────────────────┘");
 		System.out.println();
 	}
 	

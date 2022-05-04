@@ -543,7 +543,7 @@ public class verificationFichierAnalyse {
 	 * @throws CloneNotSupportedException
 	 * @throws IOException
 	 */
-	public static void MiseAJourDuHash() throws CloneNotSupportedException, IOException {
+	public static void MiseAJourFichierAnalyse() throws CloneNotSupportedException, IOException {
 			node nodeCalculHash = meptl.chargementsujet(commandes.nameSujet, false);
 			commandes.hash = String.valueOf(Run.HashNode(nodeCalculHash,0));
 			boolean maj =false;
@@ -564,7 +564,7 @@ public class verificationFichierAnalyse {
 			if(maj) {
 				int nbespace = "───────────────────────────┐".length()-commandes.hash.length();
 				if (nbespace<0) nbespace=1;
-				int nbespace2 = "────────────────────────────────┐".length()-commandes.hash.length();
+				int nbespace2 = "───────────────────────────────┐".length()-commandes.nameSujet.length();
 				if (nbespace2<0) nbespace2=1;
 				System.out.println("\t\t┌────────────────────────────────────────────────────────────────────┐");
 				System.out.println("\t\t│  Le hash du code de l'évaluation ou le nom du fichier d'analyse    │");
@@ -606,7 +606,7 @@ public class verificationFichierAnalyse {
 	static private void messagMiseAJourFichierAnalyse(String hash) {
 		int nbespace = "───────────────────────────┐".length()-hash.length();
 		if (nbespace<0) nbespace=1;
-		int nbespace2 = "──────────────────────────────┐".length()-hash.length();
+		int nbespace2 = "───────────────────────────────┐".length()-commandes.nameSujet.length();
 		if (nbespace2<0) nbespace2=1;
 		System.out.println("\t\t┌────────────────────────────────────────────────────────────────────┐");
 		System.out.println("\t\t│  A la fin de l'évaluation.                                         │");
@@ -622,7 +622,7 @@ public class verificationFichierAnalyse {
 	static public void messagMiseAJourFichierAnalyseAprèsAnalyse() {
 		int nbespace = "───────────────────────────┐".length()-commandes.hash.length();
 		if (nbespace<0) nbespace=1;
-		int nbespace2 = "──────────────────────────────┐".length()-commandes.hash.length();
+		int nbespace2 = "───────────────────────────────┐".length()-commandes.hash.length();
 		if (nbespace2<0) nbespace2=1;
 		System.out.println("\t\t┌────────────────────────────────────────────────────────────────────┐");
 		System.out.println("\t\t│  Mise à jour du fichier d'analyse                                  │");
