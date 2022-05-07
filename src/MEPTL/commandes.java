@@ -603,11 +603,27 @@ public class commandes {
 		System.out.println("\t\t┌────────────────────────────────────────────────────┐");
 		System.out.println("\t\t│  (')_(')                                           │");
 		System.out.println("\t\t│  ( `.° )     Bravo, vous avez travaillé très dur!  │");
-		System.out.println("\t\t│  (\")__(\") .. Bye Bye analyseWriter.                │");
+		System.out.println("\t\t│  (\")__(\") ... Bye Bye analyseWriter.               │");
 		System.out.println("\t\t└────────────────────────────────────────────────────┘");
 		System.out.println();
 		System.exit(0);
 	}
+	
+	/**
+	 * 
+	 */
+	public static void clotureApplicationAvecErreur() {
+		System.out.println();
+		System.out.println("\t\t┌────────────────────────────────────────────────────┐");
+		System.out.println("\t\t│  (')_(')                                           │");
+		System.out.println("\t\t│  ( ;.; )     Une erreur c'est produite.            │");
+		System.out.println("\t\t│  (\")__(\") ...  Bye Bye analyseWriter.              │");
+		System.out.println("\t\t└────────────────────────────────────────────────────┘");
+		System.out.println();
+		System.exit(0);
+	}
+	
+	
 	
 	public static void clotureWithHelp() {
 		System.out.println();

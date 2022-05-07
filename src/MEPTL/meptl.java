@@ -142,9 +142,18 @@ public class meptl {
 		if(commandes.analyse) {
 			nodeSujet = chargementsujet(commandes.nameSujet, true);
 			
-			//** Chargement de la culture **
-			commandes.culture = nodeSujet.retourneFirstEnfantsByName("setting").getAttributs().get("culture"); //récupère la culture de l'utilisateur
+			if(nodeSujet==null) {
+				//***************************
+				//** bye bye analyseWriter **
+				//***************************
+				commandes.clotureApplicationAvecErreur();
+			}
 			
+			//** Chargement de la culture **
+			if(nodeSujet.retourneFirstEnfantsByName("setting").isHasAttributs()) {
+				commandes.culture = nodeSujet.retourneFirstEnfantsByName("setting").getAttributs().get("culture"); //récupère la culture de l'utilisateur
+			}
+
 			//** La méthode verificationFichier Analyse permet de détecter des erreurs dans le fichier d'analyse
 			new verificationFichierAnalyse(nodeSujet);
 			
@@ -318,31 +327,32 @@ public class meptl {
 			}
 		}
 		
-		//*****************************************************
-		//** Exportation au format CSV  si -csv ou -verifcsv **
-		//*****************************************************
-		if(commandes.ecritNoteCSV && !commandes.fourniCSV) {
-			if(!commandes.verifHisto2) ecritureCSV(ensembleanalyse);
-			if(commandes.verifHisto2) ecritureCSV(ensembleanalyse,verif,a,nodeSujet.retourneFirstEnfantsByName("setting"));
-			//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
+		if(nodeSujet!=null) {
+			//*****************************************************
+			//** Exportation au format CSV  si -csv ou -verifcsv **
+			//*****************************************************
+			if(commandes.ecritNoteCSV && !commandes.fourniCSV) {
+				if(!commandes.verifHisto2) ecritureCSV(ensembleanalyse);
+				if(commandes.verifHisto2) ecritureCSV(ensembleanalyse,verif,a,nodeSujet.retourneFirstEnfantsByName("setting"));
+				//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
+			}
+			
+			//***********************************************************************
+			//** Exportation au format CSV  si -csv file.csv ou -verifcsv file.csv **
+			//***********************************************************************
+			if(commandes.ecritNoteCSV && commandes.fourniCSV) {
+				ecritureCSV(ensembleanalyse,verif,a,nodeCSV, nodeSujet.retourneFirstEnfantsByName("setting"));
+				//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
+			}
+			
+			//**************************************
+			//** Mise à jour du fichier d'analyse **
+			//**************************************
+			if(commandes.MAJFichierAnalyse||commandes.MAJnameAnalysisFile) {
+				verificationFichierAnalyse.MiseAJourFichierAnalyse();
+				verificationFichierAnalyse.messagMiseAJourFichierAnalyseAprèsAnalyse();
+			}
 		}
-		
-		//***********************************************************************
-		//** Exportation au format CSV  si -csv file.csv ou -verifcsv file.csv **
-		//***********************************************************************
-		if(commandes.ecritNoteCSV && commandes.fourniCSV) {
-			ecritureCSV(ensembleanalyse,verif,a,nodeCSV, nodeSujet.retourneFirstEnfantsByName("setting"));
-			//a.ecritureNodeEnXML(ensembleanalyse, "ensembleAnalyse"); //écriture du node de l'étudiant
-		}
-		
-		//**************************************
-		//** Mise à jour du fichier d'analyse **
-		//**************************************
-		if(commandes.MAJFichierAnalyse||commandes.MAJnameAnalysisFile) {
-			verificationFichierAnalyse.MiseAJourFichierAnalyse();
-			verificationFichierAnalyse.messagMiseAJourFichierAnalyseAprèsAnalyse();
-		}
-
 		
 		//***************************
 		//** bye bye analyseWriter **
@@ -1049,10 +1059,10 @@ public class meptl {
 		nodouverture.setAttributs(nodSujet.getAttributs());
 		nodouverture.getAttributs().put("dossier",a.getLectDossiers().getEC().getListeNomDossier().get(indexStudent));
 		nodouverture.getAttributs().put("filename", a.getLectDossiers().getEC().getListeFichierodt().get(indexStudent));
-		nodouverture.getAttributs().put("filenameAnalyse", nodSujet.getAttributs().get("filename"));
-		nodouverture.getAttributs().put("producteur", nodStudent.getAttributs().get("producteur"));
-		nodouverture.getAttributs().put("dureeEdition", nodStudent.getAttributs().get("dureeEdition"));
-		nodouverture.getAttributs().put("dateModification", nodStudent.getAttributs().get("dateModification"));
+		if(nodSujet.getAttributs().get("analysis_filename")!=null) nodouverture.getAttributs().put("filenameAnalyse", nodSujet.getAttributs().get("analysis_filename"));
+		if(nodStudent.getAttributs().get("producteur")!=null) nodouverture.getAttributs().put("producteur", nodStudent.getAttributs().get("producteur"));
+		if(nodStudent.getAttributs().get("dureeEdition")!=null) nodouverture.getAttributs().put("dureeEdition", nodStudent.getAttributs().get("dureeEdition"));
+		if(nodStudent.getAttributs().get("dateModification")!=null) nodouverture.getAttributs().put("dateModification", nodStudent.getAttributs().get("dateModification"));
 		nodouverture.getAttributs().put("patch", a.getPatch());
 		if(nodSujet.getAttributs().get("historiquePresent")!=null) nodouverture.getAttributs().put("historiquePresent", nodSujet.getAttributs().get("historiquePresent"));
 		if(nodSujet.getAttributs().get("controleDateCreation")!=null) nodouverture.getAttributs().put("controleDateCreation", nodSujet.getAttributs().get("controleDateCreation"));
@@ -1199,17 +1209,6 @@ public class meptl {
 					if(!nodSujet.getAttributs().get("metaSujet").equals(b.getContenu().get(0))) {
 						manqueValeurMetaSujet=true;
 					}
-				}
-			}else {
-				
-			}
-		}else {
-			b = a.retourneFirstNodeByNameAttributValue(nodStudent, "meta:user-defined", "meta:name", "Sujet");
-			if(b==null) {
-				manqueMetaSujet=true;
-			}else {
-				if(!nodSujet.getAttributs().get("metaSujet").equals(b.getContenu().get(0))) {
-					manqueValeurMetaSujet=true;
 				}
 			}
 		}
@@ -1631,7 +1630,7 @@ public class meptl {
 				//**********************************************
 				//** Analyse de tous les autres nodes enfants **
 				//**********************************************
-				page=analyseLesNodesEnants.nodeNext(page, "ana:page", pageStudent, null, null, pageSujet, nodSujetParagraphes, nodStudentParagraphes, a);
+				page=analyseLesNodesEnfants.nodeNext(page, "ana:page", pageStudent, null, null, pageSujet, nodSujetParagraphes, nodStudentParagraphes, a);
 					
 				page.getAttributs().put("point", String.valueOf(outils.getPointsClass()-pointDebut));	
 				page.getAttributs().put("pointTotal", String.valueOf(outils.getPointTotal()-pointTotalDebut));
@@ -1817,7 +1816,7 @@ public class meptl {
 	}
 	
 	/**
-	 * Analyse du node <b>numerotationchapitre</b>.
+	 * Analyse du node <b>numerotationchapitre</b>.</br>
 	 * @param nodStudentNumerotation
 	 * @param nodSujetNumerotation
 	 * @param a
@@ -1830,13 +1829,21 @@ public class meptl {
 		nodnumerotations.setAttributs(nodSujetNumerotation.getAttributs());//ajoute tous les attributs du sujet
 		nodnumerotations.setContenu(nodSujetNumerotation.getContenu()); //ajoute le commantaire du sujet
 		
-		//ajoute l'identifiant pour le menu
+		//***************************************
+		//** Ajoute l'identifiant pour le menu **
+		//***************************************
 		if(a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "numerotationchapitre")!=null) {
 			nodnumerotations.getAttributs().put("id", a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "numerotationchapitre").getAttributs().get("id"));
 		}
 						
-		//initialise les points
+		//***************************
+		//** initialise les points **
+		//***************************
 		outils.initiliseLesPoints();
+		
+		//*******************************************************************
+		//** Parcours les nodes enfants du node <text:outline-level-style> **
+		//*******************************************************************
 		for(int i = 0 ; i < nodSujetNumerotation.getNodes().size(); i++) {
 			if(nodSujetNumerotation.getNodes().get(i).getNomElt().equals("text:outline-level-style")) {
 				int pointDebut = outils.getPointsClass();
@@ -1850,68 +1857,29 @@ public class meptl {
 				node numerotationStudent = a.retourneFirstNodeByNameAttributValue(nodStudentNumerotation, "text:outline-level-style", "text:level", levelnumrotation);
 				node numerotationSujet = nodSujetNumerotation.getNodes().get(i);
 				
-				// analyse les attributs du node
+				//********************************************
+				//** analyse les attributs des nodes <page> **
+				//********************************************
 				numerotation = analyseLesAttributEtContenuDuNode(numerotationStudent, numerotationSujet, numerotation, "ana:numerotation",numerotationSujet.getNomElt());
-	
-				// les enfants du premier niveau du node
-				for(int j = 0 ; j < numerotationSujet.getNodes().size();j++ ) {
-						
-				node nodSujet = numerotationSujet.getNodes().get(j);
-				String nameNode = nodSujet.getNomElt();
-				node nodStudent = null;	
-				if(numerotationStudent!=null) if(numerotationStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
-					nodStudent = numerotationStudent.retourneFirstEnfantsByName(nameNode);
-				}
 				
-				//insère un saut si titre pas vide et saut=true
-				numerotation=addNodeSautTitre(nodSujet, numerotation);
+				//************************************
+				//** analyse tous les nodes enfants **
+				//************************************
+				numerotation = analyseLesNodesEnfants.nodeNext(numerotation, "ana:numerotation", numerotationStudent, null, null, numerotationSujet, null, null, a);
 				
-				// analyse attribut et contenu des enfants du premier niveau
-				numerotation = analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, numerotation, "ana:numerotation",numerotationSujet.getNodes().get(j).getNomElt());
-				
-					
-					for(int k = 0 ; k < nodSujet.getNodes().size();k++) {
-						node nod2Sujet = nodSujet.getNodes().get(k);
-						String nameNode2 = nod2Sujet.getNomElt();
-						node nod2Student = null;	
-						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
-							nod2Student = numerotationStudent.retourneFirstEnfantsByName(nameNode2);
-						}
-						
-						//insère un saut si titre pas vide et saut=true
-						numerotation=addNodeSautTitre(nod2Sujet, numerotation);
-						
-						// analyse attribut et contenu des enfants du second niveau
-						numerotation = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, numerotation, "ana:numerotation",nod2Sujet.getNomElt() );
-						
-						
-						for(int l = 0 ; l < nod2Sujet.getNodes().size();l++) {
-							node nod3Sujet = nod2Sujet.getNodes().get(l);
-							String nameNode3 = nod3Sujet.getNomElt();
-							node nod3Student = null;	
-							if(nod2Student!=null) if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
-								nod3Student = numerotationStudent.retourneFirstEnfantsByName(nameNode3);
-							}
-							
-							//insère un saut si titre pas vide et saut=true
-							numerotation=addNodeSautTitre(nod3Sujet, numerotation);
-							
-							// analyse attribut et contenu des enfants du troisième niveau
-							numerotation = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, numerotation, "ana:paragraph", nod3Sujet.getNomElt());
-						}
-	
-					}
-						
-				}
-					
+				//****************************************************************
+				//** Insère les attributs des points dans les node de l'analyse **
+				//****************************************************************
 				numerotation.getAttributs().put("point", String.valueOf(outils.getPointsClass()-pointDebut));	
 				numerotation.getAttributs().put("pointTotal", String.valueOf(outils.getPointTotal()-pointTotalDebut));
 				nodnumerotations.getNodes().add(numerotation);
 
-
 			}
 		}
 		
+		//****************************************************************
+		//** Insère les attributs des points dans les node de l'analyse **
+		//****************************************************************
 		nodnumerotations.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
 		nodnumerotations.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
 		nodnumerotations.getAttributs().put("proportioncorrect",String.valueOf(outils.getProportionCorrect()));
@@ -1934,14 +1902,22 @@ public class meptl {
 		nodframes.setAttributs(nodSujetFrames.getAttributs()); //ajoute tous les attributs du sujet
 		nodframes.setContenu(nodSujetFrames.getContenu()); //ajoute le commentaire du sujet
 		
-		//ajoute l'identifiant pour le menu
+		//***************************************
+		//** Ajoute l'identifiant pour le menu **
+		//***************************************
 		if(a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "frames")!=null) {
 			nodframes.getAttributs().put("id", a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "frames").getAttributs().get("id"));
 		}
 		
-		//initialise les points
+		//***************************
+		//** initialise les points **
+		//***************************
 		outils.initiliseLesPoints();
-		for(int i = 0 ; i < nodSujetFrames.getNodes().size(); i++) { //niveau 1
+		
+		//*****************************************************
+		//** Parcours les nodes enfants du node <darw:frame> **
+		//*****************************************************
+		for(int i = 0 ; i < nodSujetFrames.getNodes().size(); i++) {
 			if(nodSujetFrames.getNodes().get(i).getNomElt().equals("draw:frame")) {
 				int pointDebut = outils.getPointsClass();
 				int pointTotalDebut = outils.getPointTotal();
@@ -1954,103 +1930,28 @@ public class meptl {
 				node frameStudent = a.retourneFirstNodeByNameAttributValue(nodStudentFrames, "draw:frame", "draw:name", nomDuFrame);
 				node frameSujet = nodSujetFrames.getNodes().get(i);
 				
-				// analyse les attributs du node
+				//********************************************
+				//** analyse les attributs des nodes <page> **
+				//********************************************
 				frame = analyseLesAttributEtContenuDuNode(frameStudent, frameSujet, frame, "ana:frame",frameSujet.getNomElt());
-	
-				// les enfants du premier niveau du node
-				for(int j = 0 ; j < frameSujet.getNodes().size();j++ ) { //niveau 2
-						
-				node nodSujet = frameSujet.getNodes().get(j);
-				String nameNode = nodSujet.getNomElt();
-				node nodStudent = null;	
-				if(frameStudent!=null) if(frameStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
-					nodStudent = frameStudent.retourneFirstEnfantsByName(nameNode);
-				}
-				if(frameStudent!=null) if(nameNode.equals("text:p")) {
-					
-					if(nodSujet.getAttributs().get("index")!=null) {
-						nodStudent = a.retourneFirstNodeByNameAttributValue(frameStudent, nameNode, "text:p", frameSujet.getNodes().get(j).getAttributs().get("index"));
-					}
-					
-					if(nodStudent==null)if(nodSujet.retourneLesContenusEnfants("").isEmpty()) { //si il n'y a pas de contenu, passe par l'index
-						nodStudent = a.retourneFirstNodeByNameAttributValue(frameStudent, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-					}else {
-						nodStudent = a.retourneFirstNodeByFindContent2(frameStudent.getNodes(), nodSujet.retourneLesContenusEnfants(""), commandes.tolerance_characters,commandes.tolerance_text);
-					}
-					
-				}
-				
-				//insère un saut si titre pas vide et saut=true
-				frame=addNodeSautTitre(nodSujet, frame);
-				
-				
-				// analyse attribut et contenu des enfants du premier niveau
-				frame = analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, frame, "ana:frame",nodSujet.getNomElt());
-				
-					
-					for(int k = 0 ; k < nodSujet.getNodes().size();k++) { //niveau 3
-						node nod2Sujet = nodSujet.getNodes().get(k);
-						String nameNode2 = nod2Sujet.getNomElt();
-						node nod2Student = null;	
-						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
-							nod2Student = nodStudent.retourneFirstEnfantsByName(nameNode2);
-						}
-						if(nodStudent!=null) if(nameNode2.equals("text:p")) {
-							if(nod2Sujet.getAttributs().get("index")!=null) {
-								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "index", nod2Sujet.getAttributs().get("index"));
-							}
-						}
-						if(nodStudent!=null) if(nameNode2.equals("text:database-display")) {
-							if(nod2Sujet.getAttributs().get("text:column-name")!=null) {
-								nod2Student = a.retourneFirstNodeByNameAttributValue(nodStudent, nameNode2, "text:column-name", outils.withoutCodeAndPoint(nod2Sujet.getAttributs().get("text:column-name")));
-							}
-						}
-						
-						//insère un saut si titre pas vide et saut=true
-						frame=addNodeSautTitre(nod2Sujet, frame);
-						
-						// analyse attribut et contenu des enfants du second niveau
-						frame = analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, frame, "ana:frame",nod2Sujet.getNomElt() );
-						
-						
-						for(int l = 0 ; l < nod2Sujet.getNodes().size();l++) { //niveau 4
-							node nod3Sujet = nod2Sujet.getNodes().get(l);
-							String nameNode3 = nod3Sujet.getNomElt();
-							node nod3Student = null;	
-							if(nod2Student!=null) if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
-								nod3Student = nod2Student.retourneFirstEnfantsByName(nameNode3);
-							}
-							if(nod2Student!=null) if(nameNode3.equals("text:database-display")) {
-								if(nod3Sujet.getAttributs().get("text:column-name")!=null) {
-									nod3Student = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode3, "text:column-name", outils.withoutCodeAndPoint(nod3Sujet.getAttributs().get("text:column-name")));
-								}
-							}
 
-							// analyse attribut et contenu des enfants du troisième niveau
-							if(nod3Student!=null) if(nod3Sujet.getNomElt().equals("text:sequence") && nod3Student.getNomElt().equals("text:sequence")) {
-								ArrayList<node> changements = nod2Student.retourneEnfantsByName("text:change", new ArrayList<node>());
-								nod3Student.setNodes(changements);
-							}
-							
-							//insère un saut si titre pas vide et saut=true
-							frame=addNodeSautTitre(nod3Sujet, frame);
-							
-							// analyse attribut et contenu des enfants du second niveau
-							frame = analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, frame, "ana:frame", nod3Sujet.getNomElt());
-						}
-	
-					}
-						
-				}
-					
+				//************************************
+				//** analyse tous les nodes enfants **
+				//************************************
+				frame = analyseLesNodesEnfants.nodeNext(frame, "ana:frame", frameStudent, null, null, frameSujet, null, null, a);
+			
+				
+				//****************************************************************
+				//** Insère les attributs des points dans les node de l'analyse **
+				//****************************************************************
 				frame.getAttributs().put("point", String.valueOf(outils.getPointsClass()-pointDebut));	
 				frame.getAttributs().put("pointTotal", String.valueOf(outils.getPointTotal()-pointTotalDebut));
 				nodframes.getNodes().add(frame);
-
-
 			}
 		}
-		
+		//****************************************************************
+		//** Insère les attributs des points dans les node de l'analyse **
+		//****************************************************************		
 		nodframes.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
 		nodframes.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
 		nodframes.getAttributs().put("proportioncorrect",String.valueOf(outils.getProportionCorrect()));
@@ -2598,7 +2499,7 @@ public class meptl {
 				//************************************
 				//** analyse tous les nodes enfants **
 				//************************************
-				page = analyseLesNodesEnants.nodeNext(page, "ana:page", pageStudent, null, null, pageSujet, nodSujetParagraphs, nodStudentParagraphs, a);
+				page = analyseLesNodesEnfants.nodeNext(page, "ana:page", pageStudent, null, null, pageSujet, nodSujetParagraphs, nodStudentParagraphs, a);
 			
 				//****************************************************************
 				//** Insère les attributs des points dans les node de l'analyse **
@@ -2983,29 +2884,32 @@ public class meptl {
 	 * @return
 	 */
 	public static node addNodeSautTitre(node nodSujet, node nodanalyse) {
-		if(nodSujet.getAttributs().get("saut")!=null) if(Boolean.valueOf(nodSujet.getAttributs().get("saut"))) {
-			if(nodSujet.getAttributs().get("titre")!=null) {
-				node N = new node();
-				N.setNomElt("saut");
-				N.getAttributs().put("titre", nodSujet.getAttributs().get("titre"));
-				N.setClose(true);
-				nodanalyse.getNodes().add(N);
-			}
-			if(nodSujet.getAttributs().get("titre2")!=null) {
-				node N = new node();
-				N.setNomElt("saut");
-				N.getAttributs().put("titre2", nodSujet.getAttributs().get("titre2"));
-				N.setClose(true);
-				nodanalyse.getNodes().add(N);
-			}
-			if(nodSujet.getAttributs().get("titre3")!=null) {
-				node N = new node();
-				N.setNomElt("saut");
-				N.getAttributs().put("titre3", nodSujet.getAttributs().get("titre3"));
-				N.setClose(true);
-				nodanalyse.getNodes().add(N);
+		if(nodSujet.getAttributs().get("saut")!=null) {
+			if(Boolean.valueOf(nodSujet.getAttributs().get("saut"))) {
+				if(nodSujet.getAttributs().get("titre")!=null) {
+					node N = new node();
+					N.setNomElt("saut");
+					N.getAttributs().put("titre", nodSujet.getAttributs().get("titre"));
+					N.setClose(true);
+					nodanalyse.getNodes().add(N);
+				}
+				if(nodSujet.getAttributs().get("titre2")!=null) {
+					node N = new node();
+					N.setNomElt("saut");
+					N.getAttributs().put("titre2", nodSujet.getAttributs().get("titre2"));
+					N.setClose(true);
+					nodanalyse.getNodes().add(N);
+				}
+				if(nodSujet.getAttributs().get("titre3")!=null) {
+					node N = new node();
+					N.setNomElt("saut");
+					N.getAttributs().put("titre3", nodSujet.getAttributs().get("titre3"));
+					N.setClose(true);
+					nodanalyse.getNodes().add(N);
+				}
 			}
 		}
+			
 		return nodanalyse;	
 	}
 	

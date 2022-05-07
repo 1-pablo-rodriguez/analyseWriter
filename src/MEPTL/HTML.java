@@ -237,9 +237,10 @@ public class HTML {
 				 if(nod.getNodes().get(k).getAttributs().get("niveau")!=null) {
 					 
 					 String Tst = nod.getNodes().get(k).getAttributs().get("resultat");
-					// String Key = outils.Traduction(nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut")));
+					 
 					 String Key = outils.traduction.get(nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut")));
-					if(Key==null) Key = nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut"));
+					
+					 if(Key==null) Key = nod.getNodes().get(k).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("attribut"));
 					
 					 String valueStudent = nod.getNodes().get(k).getAttributs().get("valueStudent");
 					 String valueSujet = outils.withoutCodeAndPoint(nod.getNodes().get(k).getAttributs().get("valueSujet"));
@@ -275,6 +276,7 @@ public class HTML {
 								 code = code + HTML.Table(Tst, Key2, valueStudent, valueSujet, niveau);
 							 }else {
 								if(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre")!=null) code = code + HTML.SautLigneOnduleBleu(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre"));
+								if(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre1")!=null) code = code + HTML.SautLigneOnduleBleu(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre1"));
 								if(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre2")!=null) code = code + HTML.SautP8(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre2"));
 							 }
 							

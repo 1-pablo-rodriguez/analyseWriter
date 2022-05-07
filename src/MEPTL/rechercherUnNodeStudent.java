@@ -27,207 +27,138 @@ public class rechercherUnNodeStudent {
 		
 		node nodStudent =null;
 		
-		//** Priorité à la recherche par contenu
+		//************************************************************************************************
+		//** Recherche le node par le contenu exact du node en intégrant les contenus des nodes enfants **
+		//************************************************************************************************
 		if(nodSujet.getAttributs().get("recherche_contenu_exact")!=null){
 			nodStudent = findNodeParContenuEXACT(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
 			if(nodStudent != null) return nodStudent;
 		}
 		
-		// recherche le node par index uniquement
+		//***********************************
+		//** Recherche le node par l'index **
+		//***********************************
 		if(nodSujet.getAttributs().get("recherche_index")!=null){
 			nodStudent = findNodeParIndex(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
-			if(nodStudent != null) return nodStudent;
+			if(nodSujet.getAttributs().get("recherche_index").equalsIgnoreCase("true")) return nodStudent;
 		}
 		
 		//*****************************************************************
-		//** Recherche Le node text:p par les différents contenu du node **
+		//** Recherche le node text:p par les différents contenu du node **
 		//*****************************************************************
-		if(nameNode.equals("text:p")) {
+		if(nameNode.equals("text:p")||nameNode.equals("text:span")) {
 			nodStudent = findLeNodeTextpParDesNodesEnfantsSpecifique(nameNode, nodSujet,nod0Student, nod1Student, nod2Student, a );
 		}
 		
-		
-		if(nameNode.equals("text:title")) {
-			if(nod2Student!=null) nodStudent = nod2Student.retourneFirstEnfantsByName("text:title");
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = nod1Student.retourneFirstEnfantsByName("text:title");
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = nod0Student.retourneFirstEnfantsByName("text:title");
-			return nodStudent;
-		}
-		
-		if(nameNode.equals("text:subject")) {
-			if(nod2Student!=null) nodStudent = nod2Student.retourneFirstEnfantsByName("text:subject");
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = nod1Student.retourneFirstEnfantsByName("text:subject");
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = nod0Student.retourneFirstEnfantsByName("text:subject");
-		}
-		
-		if(nameNode.equals("text:initial-creator")) {
-			if(nod2Student!=null) nodStudent = nod2Student.retourneFirstEnfantsByName("text:initial-creator");
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = nod1Student.retourneFirstEnfantsByName("text:initial-creator");
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = nod0Student.retourneFirstEnfantsByName("text:initial-creator");
-		}
-		
-		if(nameNode.equals("text:user-defined")) {
-			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-		}
-		
-		
-		//recherche par le contenu enfant du node les titres par défaut
-		if(nameNode.equals("text:h")) {
-				String contenuSujet = nodSujet.retourneLesContenusEnfants("");
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-		}
-		
-		//recherche par text:name
-		if(nameNode.equals("text:section")) {
-			if(nodSujet.getAttributs().get("recherche_index")==null) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-			}else {
-				if(nodSujet.getAttributs().get("recherche_index").equals("false")) {
-					if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-				}
-				if(nodSujet.getAttributs().get("recherche_index").equals("true")) {
-					if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-				}
-			}
-		}
-		
-		//recherche par le nom de la colonne dans les database
-		if(nameNode.equals("text:database-display")) {
-			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
-		}
-		
-		//recherche par le nom de l'objet draw:name ou par text:anchor-page-number si ancrer à la page
+		//********************************************************************************
+		//** Recherche le node draw:frame par draw:name ou recherche_anchor-page-number **
+		//********************************************************************************
 		if(nameNode.equals("draw:frame")) {
-			if(nodSujet.getAttributs().get("recherche_anchor-page-number")==null) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-			}else {
-				if(nodSujet.getAttributs().get("recherche_anchor-page-number").equals("false")) {
-					if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-				}
-				if(nodSujet.getAttributs().get("recherche_anchor-page-number").equals("true")) {
-					if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:anchor-page-number", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("text:anchor-page-number")));
-					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:anchor-page-number", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("text:anchor-page-number")));
-					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:anchor-page-number", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("text:anchor-page-number")));
-					//si recherche l'ancrage de la page pas trouvé alors recherche par draw:name
-					if(nodStudent==null) {
-						if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-						if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-						if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
-					}
-				}
-			}
+			nodStudent = findDrawFrame(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
 		}
 		
-		
-		//recherche par le nom de l'objet
-		if(nameNode.equals("style:graphic-properties")) {
-			if(!nodSujet.getContenu().isEmpty()) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameContent(nod2Student, nameNode, nodSujet.getContenu().get(0));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod1Student, nameNode, nodSujet.getContenu().get(0));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod0Student, nameNode, nodSujet.getContenu().get(0));
-			}
+		//***********************************************
+		//** Recherche le nodes text:xxx par text:name **
+		//***********************************************
+		if(nameNode.equals("text:section") || nameNode.equals("text:user-defined") || nameNode.equals("text:table-of-content")) {
+			nodStudent = findByTextName(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
 		}
 		
+		//******************************************************************
+		//** Recherche le node text:database-display par text:column-name **
+		//******************************************************************
+		if(nameNode.equals("text:database-display")) {
+			nodStudent = findDataBase(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
+		}
 		
-		//Recherche un node table
-		if(nameNode.contains("table")) {
-			//recherche par le nom de la table
-			if(nameNode.equals("table:table")) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "table:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("table:name")));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "table:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("table:name")));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "table:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("table:name")));
-			}		
-			
-			//recherche par l'index
-			if(nameNode.equals("table:table-row")) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-			}
-			
-			//recherche par l'index
-			if(nameNode.equals("table:table-cell")) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", nodSujet.getAttributs().get("index"));
-			}
+		//**************************************************
+		//** Recherche le node table:table par table:name **
+		//**************************************************
+		if(nameNode.equals("table:table")) {
+			nodStudent = findTable(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
+		}
+		
+		//*************************************************************************
+		//** Recherche le node text:h par le contenu avec tolérance de carcatère **
+		//*************************************************************************
+		if(nameNode.equals("text:h")) {
+			nodStudent = findByContentWithTolerance(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
+		}
 
-			//recherche par le nom du style qui est toujours formé par nomtable.colonne
-			if(nameNode.equals("table:table-column")) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "table:style-name", nodSujet.getAttributs().get("table:style-name"));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "table:style-name", nodSujet.getAttributs().get("table:style-name"));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "table:style-name", nodSujet.getAttributs().get("table:style-name"));
-			}
+		//*******************************************************
+		//** Recherche le node par l'index mais si pas demandé **
+		//*******************************************************
+		if(nameNode.equals("table:table-row") || nameNode.equals("table:table-cell") || nameNode.equals("text:tab") || nameNode.equals("text:span")) {
+			nodStudent = findByIndexEvenIsFalse(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
+		}
+		
+		
+		//***************************************************************
+		//** Recherche le node table:table-column par table:style-name **
+		//***************************************************************
+		if(nameNode.equals("table:table-column")) {
+			nodStudent = findTableByStyleName(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
+		}
 			
-			//recherche par texte:name
-			if(nameNode.equals("text:table-of-content")) {
-				if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));		
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
-			}
+		//*********************************************
+		//** Recherche le node par le contenu simple **
+		//*********************************************
+		if(nameNode.equals("text:tab") || nameNode.equals("style:graphic-properties")) {
+			nodStudent = findByContentZero(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
 		}
 		
-		
-		//recherche par contenu
-		if(nameNode.equals("text:span")) {
-			String contenuSujet = nodSujet.retourneLesContenusEnfants("");
-			if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+	
+		//*****************************************************************
+		//** Recherche Le node text:p par les différents contenu du node **
+		//** text:title - text:subject - text:initial-creator - text:tab **
+		//*****************************************************************
+		if(nodStudent==null) {
+			nodStudent = findByNameNode(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
 		}
-		
-		//recherche par contenu
-		if(nameNode.equals("text:tab")) {
-			String contenuSujet = nodSujet.retourneLesContenusEnfants("");
-			if(!contenuSujet.trim().isEmpty()) {
-				if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-			}
+
+		//*********************************************
+		//** Recherche le node par le contenu simple **
+		//*********************************************
+		if(nodStudent==null){
+			nodStudent = findByContentZero(nameNode, nodSujet, nod0Student, nod1Student, nod2Student, a);
 		}
-		
-		
-		// dernière tentative si le node est vide, recherche par le nom du node
-		if(nodStudent==null && !nameNode.equals("text:p")) {
-			if(nod2Student!=null) if(nod2Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod2Student.retourneFirstEnfantsByName(nameNode);
-			if(nod1Student!=null) if(nodStudent==null) if(nod1Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod1Student.retourneFirstEnfantsByName(nameNode);
-			if(nod0Student!=null) if(nodStudent==null) if(nod0Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod0Student.retourneFirstEnfantsByName(nameNode);
-		}
-		
-		
 		
 		return nodStudent;
 	}
-		
 	
-	
+	/**
+	 * Recherche par le contenu exact du node. Englobe les contenus des nodes enfants.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
 	private static node findNodeParContenuEXACT(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a ) {
 		node nodStudent = null;
 		if(nodSujet.getAttributs().get("recherche_contenu_exact").equals("true")) {
-			String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
-			if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut, nodSujet.getNomElt());
-			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut, nodSujet.getNomElt());
-			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+			if(!nodSujet.retourneLesContenusEnfants("").isEmpty()) {
+				String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.retourneLesContenusEnfants(""));
+				if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+			}
 		}
 		return nodStudent;
 	}
 	
+	/**
+	 * Recherche par l'attribut index.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
 	private static node findNodeParIndex(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a ) {
 		node nodStudent = null;
 		if(nodSujet.getAttributs().get("recherche_index").equals("true")) {
@@ -303,39 +234,209 @@ public class rechercherUnNodeStudent {
 			if(nod0Student!=null) if(nodStudent==null) nodStudent = nod0Student.retourneFirstEnfantsByNameNode1ContainNameNode2("text:p","text:creator");
 		}
 		
-		if(nodSujet.getAttributs().get("recherche_contenu_exact")!=null) {
-			if(nodSujet.getAttributs().get("recherche_contenu_exact").equalsIgnoreCase("true")) {
-				if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-			}
+		
+		//** Recherche par contenu
+		if(!nodSujet.getContenu().isEmpty()) {
+			String valueAttribut = outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getContenu().get(0));
+			if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod2Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod1Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContentExact(nod0Student.getNodes(), valueAttribut, nodSujet.getNomElt());
+		}
+		
+		//** Recherche le node par index uniquement. Si trouve pa retourne un null.
+		if(nodSujet.getAttributs().get("index")!=null){
+			String valueAttribut = nodSujet.getAttributs().get("index");
+			if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student.getNodes(), nodSujet.getNomElt(),"index",valueAttribut);
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student.getNodes(), nodSujet.getNomElt(),"index",valueAttribut);
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student.getNodes(), nodSujet.getNomElt(),"index",valueAttribut);
 		}
 		
 		
-//		if(nodSujet.getAttributs().get("recherche_index")!=null) {
-//			if(nodSujet.getAttributs().get("recherche_index").equalsIgnoreCase("true")) {
-//				if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-//				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-//				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-//			}
-//		}
-//		
-//		
-//		if(nodStudent==null) {
-//			if(nodSujet.retourneLesContenusEnfants("").isEmpty()) { //s'il n'y a pas de contenu, passe par l'index
-//				if(nodSujet.getAttributs().get("index")!=null) {
-//					if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-//					if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-//					if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("index")));
-//				}
-//			}else {
-//				String contenuSujet = nodSujet.retourneLesContenusEnfants("");
-//				if(nod2Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(),contenuSujet ,commandes.tolerance_characters,commandes.tolerance_text);
-//				if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-//				if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
-//			}
-//		}
+		return nodStudent;
+	}
+	
+	
+	
+	/**
+	 * Recherche Le node draw:frame par l'attribut draw:name ou recherche_anchor-apge-number.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findDrawFrame(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		//recherche par le nom de l'objet draw:name par défaut
+		if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod2Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
+		if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod1Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
+		if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValueNetTexte(nod0Student, nameNode, "draw:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("draw:name")));
+
+		if(nodStudent!=null) return nodStudent;
+			
+		if(nodSujet.getAttributs().get("recherche_anchor-page-number")!=null) if(nodSujet.getAttributs().get("recherche_anchor-page-number").equalsIgnoreCase("true")) {
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:anchor-page-number", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("text:anchor-page-number")));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:anchor-page-number", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("text:anchor-page-number")));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:anchor-page-number", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("text:anchor-page-number")));
+		}
 		
+		return nodStudent;
+	}
+	
+	/**
+	 * Recherche Le node text:section par l'attribut text:name;</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findByTextName(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+		if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+		if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:name")));
+
+		return nodStudent;
+	}
+
+	/**
+	 * Recherche le node par son nom. Retourne le premier node qui correspond au nom du node.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findByNameNode(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		if(nod2Student!=null) if(nod2Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod2Student.retourneFirstEnfantsByName(nameNode);
+		if(nod1Student!=null) if(nodStudent==null) if(nod1Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod1Student.retourneFirstEnfantsByName(nameNode);
+		if(nod0Student!=null) if(nodStudent==null) if(nod0Student.retourneEnfantsByNameExist(nameNode)) nodStudent = nod0Student.retourneFirstEnfantsByName(nameNode);
+	
+		return nodStudent;
+	}
+	
+	/**
+	 * Recherche le node text:database-display par text:column-name.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findDataBase(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+		if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+		if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "text:column-name", outils.withoutCodeAndPoint(nodSujet.getAttributs().get("text:column-name")));
+
+		return nodStudent;
+	}
+	
+	/**
+	 * Recherche le node par le contenu simple get(0).</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findByContentZero(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		if(!nodSujet.getContenu().isEmpty()) {
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameContent(nod2Student, nameNode, nodSujet.getContenu().get(0));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod1Student, nameNode, nodSujet.getContenu().get(0));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameContent(nod0Student, nameNode, nodSujet.getContenu().get(0));
+		}
+
+		return nodStudent;
+	}
+	
+	/**
+	 * Rechercher le node table:table par table:name.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findTable(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "table:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("table:name")));
+		if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "table:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("table:name")));
+		if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "table:name", outils.withoutCodeAndPointPourRechercheContenuExact(nodSujet.getAttributs().get("table:name")));
+		
+		return nodStudent;
+	}
+	
+	/**
+	 * Recherche le node par son contenu avec une tolérance de carcatère.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findByContentWithTolerance(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		String contenuSujet = nodSujet.retourneLesContenusEnfants("");
+		if(nod2Student!=null) nodStudent = a.retourneFirstNodeByFindContent2(nod2Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+		if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod1Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+		if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByFindContent2(nod0Student.getNodes(), contenuSujet,commandes.tolerance_characters,commandes.tolerance_text);
+
+		return nodStudent;
+	}
+	
+	/**
+	 * Rechreche le node par son index même si pas demandé.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findByIndexEvenIsFalse(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		if(nodSujet.getAttributs().get("index")!=null){
+			if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "index", nodSujet.getAttributs().get("index"));
+			if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "index", nodSujet.getAttributs().get("index"));
+			if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "index", nodSujet.getAttributs().get("index"));
+		}
+		return nodStudent;
+	}
+	
+	/**
+	 * Recherche le node par table:style-name.</br>
+	 * @param nameNode
+	 * @param nodSujet
+	 * @param nod0Student
+	 * @param nod1Student
+	 * @param nod2Student
+	 * @param a
+	 * @return
+	 */
+	private static node findTableByStyleName(String nameNode, node nodSujet,node nod0Student, node nod1Student, node nod2Student, Run a) {
+		node nodStudent = null;
+		if(nod2Student!=null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod2Student, nameNode, "table:style-name", nodSujet.getAttributs().get("table:style-name"));
+		if(nod1Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod1Student, nameNode, "table:style-name", nodSujet.getAttributs().get("table:style-name"));
+		if(nod0Student!=null) if(nodStudent==null) nodStudent = a.retourneFirstNodeByNameAttributValue(nod0Student, nameNode, "table:style-name", nodSujet.getAttributs().get("table:style-name"));
 		
 		return nodStudent;
 	}

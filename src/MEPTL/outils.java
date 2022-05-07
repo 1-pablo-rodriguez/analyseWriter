@@ -680,11 +680,11 @@ public class outils {
 	public static String withoutCodeAndPointPourRechercheContenuExact(String B) {
 		if(B!=null) {
 			if(B.contains("‽")) B=B.replaceAll("‽[0-9]{0,}", ""); //B=B.substring(0, B.indexOf("‽"));
-			if(B.contains("↑")) B=B.replace("↑", "");
-			if(B.contains("↕")) B=B.replace("↕", "");
-			if(B.contains("≡")) B=B.replace("≡", "");
-			if(!B.isEmpty()) B=B.replace("¢", "");
-			 B=B.replaceAll("‽[0-9]{1,}", "");
+			if(!B.isEmpty()) if(B.contains("↑")) B=B.replace("↑", "");
+			if(!B.isEmpty()) if(B.contains("↕")) B=B.replace("↕", "");
+			if(!B.isEmpty()) if(B.contains("≡")) B=B.replace("≡", "");
+			if(!B.isEmpty()) if(B.contains("¢")) B=B.replace("¢", "");
+			if(!B.isEmpty()) B=B.replaceAll("‽[0-9]{1,}", "");
 		}
 		return B;
 	}

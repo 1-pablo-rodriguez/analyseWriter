@@ -300,7 +300,7 @@ public class ecritureSujet {
 			if(no.get(k)!=null) {
 				no.get(k).getAttributs().put("evaluer", "false");
 				if(listeDesNodesAvecEvalNode(no.get(k).getNomElt())) no.get(k).getAttributs().put("evalNameNode", "0");
-				if(listeDesNodesSautEtTitre(no.get(k).getNomElt())) {no.get(k).getAttributs().put("saut", "false"); no.get(k).getAttributs().put("titre", ""); no.get(k).getAttributs().put("styletitre", "nostyle");}
+				if(listeDesNodesSautEtTitre(no.get(k).getNomElt())) {no.get(k).getAttributs().put("saut", "false"); no.get(k).getAttributs().put("titre", "");}
 				if(listeDesNodesRechercheIndex(no.get(k).getNomElt())) {no.get(k).getAttributs().put("recherche_index", "false"); no.get(k).getAttributs().put("recherche_contenu_exact", "false");}
 				if(listeDesNodesAnalyseStyle(no.get(k).getNomElt())) no.get(k).getAttributs().put("analyseStyle", "false");
 				if(listeDesNodesAllContent(no.get(k).getNomElt())) no.get(k).getAttributs().put("allContent", "strict0");
@@ -354,6 +354,7 @@ public class ecritureSujet {
 	 * @return
 	 */
 	private static boolean listeDesNodesAnalyseStyle(String nameNode) {
+		if(nameNode.contains("text:database-display")) return false;
 		if(nameNode.contains("text:")) return true;
 		return false;
 	}
