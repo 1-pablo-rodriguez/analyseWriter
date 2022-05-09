@@ -24,6 +24,7 @@ public class commandes {
 	public static boolean analyse = false; //analyse des fichiers étudiants
 	public static boolean ecritCode = false; // -write : ecriture du code du sujet
 	public static boolean ecritSujet = false; // -sujet : ecriture 2 du code du sujet, uniquement les nodes évalués
+	public static boolean ecritNodeAnalyse = false;
 	public static boolean ecritNoteCSV = false; // ecriture note.csv
 	public static boolean writefiles = false; // -writefiles permet d'écrire tous les fichiers XML après la lecture en node
 	public static boolean calculLeHashDuFichier = false; //  -hash retourne le hash du fichier d'analyse
@@ -82,18 +83,21 @@ public class commandes {
 			if(args.length==0) {badCommand=true; System.out.println("Il doit y avoir une commande.");System.out.println("Vous pouvez saisir les commandes -aide ou -help pour obtenir la liste des commandes.");}
 			for(int i = 0 ; i < args.length ; i++) {
 				if(args[i].equals("-use")) if((i+1)<args.length) { if(!args[i+1].contains(".xml")) {badCommand=true; System.out.println("La commande -use doit être suivi du nom du fichier.");}}else {badCommand=true; System.out.println("La commande -use doit être suivi du nom du fichier.");}
+				
 				if(args[i].contains(".xml")) {
 					Matcher m = Pattern.compile("{1,}.xml$").matcher(args[i]);
 					if(m.find()) {nameSujet = args[i];}else {badCommand=true;System.out.println("Il y a un problème avec l'extension du fichier d'analyse.\nL'extension doit être \".xml\".");};
 					if(i-1>=0){
 						if(args[i-1].equals("-use")) analyse=true;
 						if(args[i-1].equals("-hash")) calculLeHashDuFichier=true;
-						if(!analyse&&!calculLeHashDuFichier) {
+						if(args[i-1].equals("-a")) ecritNodeAnalyse=true;
+						if(!analyse&&!calculLeHashDuFichier&&!ecritNodeAnalyse) {
 							badCommand=true;
-							System.out.println("Les commandes -use ou -hash doit être suivi du nom du fichier d'analyse.");
+							System.out.println("Les commandes -use ou -hash ou -a doit être suivi du nom du fichier d'analyse.");
 						}
 					}
 				}
+				
 				if(args[i].contains(".csv")) {
 					Matcher m = Pattern.compile("{1,}.csv$").matcher(args[i]);
 					if(m.find()) {fourniCSV=true; nameCSV = args[i];}else {badCommand=true;System.out.println("Il y a un problème avec l'extension du fichier CSV.\nL'extension doit être \".csv\".");}
@@ -156,6 +160,10 @@ public class commandes {
 					if(args.length>2) {System.out.println("\n\n***\nLa commande -hash suivi du nom du fichier d'analyse doit être la seule commande.\n***");clotureWithError();}
 					calculLeHashDuFichier=true;
 				}
+				if(args[i].equals("-a")) {
+					if(args.length>2) {System.out.println("\n\n***\nLa commande -a suivi du nom du fichier d'analyse doit être la seule commande.\n***");clotureWithError();}
+					ecritNodeAnalyse=true;
+				}
 				if(args[i].equals("-sujet")) {
 					if(!(analyse&&args.length==3&&Command.contains("-use"))) {badCommand=true; System.out.println("Vous devez saisir la commande -use suivi du fichier d'analyse et après vous pouvez saisir la commande -sujet.");}
 					ecritSujet=true;
@@ -209,7 +217,7 @@ public class commandes {
 						&&!args[i].contains(".csv")&&!args[i].contains(".svg")&&!args[i].contains(".xml")&&!args[i].contains("-nofeedback")&&!args[i].contains("-help")&&!args[i].equals("-aide")
 						&&!args[i].equals("-about")&&!args[i].equals("-nonote") &&!args[i].equals("-dest")&&!args[i].equals("-sujet")&&!args[i].equals("-nologo")
 						&&!args[i].equals("-licence")&&!args[i].equals("-zipfeedback")&&!args[i].equals("-newLogo")&&!args[i].equals("-f")&&!m.find()&&!args[i].equals("-writefiles")
-						&&!args[i].equals("-hash")&&!m.find()) {
+						&&!args[i].equals("-hash")&&!m.find() &&!args[i].equals("-a")&&!m.find()) {
 					badCommand=true; System.out.println("La commande " + args[i] + " est inconnu.");System.out.println("Vous pouvez taper \"java -jar analyseWriter.jar -aide\" pour obtenir la liste des commandes.");
 				}
 			}

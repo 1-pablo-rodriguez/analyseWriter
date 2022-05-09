@@ -199,6 +199,89 @@ public class verificationFichierAnalyse {
   		
 	}
 	
+	
+	/**
+	 * Vérification du node sujet (premier node <b>fichier</b> et des paramètres.<br>
+	 * <br>
+	 * @param nodSujet
+	 * @return
+	 */
+	public static node InitialisationAvantAnalyse(node nodSujet) {
+		node initSujet = new node();
+		initSujet.setNomElt("init");
+
+		boolean erreur=false;
+		boolean erreurNomPremierNodeFichier=false;
+		boolean erreurManqueAttributEvaluerPremierNodeFichier=false;
+		boolean erreurValeurAttributEvaluerPremierNodeFichier=false;
+		boolean erreurPasNodesEnfantsAuPremierNodeFichier=false;
+		boolean erreurPasAttributMetaSujetAuPremierNodeFichier=false;
+		boolean erreurValeurVideAttributMetaSujetAuPremierNodeFichier=false;
+		boolean erreurValeurAttributProgressionNonConvertibleEnDouble=false;
+		boolean erreurValeurAttributNoteFromNonConvertibleEnDouble=false;
+		
+		if(!nodSujet.getNomElt().equals("fichier")) {
+			erreur=true;
+			erreurNomPremierNodeFichier = true;
+		}
+		if(nodSujet.getAttributs().get("evaluer")==null) {
+			erreur=true;
+			erreurManqueAttributEvaluerPremierNodeFichier = true;
+		}
+		if(nodSujet.getAttributs().get("evaluer")!=null) {
+			if(!nodSujet.getAttributs().get("evaluer").equals("true")) {
+				erreur=true;
+				erreurValeurAttributEvaluerPremierNodeFichier=true;
+			}	
+		}
+		if(nodSujet.getNodes().isEmpty()) {
+			erreur=true;
+			erreurPasNodesEnfantsAuPremierNodeFichier=true;
+		}
+		if(nodSujet.getAttributs().get("metaSujet")==null) {
+			erreur=true;
+			erreurPasAttributMetaSujetAuPremierNodeFichier=true;
+		}
+		if(nodSujet.getAttributs().get("metaSujet")!=null) {
+			if(nodSujet.getAttributs().get("metaSujet").isEmpty()) {
+				erreur=true;
+				erreurValeurVideAttributMetaSujetAuPremierNodeFichier=true;
+			}
+		}
+		if(nodSujet.getAttributs().get("progression")!=null) {
+			String p = nodSujet.getAttributs().get("progression");
+			try {
+				Double.valueOf(p);
+			} catch (Exception e) {
+				erreur=true;
+				erreurValeurAttributProgressionNonConvertibleEnDouble=true;
+			}
+		}
+		if(nodSujet.getAttributs().get("notefrom")!=null) {
+			String p = nodSujet.getAttributs().get("notefrom");
+			try {
+				Double.valueOf(p);
+			} catch (Exception e) {
+				erreur=true;
+				erreurValeurAttributNoteFromNonConvertibleEnDouble=true;
+			}
+		}		
+		
+		initSujet.getAttributs().put("erreur",String.valueOf(erreur));
+		initSujet.getAttributs().put("erreurNomPremierNodeFichier",String.valueOf(erreurNomPremierNodeFichier));
+		initSujet.getAttributs().put("erreurManqueAttributEvaluerPremierNodeFichier",String.valueOf(erreurManqueAttributEvaluerPremierNodeFichier));
+		initSujet.getAttributs().put("erreurValeurAttributEvaluerPremierNodeFichier",String.valueOf(erreurValeurAttributEvaluerPremierNodeFichier));
+		initSujet.getAttributs().put("erreurPasNodesEnfantsAuPremierNodeFichier",String.valueOf(erreurPasNodesEnfantsAuPremierNodeFichier));
+		initSujet.getAttributs().put("erreurPasAttributMetaSujetAuPremierNodeFichier",String.valueOf(erreurPasAttributMetaSujetAuPremierNodeFichier));
+		initSujet.getAttributs().put("erreurValeurVideAttributMetaSujetAuPremierNodeFichier",String.valueOf(erreurValeurVideAttributMetaSujetAuPremierNodeFichier));
+		initSujet.getAttributs().put("erreurValeurAttributProgressionNonConvertibleEnDouble",String.valueOf(erreurValeurAttributProgressionNonConvertibleEnDouble));
+		initSujet.getAttributs().put("erreurValeurAttributNoteFromNonConvertibleEnDouble",String.valueOf(erreurValeurAttributNoteFromNonConvertibleEnDouble));
+		
+		return initSujet;
+	}
+
+	
+	
 	/**
 	 * Vérification de la présence de l'attribut addmenu=true lorsque l'attribut evaluer=true.<br>
 	 * Uniquement pour les nodes principaux.<br>
@@ -648,7 +731,7 @@ public class verificationFichierAnalyse {
 		System.out.println("\t\t│                                                           │");
 		System.out.println("\t\t│  (')_(')                                                  │");
 		System.out.println("\t\t│  ( `.° )                                                  │");
-		System.out.println("\t\t│  (\")__(\") .. à bientôt, analyseWriter.                  │");
+		System.out.println("\t\t│  (\")__(\") .. à bientôt, analyseWriter.                    │");
 		System.out.println("\t\t└───────────────────────────────────────────────────────────┘");
 		System.out.println();
 		System.exit(0);

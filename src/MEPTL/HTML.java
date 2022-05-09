@@ -1,15 +1,14 @@
 package MEPTL;
 
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
+
 
 import cXML.node;
 
 /**
  * 
- * @author pablo rodriguez - 2000
+ * @author pablo rodriguez
  *
  */
 public class HTML {
@@ -221,14 +220,10 @@ public class HTML {
 		public static String Table(node nod) {
 						
 			 String code = HTML.SautLigne();
-			 if(nod.getAttributs().get("titre")!=null) if(!nod.getAttributs().get("titre").isEmpty()) {
-				 code = code + HTML.H1(nod.getAttributs().get("titre"),nod.getAttributs().get("id"))+ HTML.SautLigne() ;
-			 }else {
-				 code = code + HTML.H1("",nod.getAttributs().get("id"))+ HTML.SautLigne() ;
-			 }
+			 code = addSautEtTitres(code,nod);
 			 	 
 			 //ajoute le commentaire
-			 if(!nod.getContenu().isEmpty()) if(nod.getNodes().size()==1) code = code + HTML.Paragraph_classp6(nod.getContenu().get(0)) + HTML.SautLigne();
+			 if(!nod.getContenu().isEmpty()) if(nod.getNodes().size()>0) code = code + HTML.Paragraph_classp6(nod.getContenu().get(0)) + HTML.SautLigne();
 			
 			 code = code  + HTML.TableEntete(); //ajoute l'entête
 		
@@ -248,25 +243,16 @@ public class HTML {
 					 
 					 code = code + HTML.Table(Tst, Key, valueStudent, valueSujet, niveau);
 				 }else {
+					
+					 code = addSautEtTitres(code,nod.getNodes().get(k));
+
 					 
-					 if(nod.getNodes().get(k).getAttributs().get("titre")!=null) if(!nod.getNodes().get(k).getAttributs().get("titre").isEmpty()){
-						 code = code + HTML.SautLigne() + HTML.H2(nod.getNodes().get(k).getAttributs().get("titre")) 
-						 + HTML.SautLigne();
-					 }else {
-						 code = code + HTML.SautLigne();
-					 }
-					 
-					 
-					 if(nod.getNodes().get(k).getAttributs().get("saut")!=null) if(nod.getNodes().get(k).getAttributs().get("saut").equals("true")) {
-						 code = code + HTML.SautLigne();
-					 }
-						 
 						 if(!nod.getContenu().isEmpty()) code = code + HTML.Paragraph_classp6(nod.getContenu().get(0)) + HTML.SautLigne();
 						 
 						 for(int l = 0 ; l < nod.getNodes().get(k).getNodes().size() ; l++) {
 							if(!nod.getNodes().get(k).getNodes().get(l).getNomElt().equals("saut")){
 								 String Tst = nod.getNodes().get(k).getNodes().get(l).getAttributs().get("resultat");
-								// String Key = outils.Traduction(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("attribut")));
+
 								 String Key2 = outils.traduction.get(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("attribut")));
 								 if(Key2==null) Key2 = nod.getNodes().get(k).getNodes().get(l).getAttributs().get("elt") + " " + outils.withoutCodeAndPoint(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("attribut"));
 								 String valueStudent = nod.getNodes().get(k).getNodes().get(l).getAttributs().get("valueStudent");
@@ -275,9 +261,7 @@ public class HTML {
 								 
 								 code = code + HTML.Table(Tst, Key2, valueStudent, valueSujet, niveau);
 							 }else {
-								if(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre")!=null) code = code + HTML.SautLigneOnduleBleu(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre"));
-								if(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre1")!=null) code = code + HTML.SautLigneOnduleBleu(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre1"));
-								if(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre2")!=null) code = code + HTML.SautP8(nod.getNodes().get(k).getNodes().get(l).getAttributs().get("titre2"));
+								 code = addSautEtTitres(code,nod.getNodes().get(k).getNodes().get(l));
 							 }
 							
 						 }
@@ -291,6 +275,27 @@ public class HTML {
 			 return code;
 		}
 
+		
+		private static String addSautEtTitres(String code, node nodeAna) {
+			if(nodeAna.getNomElt().equals("saut")) {
+				code = code + HTML.SautLigne();
+			}
+			if(nodeAna.getAttributs().get("titre")!=null) if(!nodeAna.getAttributs().get("titre").isEmpty()){
+				if(nodeAna.getAttributs().get("id")!=null) code = code + HTML.SautLigne()+ HTML.H1(nodeAna.getAttributs().get("titre"),nodeAna.getAttributs().get("id")) + HTML.SautLigne(); ;
+				if(nodeAna.getAttributs().get("id")==null) code = code + HTML.SautLigne()+ HTML.H1(nodeAna.getAttributs().get("titre")) + HTML.SautLigne(); ;
+			}
+			if(nodeAna.getAttributs().get("titre1")!=null) if(!nodeAna.getAttributs().get("titre1").isEmpty()){
+				code = code + HTML.SautLigne() + HTML.H2(nodeAna.getAttributs().get("titre1")) + HTML.SautLigne(); ;
+			}
+			if(nodeAna.getAttributs().get("titre2")!=null) if(!nodeAna.getAttributs().get("titre2").isEmpty()){
+				code = code + HTML.SautLigne() + HTML.SautLigneOnduleBleu(nodeAna.getAttributs().get("titre2")) + HTML.SautLigne(); ;
+			}
+			if(nodeAna.getAttributs().get("titre3")!=null) if(!nodeAna.getAttributs().get("titre3").isEmpty()){
+				code = code + HTML.SautLigne() + HTML.SautP8(nodeAna.getAttributs().get("titre3")) + HTML.SautLigne(); ;
+			}
+			return code;
+		}
+		
 		
 		
 		// Table correct pour application des styles
@@ -411,7 +416,10 @@ public class HTML {
 					"";
 		}
 		
-		// image de la progression
+		/**
+		 * Image SVG de la progression
+		 * @return
+		 */
 		public static String imgProgression() {
 			return "<svg\r\n" + 
 					"   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"\r\n" + 
@@ -2494,7 +2502,11 @@ public class HTML {
 					"  </g>\r\n" + 
 					"</svg>";
 		}
-
+		
+		/**
+		 * Image SVG de la note A.
+		 * @return
+		 */
 		public static String NoteA( ) {
 			return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
 					+ "<!-- Created with Inkscape (http://www.inkscape.org/) -->\r\n"
@@ -2838,6 +2850,10 @@ public class HTML {
 					+ "</svg>\r\n";
 		}
 
+		/**
+		 * Image SVG de la note B
+		 * @return
+		 */
 		public static String NoteB() {
 			return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
 					+ "<!-- Created with Inkscape (http://www.inkscape.org/) -->\r\n"
@@ -3164,6 +3180,10 @@ public class HTML {
 					+ "</svg>\r\n";
 		}
 		
+		/**
+		 * Image SVG de la note C
+		 * @return
+		 */
 		public static String NoteC() {
 			return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
 					+ "<!-- Created with Inkscape (http://www.inkscape.org/) -->\r\n"
@@ -5406,6 +5426,10 @@ public class HTML {
 					+ "</svg>\r\n";
 		}
 
+		/**
+		 * Image SVG de la note D
+		 * @return
+		 */
 		public static String NoteD() {
 			return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
 					+ "<!-- Created with Inkscape (http://www.inkscape.org/) -->\r\n"
@@ -5520,6 +5544,10 @@ public class HTML {
 					+ "";
 		}
 		
+		/**
+		 * Image SVG de la note E
+		 * @return
+		 */
 		public static String NoteE() {
 			return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\r\n"
 					+ "<!-- Created with Inkscape (http://www.inkscape.org/) -->\r\n"
@@ -5610,7 +5638,10 @@ public class HTML {
 					+ "";
 		}
 		
-		// image du bouton interrogation
+		/**
+		 * Image SVG Interoorgation
+		 * @return
+		 */
 		public static String imgInterogation() {
 			return "<svg\r\n"
 					+ "   width=\"5.2916665mm\"\r\n"
@@ -5689,91 +5720,72 @@ public class HTML {
 		 * Retourne l'entête et les styles CSS du formulaire
 		 * @return
 		 */
-		public static String getHTMLenteteEtCssFormulaireHTML() {
-			Date aujourdhui = new Date();
-			DateFormat mediumDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
-			
-			return "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">\r"
-					+ "<html>\r"
-					+ "<head>\r"
-					+ "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\"/>\r"
-					+ "<title>Analyse mise en page d'un texte long</title>\r"
-					
-					+ "<meta name=\"generator\" content=\"AnalyseWriter V1.0\"/>"
-					+ "<meta name=\"author\" content=\"Pablo Rodriguez\"/>"
-					+ "<meta name=\"created\" content=\""+  mediumDateFormat.format(aujourdhui) +"\"/>"
-					+ "<meta name=\"changedby\" content=\"Pablo Rodriguez\"/>"
-					+ "<meta name=\"changed\" content=\"" + mediumDateFormat.format(aujourdhui) + "\"/>"
-					
-					+"<style type=\"text/css\">" 
+		public static String getStyleCSS() {
+//			Date aujourdhui = new Date();
+//			DateFormat mediumDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
+			return "\r<style type=\"text/css\">\r" 
 					+ "p.pablo { margin-bottom: 0.25cm; line-height: 100%; background: transparent;  margin-left: 1cm; }"
 					+ ".header {background-color: #f1f1f1;padding: 30px;text-align:center;}"
 					+ "h1 { margin-bottom: 0.25cm; background: transparent;}"
+					+ "h2 {color: blue;font-size:22pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;  margin-right: 10px; text-decoration: underline overline;}"
+					+ "h3 {font-size:18pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 20pt;}"
 					+ "header.h1.western { font-family: \"Arial\"; font-size: 18pt; font-weight: bold; backgroung: #adff2f;}"
 					+ ".header p {color:blue; font-size:30px;}"
+					+ ".triche {background: #AA0000;padding-top: 5px;padding-right: 5px;padding-bottom: 5px;padding-left: 5px;width=80%;margin-top:18px; box-shadow: 5px 10px 18px #800000;}"
+					+ ".triche p {color:white; font-size:16px;margin-left:10px;margin-bottom:6px;margin-top:6px}"
 					+ ".header h4 {text-align:left;font-family: \"Arial\"; font-size: 12pt; font-weight: bold; line-height: 110%;}"
 					+ "h4.western { font-family: \"Arial\"; font-size: 14pt; font-style: italic; font-weight: bold; line-height: 40%}"
-					+ "a:link { color: #000080; so-language: zxx; text-decoration: underline }" 
-					+ "a:visited { color: #800000; so-language: zxx; text-decoration: underline }"
+					+ "a:link { color: #000099; so-language: zxx; text-decoration: underline; margin-left: 10px; }" 
+					+ "a:visited { color: #99000; so-language: zxx; text-decoration: underline; margin-left: 10px; }"
 					+ "hr { display: block; margin-top: 0.5em; margin-bottom: 8em; margin-left: 2em; margin-right: 2em; border-style: inset; border-width: 4px;}"
 					+ "spanpablo { float: right; width: 8em; font-size: 250%; font-family: algerian, courier; line-height: 80%; margin-right: 1%; color: red; text-align: center}"
 					+ "p.p1{margin-bottom: 0cm; margin-top: 0cm; line-height: 100%; background: transparent;  margin-left: 0cm; white-space: pre;}"
+					+ "p.p8{font-size:14pt;margin-bottom: 0cm; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 8pt;  margin-right: 10px;}"
+					+ "p.p9{font-size:16pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 40pt;  margin-right: 0cm;text-decoration: underline overline wavy blue;text-shadow: 0px 1px #101010;}"
+					+ "p.p10{font-size:12pt;margin-bottom: 12px;text-align: left; margin-top: 0cm; line-height: 110%; background: transparent;  margin-left: 30pt;  margin-right: 0cm;text-decoration: underline overline wavy red;}"
+					+ ".commentaire{margin-left: 0px; margin-bottom: 24px; margin-top: 24px;font-size:1.4rem}"
 					+ "p.p2{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; line-height: 115%}"
 					+ "p.p3{margin-left: 20px; line-height: 100%; border: 1px solid black; background-color: lightcyan; margin-right: 10px;  }"
 					+ "p.p4{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; margin-right: 4px; line-height: 115%; background: darkblue; color:white; font-size: 20px; white-space: pre;}"
 					+ "p.p5{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: red; color:white; font-size: 20px;}"
-					+ "p.p6{margin-left: 0px; margin-bottom: 0cm; margin-top: 4px; margin-right: 4px; line-height: 115%; background: beige; color:darkcyan; font-size: 20px; white-space: pre;}"
+					+ "p.p6{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: beige; color:darkcyan; font-size: 20px;}"
 					+ "p.p7{margin-left: 80px; margin-bottom: 0cm; margin-top: 4px; margin-right: 80px; line-height: 115%; background: #7FFF00; font-size: 20px;}"
 					+ "#navbar {overflow: hidden;background-color: #333;width:100%;box-shadow: 5px 10px 8px #888888;}"
 					+ "#navbar a {float: left;display: block;color: #f2f2f2;text-align: center;padding: 14px 16px;text-decoration: none;font-size: 17px;}"
 					+ "#navbar a:hover {background-color: #ddd;color: black;}" 
-					+ "#navbar a.active {background-color: #4CAF50;color: white;}"
-					+ "#navbar a.active2 {background-color: #FF8050;color: white;}"
+					+ "#navbar a.active {background-color: #4CAF50;color: white;margin-left:0px;}"
+					+ "#navbar a.active2 {background-color: #FF8050;color: white;margin-left:0px;}"
+					+ "#navbar a.active3 {background-color: #5080FF;color: white;margin-left:0px;}"
 					+ "div.sticky {position: fixed;top: 0;width: 100%;}"
 					+ ".sticky + .content {padding-top: 60px;}"
+					+ "#navbar2 {overflow: hidden; background-color: #333;}"
+					+ "#navbar2 a {float: left; font-size: 18px; color: white; text-align: center; padding: 16px 18px; text-decoration: none;}"
+					+ ".dropdown {position: relative; display: inline-block;}"
+					+ ".dropbtn:hover, .dropbtn:focus { background-color: #3e8e41;}"
+					+ ".dropdown-content {display: none; position: absolute; background-color: #f9f9f9; min-width: 160px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);}"
+					+ ".dropdown-content a {color: black; padding: 12px 16px; text-decoration: none; display: block;}"
+					+ ".dropdown-content a:hover {background-color: #f1f1f1}"
+					+".show {display:block;}"
+					+ "#myDropdown {background-color: #508050;color: black;}"
+					+ ".menu-box{display: none;}"
+					+ ".menuopen{display: block;}"
 					+ ".tooltip {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-					+ ".tooltip .tooltiptext {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -30px; width: 120px;top: 100%;left: 10%;}"
+					+ ".tooltip .tooltiptext {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-left: -30px; width: 260px;top: 100%;left: 10%;}"
 					+ ".tooltip .tooltiptext::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
 					+ ".tooltip:hover .tooltiptext {visibility: visible;}"
+					+ ".tooltip1 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
+					+ ".tooltip1 .tooltiptext1 {visibility: hidden;background-color: #0000CC;color: #fff;text-align: left;border-radius: 4px;padding: 10px;position: absolute;z-index: 1;margin-left: -40px; width: 280px;top: 100%;left: 10%;}"
+					+ ".tooltip1 .tooltiptext1::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent #0000CC transparent;}"
+					+ ".tooltip1:hover .tooltiptext1 {visibility: visible;}"
 					+ ".tooltip2 {position: relative;display: inline-block;border-bottom: 1px dotted black;}"
-					+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: center;border-radius: 6px;padding: 5px 0;position: absolute;z-index: 1;margin-top: -15px; width: 240px;left: 110%;}"
-					+ ".tooltip2 .tooltiptext2::after {content: \" \";position: absolute;top: 50%;right: 100%;margin-top: -5px;border-width: 5px;border-style: solid;border-color: transparent black transparent transparent;}"
+					+ ".tooltip2 .tooltiptext2 {visibility: hidden;background-color: black;color: #fff;text-align: left;border-radius: 8px;padding: 8px;position: absolute;z-index: 1;margin-left: -40px; width: 340px;top: 100%;left: 10%;}"
+					+ ".tooltip2 .tooltiptext2::after {content: \" \";position: absolute;bottom: 100%;left: 50%;margin-left: -5px;border-width: 5px;border-style: solid;border-color: transparent transparent black transparent;}"
 					+ ".tooltip2:hover .tooltiptext2 {visibility: visible;}"
-					+ "</style>"
-			
-                    +"</head>\r";
+					+ ".footer {position: fixed;left: 0;bottom: 0;width: 100%;background-color: white;color: black;text-align: center;}"
+					+"\r</style>\r";
 		}
 
-	
-		/**
-		 * Retourne l'ouverture de la balise body
-		 * @return
-		 */
-		public static String getHTMLdebutBody(double note, String noteFrom, String NumSujet, String dossier, double proportioncorrect, String progression) {
-			DecimalFormat df1 = new DecimalFormat("##.##");
-			Date aujourdhui = new Date();
-			DateFormat mediumDateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,DateFormat.MEDIUM);
-			
-			return  "<body lang=\"fr-FR\" link=\"#000080\" vlink=\"#800000\" dir=\"ltr\">\r"
-					+"<div class=\"header\">"
-			        +"<h1 id=\"#top\" class=\"western\" align=\"center\" style=\"margin-left: 1cm; margin-right: 1cm; border: 2.00pt solid #ffffff; padding: 0.4cm 0.1cm; background: #505050\">\r\n" + 
-					"<font color=\"#ffffff\" size=\"6\" style=\"font-size: 26pt\">Feedback - Analyse LibreOffice Writer<br/>"+HTML.imgLogos()+"</font></h1>\r"
-					+"<p><spanpablo>" + df1.format(note) + " / " + noteFrom +"<br/><span style=\"color:blue; font-size:30px\">Sujet "+ NumSujet +"</span></spanpablo></p>\r"
-					+"<h4>Date d'analyse :  <font color=\"#0000ff\">"+ mediumDateFormat.format(aujourdhui) + "</font><br/>"
-				    +"<div class=\"tooltip2\">Dossier étudiant : <font color=\"#0000ff\"><b>"+ dossier + "</b></font><span class=\"tooltiptext2\">Dossier téléchargé depuis la plateforme Moodle.</span></div><br/>"
-				    +"Analyse MEPTL : sujet "+ NumSujet + "<br/>\r"	
-				    +"Méthode : <div class=\"tooltip\"><font color=\"#0000ff\">Progression " + progression + "</font><span class=\"tooltiptext\">Explication<br/>"+ HTML.imgProgression() +"</span></div> - Proportion correcte du fichier analysé : " + Math.floor(proportioncorrect*10000)/100 + "%<br/>"
-				   	+"<br/><font color=\"#808080\" style=\"font-size: 9pt\"><i>Auteur : P. Rodriguez - Licence GPL v3.0 - Avril 2020</i></font></h4>"
-				    +"</div>";
-		}
 		
-		/**
-		 * Retourne la fermeture de la balise body et html
-		 * @return
-		 */
-		public static String getHTMLfinBodyHTML() {
-			return 	"</body>\r</html>";
-		}
 		
 		/**
 		 * Retourne le code HTML du menu
@@ -5784,7 +5796,7 @@ public class HTML {
 
 			String codeHTMLMenu= "<div id=\"navbar\"  onclick=\"toggleMenu()\"><a class=\"active\" href=\"#top\">Note</a>";
 			for(int i =0 ; i < items.size(); i++) {
-				codeHTMLMenu = codeHTMLMenu + "<a class=\"active3\" href=\"#"+  items.get(i).getAttributs().get("id") + "\">" + items.get(i).getAttributs().get("titre") + "</a>";
+				codeHTMLMenu = codeHTMLMenu + "<a class=\"active3\" href=\""+  items.get(i).getAttributs().get("id") + "\">" + items.get(i).getAttributs().get("titre") + "</a>";
 			}
 			codeHTMLMenu = codeHTMLMenu + "</div>";
 			

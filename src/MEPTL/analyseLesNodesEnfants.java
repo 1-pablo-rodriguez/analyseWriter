@@ -28,10 +28,16 @@ public class analyseLesNodesEnfants {
 			nodEnfantSujet = nodSujet.getNodes().get(j);
 			String nameNode = nodEnfantSujet.getNomElt();
 			
+			
+			//*****************************
+			//** Ajoute un saut de ligne **
+			//*****************************
+			PourAnalyse = meptl.addSaut(nodEnfantSujet, PourAnalyse);
+			
 			//********************************
 			//** Ajoute des sauts et titres **
 			//********************************
-			PourAnalyse = meptl.addNodeSautTitre(nodEnfantSujet, PourAnalyse); // ajoute des saut de page s'il y a des sauts avec des titres
+			PourAnalyse = meptl.addNodeSautTitre(nodEnfantSujet, PourAnalyse);
 
 			//***************************************************
 			//** Recherche le node correspondant de l'étudiant **
@@ -55,7 +61,7 @@ public class analyseLesNodesEnfants {
 			//**************************************************************
 			//** Analyse attribut et contenu du node enfant de l'étudiant **
 			//**************************************************************
-			PourAnalyse = meptl.analyseLesAttributEtContenuDuNode(nodStudentCorrespondantAuNodSujet, nodEnfantSujet, PourAnalyse, nomDuNodePourAnalyse,nameNode);
+			PourAnalyse = meptl.evalLesAttributEtContenuDuNode(nodStudentCorrespondantAuNodSujet, nodEnfantSujet, PourAnalyse, nomDuNodePourAnalyse,nameNode);
 		
 			//*******************************
 			//** méthode analyseStyle=true **
@@ -114,10 +120,21 @@ public class analyseLesNodesEnfants {
 				//ajoute les valeurs par défaut.
 				if(StyleParagraphStudent!=null) StyleParagraphStudent = meptl.ajouteValeurParDefautAuStyleParagraph(nodStudentParagraphs , StyleParagraphStudent);
 				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				PourAnalyse = meptl.addSaut(StyleParagraphSujet, PourAnalyse);
+				
+				//********************************
+				//** Ajoute des sauts et titres **
+				//********************************
+				PourAnalyse = meptl.addNodeSautTitre(StyleParagraphSujet, PourAnalyse);
+
+				
 				//**************************************************************
 				//** Analyse attribut et contenu du node enfant de l'étudiant **
 				//**************************************************************
-				PourAnalyse = meptl.analyseLesAttributAnalyseStyle(StyleParagraphStudent, StyleParagraphSujet, PourAnalyse, nomDuNodePourAnalyse,"style:style");
+				PourAnalyse = meptl.evalLesAttributAnalyseStyle(StyleParagraphStudent, StyleParagraphSujet, PourAnalyse, nomDuNodePourAnalyse,"style:style");
 			}
 			
 		}

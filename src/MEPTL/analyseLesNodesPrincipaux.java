@@ -47,35 +47,41 @@ public class analyseLesNodesPrincipaux {
 				biblio.setNomElt("biblio");
 				biblio.getAttributs().put("namebiblio", nomDeLaBiblio);
 				
-				if(nodSujetBibio.getAttributs().get("titre")!=null) {
-					biblio.getAttributs().put("titre", nodSujetBibio.getAttributs().get("titre"));
-				}
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				biblio = meptl.addSaut(nodSujetBibio,biblio);
+				
+				//*********************
+				//** Ajoute un titre **
+				//*********************
+				biblio = meptl.addNodeSautTitre(nodSujetBibio,biblio);
+				
 						
 				String TitreTable = outils.withoutCodeAndPoint(nodSujetBibio.retourneFirstEnfantsByName("text:index-title").retourneLesContenusEnfants(""));
-
 				node nodSujet = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodSujetBiblio, "text:index-body"), TitreTable);
 				node nodStudent = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodStudentBiblio, "text:index-body"), TitreTable);
 								
-				biblio = meptl.analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, biblio, "ana:biblio", nodSujet.getNomElt());
+				biblio = meptl.evalLesAttributEtContenuDuNode(nodStudent, nodSujet, biblio, "ana:biblio", nodSujet.getNomElt());
 				
 				for(int j =0 ; j < nodSujet.getNodes().size();j++) {
 					if(nodStudent!=null) {
 						if(j<nodStudent.getNodes().size()) {
-							biblio = meptl.analyseLesAttributEtContenuDuNode(nodStudent.getNodes().get(j), nodSujet.getNodes().get(j), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNomElt());
+							biblio = meptl.evalLesAttributEtContenuDuNode(nodStudent.getNodes().get(j), nodSujet.getNodes().get(j), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNomElt());
 							for(int k=0; k<nodSujet.getNodes().get(j).getNodes().size();k++) {
 								if(k<nodStudent.getNodes().get(j).getNodes().size()) {
-									biblio = meptl.analyseLesAttributEtContenuDuNode(nodStudent.getNodes().get(j).getNodes().get(k), nodSujet.getNodes().get(j).getNodes().get(k), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+									biblio = meptl.evalLesAttributEtContenuDuNode(nodStudent.getNodes().get(j).getNodes().get(k), nodSujet.getNodes().get(j).getNodes().get(k), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 								}else {
-									biblio = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+									biblio = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 								}
 							}
 						}else {
-							biblio = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNomElt());
+							biblio = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNomElt());
 						}
 					}else {
-						biblio = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNomElt());
+						biblio = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNomElt());
 						for(int k=0; k<nodSujet.getNodes().get(j).getNodes().size();k++) {
-							biblio = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+							biblio = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), biblio, "ana:biblio", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 						}
 					}
 				}
@@ -128,6 +134,7 @@ public class analyseLesNodesPrincipaux {
 		//*******************************************************************
 		for(int i = 0 ; i < nodSujetNumerotation.getNodes().size(); i++) {
 			if(nodSujetNumerotation.getNodes().get(i).getNomElt().equals("text:outline-level-style")) {
+				node numerotationSujet = nodSujetNumerotation.getNodes().get(i);
 				int pointDebut = outils.getPointsClass();
 				int pointTotalDebut = outils.getPointTotal();
 				String levelnumrotation = outils.withoutCodeAndPoint(nodSujetNumerotation.getNodes().get(i).getAttributs().get("text:level"));
@@ -136,13 +143,26 @@ public class analyseLesNodesPrincipaux {
 				numerotation.getAttributs().put("level", levelnumrotation);
 				if(nodSujetNumerotation.getNodes().get(i).getAttributs().get("titre")!=null) numerotation.getAttributs().put("titre", nodSujetNumerotation.getNodes().get(i).getAttributs().get("titre"));
 				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				numerotation = meptl.addSaut(numerotationSujet,numerotation);
+				
+				//*********************
+				//** Ajoute un titre **
+				//*********************
+				numerotation = meptl.addNodeSautTitre(numerotationSujet,numerotation);
+				
+				//*******************************
+				//** Recherche le node Student **
+				//*******************************
 				node numerotationStudent = a.retourneFirstNodeByNameAttributValue(nodStudentNumerotation, "text:outline-level-style", "text:level", levelnumrotation);
-				node numerotationSujet = nodSujetNumerotation.getNodes().get(i);
+
 				
 				//********************************************
 				//** analyse les attributs des nodes <page> **
 				//********************************************
-				numerotation = meptl.analyseLesAttributEtContenuDuNode(numerotationStudent, numerotationSujet, numerotation, "ana:numerotation",numerotationSujet.getNomElt());
+				numerotation = meptl.evalLesAttributEtContenuDuNode(numerotationStudent, numerotationSujet, numerotation, "ana:numerotation",numerotationSujet.getNomElt());
 				
 				//************************************
 				//** analyse tous les nodes enfants **
@@ -209,6 +229,11 @@ public class analyseLesNodesPrincipaux {
 				frame.setNomElt("frame");
 				frame.getAttributs().put("nameframe", nomDuFrame);
 				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				frame = meptl.addSaut(frameSujet,frame);
+				
 				//*********************
 				//** Ajoute un titre **
 				//*********************
@@ -222,7 +247,7 @@ public class analyseLesNodesPrincipaux {
 				//********************************************
 				//** analyse les attributs des nodes <page> **
 				//********************************************
-				frame = meptl.analyseLesAttributEtContenuDuNode(frameStudent, frameSujet, frame, "ana:frame",frameSujet.getNomElt());
+				frame = meptl.evalLesAttributEtContenuDuNode(frameStudent, frameSujet, frame, "ana:frame",frameSujet.getNomElt());
 
 				//************************************
 				//** analyse tous les nodes enfants **
@@ -282,6 +307,11 @@ public class analyseLesNodesPrincipaux {
 			node nodSujet = sujet.get(i);
 			String namenode = nodSujet.getNomElt();
 			
+			//*****************************
+			//** Ajoute un saut de ligne **
+			//*****************************
+			nodmeta = meptl.addSaut(nodSujet,nodmeta);
+			
 			//*********************
 			//** Ajoute un titre **
 			//*********************
@@ -299,7 +329,7 @@ public class analyseLesNodesPrincipaux {
 						//** Recherche le node Student **
 						//*******************************
 						node nodStudent = a.retourneFirstNodeByNameAttributContainsValueNetTexte(nodStudentMeta, namenode,k,outils.withoutCodeAndPointPourRechercheContenuExact(valueOfAttribut));
-						nodmeta = meptl.analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, nodmeta, "ana:meta", namenode);
+						nodmeta = meptl.evalLesAttributEtContenuDuNode(nodStudent, nodSujet, nodmeta, "ana:meta", namenode);
 					}
 				}
 			}else {
@@ -310,12 +340,12 @@ public class analyseLesNodesPrincipaux {
 			
 				if(NStudent!=null) {
 					if(!NStudent.isEmpty()) {
-						nodmeta = meptl.analyseLesAttributEtContenuDuNode(NStudent.get(0), sujet.get(i), nodmeta, "ana:meta", namenode);
+						nodmeta = meptl.evalLesAttributEtContenuDuNode(NStudent.get(0), sujet.get(i), nodmeta, "ana:meta", namenode);
 					}else {
-						nodmeta = meptl.analyseLesAttributEtContenuDuNode(null, sujet.get(i), nodmeta, "ana:meta", namenode);
+						nodmeta = meptl.evalLesAttributEtContenuDuNode(null, sujet.get(i), nodmeta, "ana:meta", namenode);
 					}
 				}else {
-					nodmeta = meptl.analyseLesAttributEtContenuDuNode(null, sujet.get(i), nodmeta, "ana:meta", namenode);
+					nodmeta = meptl.evalLesAttributEtContenuDuNode(null, sujet.get(i), nodmeta, "ana:meta", namenode);
 				}
 				
 			}
@@ -361,7 +391,7 @@ public class analyseLesNodesPrincipaux {
 		//*******************************************************
 		//** Parcours les nodes enfants du node <text:section> **
 		//*******************************************************
-		for(int i = 0 ; i < nodSujetSections.getNodes().size(); i++) { //niveau 1
+		for(int i = 0 ; i < nodSujetSections.getNodes().size(); i++) {
 			if(nodSujetSections.getNodes().get(i).getNomElt().equals("text:section")) {
 				node sectionSujet = nodSujetSections.getNodes().get(i);
 				int pointDebut = outils.getPointsClass();
@@ -371,6 +401,11 @@ public class analyseLesNodesPrincipaux {
 				node section = new node();
 				section.setNomElt("section");
 				section.getAttributs().put("namesection", nomDeLaSection);
+				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				section = meptl.addSaut(sectionSujet,section);
 				
 				//*********************
 				//** Ajoute un titre **
@@ -385,7 +420,7 @@ public class analyseLesNodesPrincipaux {
 				//***********************************************
 				//** analyse les attributs des nodes <section> **
 				//***********************************************
-				section = meptl.analyseLesAttributEtContenuDuNode(sectionStudent, sectionSujet, section, "ana:section",sectionSujet.getNomElt());
+				section = meptl.evalLesAttributEtContenuDuNode(sectionStudent, sectionSujet, section, "ana:section",sectionSujet.getNomElt());
 	
 				//************************************
 				//** analyse tous les nodes enfants **
@@ -493,7 +528,7 @@ public class analyseLesNodesPrincipaux {
 		node nodseq = new node();
 		nodseq.setNomElt("sequences");
 		nodseq.setAttributs(nodSujetSequence.getAttributs());
-		nodseq.setContenu(nodSujetSequence.getContenu()); //ajoute le commantire
+		nodseq.setContenu(nodSujetSequence.getContenu()); //ajoute le commentaire
 		
 		//***************************************
 		//** Ajoute l'identifiant pour le menu **
@@ -520,6 +555,11 @@ public class analyseLesNodesPrincipaux {
 				seq.setNomElt("sequence");
 				seq.getAttributs().put("name", nomSequence);
 				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				seq = meptl.addSaut(seqSujet,seq);
+				
 				//*********************
 				//** Ajoute un titre **
 				//*********************
@@ -538,7 +578,7 @@ public class analyseLesNodesPrincipaux {
 				//***********************************************
 				//** analyse les attributs des nodes <section> **
 				//***********************************************
-				seq = meptl.analyseLesAttributEtContenuDuNode(seqStudent, seqSujet, seq, "ana:seq",seqSujet.getNomElt());
+				seq = meptl.evalLesAttributEtContenuDuNode(seqStudent, seqSujet, seq, "ana:seq",seqSujet.getNomElt());
 
 				//****************************************************************
 				//** Insère les attributs des points dans les node de l'analyse **
@@ -588,7 +628,7 @@ public class analyseLesNodesPrincipaux {
 		//******************************************************
 		//** Parcours les nodes enfants du node <table:table> **
 		//******************************************************
-		for(int i = 0 ; i < nodSujetTableaux.getNodes().size(); i++) { //niveau 1
+		for(int i = 0 ; i < nodSujetTableaux.getNodes().size(); i++) {
 			if(nodSujetTableaux.getNodes().get(i).getNomElt().equals("table:table")) {
 				int pointDebut = outils.getPointsClass();
 				int pointTotalDebut = outils.getPointTotal();
@@ -598,6 +638,11 @@ public class analyseLesNodesPrincipaux {
 				node tableau = new node();
 				tableau.setNomElt("tableau");
 				tableau.getAttributs().put("nametableau", nomDeLaTable);
+				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				tableau = meptl.addSaut(tableSujet,tableau);
 				
 				//*********************
 				//** Ajoute un titre **
@@ -612,7 +657,7 @@ public class analyseLesNodesPrincipaux {
 				//***************************************************
 				//** analyse les attributs des nodes <table:table> **
 				//***************************************************
-				tableau = meptl.analyseLesAttributEtContenuDuNode(tableauStudent, tableSujet, tableau, "ana:tableau",tableSujet.getNomElt());
+				tableau = meptl.evalLesAttributEtContenuDuNode(tableauStudent, tableSujet, tableau, "ana:tableau",tableSujet.getNomElt());
 	
 				//************************************
 				//** analyse tous les nodes enfants **
@@ -713,72 +758,88 @@ public class analyseLesNodesPrincipaux {
 		nodTablesMs.setAttributs(nodSujetTableI.getAttributs());//ajoute tous les attributs du sujet
 		nodTablesMs.setContenu(nodSujetTableI.getContenu());//ajoute le commentaire du sujet
 		
-		//ajoute l'identifiant pour le menu
+		//***************************************
+		//** Ajoute l'identifiant pour le menu **
+		//***************************************
 		if(a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "tableillustrations")!=null) {
 			nodTablesMs.getAttributs().put("id", a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "tableillustrations").getAttributs().get("id"));
 		}
 		
-		//initialise les points
+		//***************************
+		//** initialise les points **
+		//***************************
 		outils.initiliseLesPoints();
 		
 		
 		for(int i = 0 ; i < nodSujetTableI.getNodes().size(); i++) {
 			if(nodSujetTableI.getNodes().get(i).getNomElt().equals("text:illustration-index")) {
+				int pointDebut = outils.getPointsClass();
+				int pointTotalDebut = outils.getPointTotal();
 				node table = new node();
 				table.setNomElt("tableillustrations");
+				String TitreTable = outils.withoutCodeAndPoint(nodSujetTableI.getNodes().get(i).retourneFirstEnfantsByName("text:index-title").retourneLesContenusEnfants(""));
+				node nodSujet = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodSujetTableI, "text:index-body"), TitreTable);
+				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				table = meptl.addSaut(nodSujet,table);
 				
 				//*********************
 				//** Ajoute un titre **
 				//*********************
-				if(nodSujetTableI.getNodes().get(i).getAttributs().get("titre")!=null) {
-					String titre = nodSujetTableI.getNodes().get(i).getAttributs().get("titre");
-					if(!titre.isEmpty()) table.getAttributs().put("titre", titre);
-				}
+				table = meptl.addNodeSautTitre(nodSujet,table);
 				
-				
-				int pointDebut = outils.getPointsClass();
-				int pointTotalDebut = outils.getPointTotal();
-				String TitreTable = outils.withoutCodeAndPoint(nodSujetTableI.getNodes().get(i).retourneFirstEnfantsByName("text:index-title").retourneLesContenusEnfants(""));
-				
-				node nodSujet = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodSujetTableI, "text:index-body"), TitreTable);
+				//*******************************
+				//** Recherche le node Student **
+				//*******************************
 				node nodStudent = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodStudentTableI, "text:index-body"), TitreTable);
 		
-				table = meptl.analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, table, "ana:tableillustration", nodSujet.getNomElt());
+				//*********************************************
+				//** analyse les attributs des nodes <table> **
+				//*********************************************
+				table = meptl.evalLesAttributEtContenuDuNode(nodStudent, nodSujet, table, "ana:tableillustration", nodSujet.getNomElt());
 				
+				//****************************************************************
+				//** Parcours les nodes enfants du node <text:illustration-index> **
+				//****************************************************************
 				for(int j =0 ; j < nodSujet.getNodes().size();j++) {
 					if(nodStudent!=null) {
 						if(j<nodStudent.getNodes().size()) {
-							table = meptl.analyseLesAttributEtContenuDuNode(nodStudent.getNodes().get(j), nodSujet.getNodes().get(j), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNomElt());
+							table = meptl.evalLesAttributEtContenuDuNode(nodStudent.getNodes().get(j), nodSujet.getNodes().get(j), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNomElt());
 							for(int k=0; k<nodSujet.getNodes().get(j).getNodes().size();k++) {
 								if(k<nodStudent.getNodes().get(j).getNodes().size()) {
-									table = meptl.analyseLesAttributEtContenuDuNode(nodStudent.getNodes().get(j).getNodes().get(k), nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+									table = meptl.evalLesAttributEtContenuDuNode(nodStudent.getNodes().get(j).getNodes().get(k), nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 								}else {
-									table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+									table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 								}
 							}
 						}else {
-							table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNomElt());
+							table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNomElt());
 						}
 					}else {
-						table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNomElt());
+						table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNomElt());
 						for(int k=0; k<nodSujet.getNodes().get(j).getNodes().size();k++) {
-							table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+							table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tableillustration", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 						}
 					}
 				}
-				
-				
+				//****************************************************************
+				//** Insère les attributs des points dans les node de l'analyse **
+				//****************************************************************
 				table.getAttributs().put("point", String.valueOf(outils.getPointsClass()-pointDebut));	
 				table.getAttributs().put("pointTotal", String.valueOf(outils.getPointTotal()-pointTotalDebut));
 				nodTablesMs.getNodes().add(table);
-
 			}
 		}
-		
-			nodTablesMs.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
-			nodTablesMs.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
-			nodTablesMs.getAttributs().put("proportioncorrect",String.valueOf(outils.getProportionCorrect()));
-			nodTablesMs.setClose(true);		
+		//****************************************************************
+		//** Insère les attributs des points dans les node de l'analyse **
+		//****************************************************************
+		nodTablesMs.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
+		nodTablesMs.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
+		nodTablesMs.getAttributs().put("proportioncorrect",String.valueOf(outils.getProportionCorrect()));
+		nodTablesMs.setClose(true);		
+
 		return nodTablesMs;
 	}
 	
@@ -796,12 +857,16 @@ public class analyseLesNodesPrincipaux {
 		nodTablesMs.setAttributs(nodSujetTableM.getAttributs());//ajoute tous les attributs du sujet
 		nodTablesMs.setContenu(nodSujetTableM.getContenu());//ajoute le commentaire du sujet
 		
-		//ajoute l'identifiant pour le menu
+		//***************************************
+		//** Ajoute l'identifiant pour le menu **
+		//***************************************
 		if(a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "tablematieres")!=null) {
 			nodTablesMs.getAttributs().put("id", a.retourneFirstNodeByNameAttributValue(nodmenu, "item", "name", "tablematieres").getAttributs().get("id"));
 		}
 		
-		//initialise les points
+		//***************************
+		//** initialise les points **
+		//***************************
 		outils.initiliseLesPoints();
 		
 		
@@ -809,59 +874,74 @@ public class analyseLesNodesPrincipaux {
 			if(nodSujetTableM.getNodes().get(i).getNomElt().equals("text:table-of-content")) {
 				node table = new node();
 				table.setNomElt("tablematiere");
-				
-				//*********************
-				//** Ajoute un titre **
-				//*********************
-				if(nodSujetTableM.getNodes().get(i).getAttributs().get("titre")!=null) {
-					String titre = nodSujetTableM.getNodes().get(i).getAttributs().get("titre");
-					if(!titre.isEmpty()) table.getAttributs().put("titre", titre);
-				}
-				
-				
 				int pointDebut = outils.getPointsClass();
 				int pointTotalDebut = outils.getPointTotal();
 				String TitreTable = outils.withoutCodeAndPoint(nodSujetTableM.getNodes().get(i).retourneFirstEnfantsByName("text:index-title").retourneLesContenusEnfants(""));
 				
 				node nodSujet = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodSujetTableM, "text:index-body"), TitreTable);
-				node nodStudent = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodStudentTableM, "text:index-body"), TitreTable);
 
-				table = meptl.analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, table, "ana:tablematiere", nodSujet.getNomElt());
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				table = meptl.addSaut(nodSujet,table);
 				
+				//*********************
+				//** Ajoute un titre **
+				//*********************
+				table = meptl.addNodeSautTitre(nodSujet,table);
+				
+				//*******************************
+				//** Recherche le node Student **
+				//*******************************
+				node nodStudent = a.retourneFirstNodeParagrapheContain(a.retourneNames(nodStudentTableM, "text:index-body"), TitreTable);
+				
+				//*********************************************
+				//** analyse les attributs des nodes <table> **
+				//*********************************************
+				table = meptl.evalLesAttributEtContenuDuNode(nodStudent, nodSujet, table, "ana:tablematiere", nodSujet.getNomElt());
+				
+				//****************************************************************
+				//** Parcours les nodes enfants du node <text:table-of-content> **
+				//****************************************************************
 				for(int j =0 ; j < nodSujet.getNodes().size();j++) {
 					if(nodStudent!=null) {
 						if(j<nodStudent.getNodes().size()) {
-							table = meptl.analyseLesAttributEtContenuDuNode(nodStudent.getNodes().get(j), nodSujet.getNodes().get(j), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNomElt());
+							table = meptl.evalLesAttributEtContenuDuNode(nodStudent.getNodes().get(j), nodSujet.getNodes().get(j), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNomElt());
 							for(int k=0; k<nodSujet.getNodes().get(j).getNodes().size();k++) {
 								if(k<nodStudent.getNodes().get(j).getNodes().size()) {
-									table = meptl.analyseLesAttributEtContenuDuNode(nodStudent.getNodes().get(j).getNodes().get(k), nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+									table = meptl.evalLesAttributEtContenuDuNode(nodStudent.getNodes().get(j).getNodes().get(k), nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 								}else {
-									table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+									table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 								}
 							}
 						}else {
-							table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNomElt());
+							table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNomElt());
 						}
 					}else {
-						table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNomElt());
+						table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNomElt());
 						for(int k=0; k<nodSujet.getNodes().get(j).getNodes().size();k++) {
-							table = meptl.analyseLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
+							table = meptl.evalLesAttributEtContenuDuNode(null, nodSujet.getNodes().get(j).getNodes().get(k), table, "ana:tablematiere", nodSujet.getNodes().get(j).getNodes().get(k).getNomElt());
 						}
 					}
 				}
 				
-				
+				//****************************************************************
+				//** Insère les attributs des points dans les node de l'analyse **
+				//****************************************************************
 				table.getAttributs().put("point", String.valueOf(outils.getPointsClass()-pointDebut));	
 				table.getAttributs().put("pointTotal", String.valueOf(outils.getPointTotal()-pointTotalDebut));
 				nodTablesMs.getNodes().add(table);
 
 			}
 		}
+		//****************************************************************
+		//** Insère les attributs des points dans les node de l'analyse **
+		//****************************************************************
+		nodTablesMs.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
+		nodTablesMs.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
+		nodTablesMs.getAttributs().put("proportioncorrect",String.valueOf(outils.getProportionCorrect()));
+		nodTablesMs.setClose(true);	
 		
-			nodTablesMs.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
-			nodTablesMs.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
-			nodTablesMs.getAttributs().put("proportioncorrect",String.valueOf(outils.getProportionCorrect()));
-			nodTablesMs.setClose(true);		
 		return nodTablesMs;
 	}
 	
@@ -904,6 +984,11 @@ public class analyseLesNodesPrincipaux {
 				page.setNomElt("page");
 				page.getAttributs().put("name", nomDeLaPage);
 				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				page = meptl.addSaut(pageSujet,page);
+				
 				//*********************
 				//** Ajoute un titre **
 				//*********************
@@ -917,7 +1002,7 @@ public class analyseLesNodesPrincipaux {
 				//********************************************
 				//** analyse les attributs des nodes <page> **
 				//********************************************
-				page = meptl.analyseLesAttributEtContenuDuNode(pageStudent, pageSujet, page, "ana:page",pageSujet.getNomElt());
+				page = meptl.evalLesAttributEtContenuDuNode(pageStudent, pageSujet, page, "ana:page",pageSujet.getNomElt());
 	
 				//**********************************************
 				//** Analyse de tous les autres nodes enfants **
@@ -980,87 +1065,106 @@ public class analyseLesNodesPrincipaux {
 				paragraph.setNomElt("paragraph");
 				paragraph.getAttributs().put("name", nomDuParagraph);
 				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				paragraph = meptl.addSaut(paragraphSujet,paragraph);
+				
 				//*********************
 				//** Ajoute un titre **
 				//*********************
-				if(paragraphSujet.getAttributs().get("titre")!=null) {
-					paragraph.getAttributs().put("titre", nodSujetParagraph.getNodes().get(i).getAttributs().get("titre"));
-				}
+				paragraph = meptl.addNodeSautTitre(paragraphSujet,paragraph);
 							
 				//*******************************
 				//** Recherche le node Student **
 				//*******************************
 				node paragraphStudent = a.retourneFirstNodeByNameAttributValue(nodStudentParagraph, "style:style", "style:name", nomDuParagraph);
 				
-				// ajoute les valeurs par héritage
+				//**************************************************************
+				//** Ajoute les valeurs par héritage au node paragraphStudent **
+				//**************************************************************
 				if(paragraphStudent!=null) paragraphStudent = meptl.ajouteValeurLesValeursDuStyleParagraphParent(nodStudentParagraph, paragraphStudent);
 				
-				// ajoute les valeurs par défauts
+				//************************************************************
+				//** Ajoute les valeurs par défaut au node paragraphStudent **
+				//************************************************************
 				if(paragraphStudent!=null)	paragraphStudent = meptl.ajouteValeurParDefautAuStyleParagraph(nodStudentParagraph, paragraphStudent);
 			
-				// analyse les attributs du node
-				paragraph = meptl.analyseLesAttributEtContenuDuNode(paragraphStudent, paragraphSujet, paragraph, "ana:paragraph",paragraphSujet.getNomElt());
+				//*************************************************
+				//** analyse les attributs des nodes <paragraph> **
+				//*************************************************
+				paragraph = meptl.evalLesAttributEtContenuDuNode(paragraphStudent, paragraphSujet, paragraph, "ana:paragraph",paragraphSujet.getNomElt());
 	
-				// les enfants du premier niveau du node
-				for(int j = 0 ; j < paragraphSujet.getNodes().size();j++ ) {
-						
-				node nodSujet = paragraphSujet.getNodes().get(j);
-				String nameNode = nodSujet.getNomElt();
-				node nodStudent = null;	
-				if(paragraphStudent!=null) {
-					if(paragraphStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
-						nodStudent = paragraphStudent.retourneFirstEnfantsByName(nameNode);
-					}
-				}
+				//************************************
+				//** analyse tous les nodes enfants **
+				//************************************
+				paragraph = analyseLesNodesEnfants.nodeNext(paragraph, "ana:paragraph", paragraphStudent, null, null, paragraphSujet, null, null, a);
+
 				
-				//insère un saut si titre pas vide et saut=true
-				paragraph = meptl.addNodeSautTitre(nodSujet, paragraph);
 				
-				// analyse attribut et contenu des enfants du premier niveau
-				paragraph = meptl.analyseLesAttributEtContenuDuNode(nodStudent, nodSujet, paragraph, "ana:paragraph",nodSujet.getNomElt());
+//				// les enfants du premier niveau du node
+//				for(int j = 0 ; j < paragraphSujet.getNodes().size();j++ ) {
+//						
+//				node nodSujet = paragraphSujet.getNodes().get(j);
+//				String nameNode = nodSujet.getNomElt();
+//				node nodStudent = null;	
+//				if(paragraphStudent!=null) {
+//					if(paragraphStudent.retourneFirstEnfantsByName(nameNode).getNomElt().equals(nameNode)) {
+//						nodStudent = paragraphStudent.retourneFirstEnfantsByName(nameNode);
+//					}
+//				}
+//				
+//				//insère un saut si titre pas vide et saut=true
+//				paragraph = meptl.addNodeSautTitre(nodSujet, paragraph);
+//				
+//				// analyse attribut et contenu des enfants du premier niveau
+//				paragraph = meptl.evalLesAttributEtContenuDuNode(nodStudent, nodSujet, paragraph, "ana:paragraph",nodSujet.getNomElt());
+//				
+//					
+//					for(int k = 0 ; k < nodSujet.getNodes().size();k++) {
+//						node nod2Sujet = nodSujet.getNodes().get(k);
+//						String nameNode2 = nod2Sujet.getNomElt();
+//						node nod2Student = null;	
+//						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
+//							nod2Student = paragraphStudent.retourneFirstEnfantsByName(nameNode2);
+//						}
+//						
+//						//insère un saut si titre pas vide et saut=true
+//						paragraph = meptl.addNodeSautTitre(nod2Sujet, paragraph);
+//						
+//						// analyse attribut et contenu des enfants du second niveau
+//						paragraph = meptl.evalLesAttributEtContenuDuNode(nod2Student, nod2Sujet, paragraph, "ana:paragraph",nod2Sujet.getNomElt() );
+//						
+//						for(int l = 0 ; l < nod2Sujet.getNodes().size();l++) {
+//							node nod3Sujet = nod2Sujet.getNodes().get(l);
+//							String nameNode3 = nod3Sujet.getNomElt();
+//							node nod3Student = null;	
+//							if(nod2Student!=null) if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
+//								nod3Student = paragraphStudent.retourneFirstEnfantsByName(nameNode3);
+//							}
+//							
+//							//insère un saut si titre pas vide et saut=true
+//							paragraph = meptl.addNodeSautTitre(nod3Sujet, paragraph);
+//							
+//							// analyse attribut et contenu des enfants du troisième niveau
+//							paragraph = meptl.evalLesAttributEtContenuDuNode(nod3Student, nod3Sujet, paragraph, "ana:paragraph", nod3Sujet.getNomElt());
+//						}
+//	
+//					}
+//						
+//				}
 				
-					
-					for(int k = 0 ; k < nodSujet.getNodes().size();k++) {
-						node nod2Sujet = nodSujet.getNodes().get(k);
-						String nameNode2 = nod2Sujet.getNomElt();
-						node nod2Student = null;	
-						if(nodStudent!=null) if(nodStudent.retourneFirstEnfantsByName(nameNode2).getNomElt().equals(nameNode2)) {
-							nod2Student = paragraphStudent.retourneFirstEnfantsByName(nameNode2);
-						}
-						
-						//insère un saut si titre pas vide et saut=true
-						paragraph = meptl.addNodeSautTitre(nod2Sujet, paragraph);
-						
-						// analyse attribut et contenu des enfants du second niveau
-						paragraph = meptl.analyseLesAttributEtContenuDuNode(nod2Student, nod2Sujet, paragraph, "ana:paragraph",nod2Sujet.getNomElt() );
-						
-						for(int l = 0 ; l < nod2Sujet.getNodes().size();l++) {
-							node nod3Sujet = nod2Sujet.getNodes().get(l);
-							String nameNode3 = nod3Sujet.getNomElt();
-							node nod3Student = null;	
-							if(nod2Student!=null) if(nod2Student.retourneFirstEnfantsByName(nameNode3).getNomElt().equals(nameNode3)) {
-								nod3Student = paragraphStudent.retourneFirstEnfantsByName(nameNode3);
-							}
-							
-							//insère un saut si titre pas vide et saut=true
-							paragraph = meptl.addNodeSautTitre(nod3Sujet, paragraph);
-							
-							// analyse attribut et contenu des enfants du troisième niveau
-							paragraph = meptl.analyseLesAttributEtContenuDuNode(nod3Student, nod3Sujet, paragraph, "ana:paragraph", nod3Sujet.getNomElt());
-						}
-	
-					}
-						
-				}
-					
+				//****************************************************************
+				//** Insère les attributs des points dans les node de l'analyse **
+				//****************************************************************
 				paragraph.getAttributs().put("point", String.valueOf(outils.getPointsClass()-pointDebut));	
 				paragraph.getAttributs().put("pointTotal", String.valueOf(outils.getPointTotal()-pointTotalDebut));
 				nodparagraphs.getNodes().add(paragraph);
-
-
 			}
 		}
-		
+		//****************************************************************
+		//** Insère les attributs des points dans les node de l'analyse **
+		//****************************************************************
 		nodparagraphs.getAttributs().put("pointgagner",String.valueOf(outils.getPointsClass()));
 		nodparagraphs.getAttributs().put("pointtotal",String.valueOf(outils.getPointTotal()));
 		nodparagraphs.getAttributs().put("proportioncorrect",String.valueOf(outils.getProportionCorrect()));
@@ -1072,7 +1176,7 @@ public class analyseLesNodesPrincipaux {
 	 * Cette méthode permet d'analyse la structure du document.</br>
 	 * La structure de l'étudiant est comparé avec la structure du sujet.</br>
 	 * Le node d'analyse est retourné.</br>
-	 * Le nom du node analysé pour cette partie est <page> puis <ana:page>.</br> 
+	 * Le nom du node analysé pour cette partie est page puis ana:page.</br> 
 	 * <br>
 	 * @param nodStudentS : node de la structure de l'étudiant.
 	 * @param nodSujetS : node de la structure du sujet.
@@ -1117,6 +1221,11 @@ public class analyseLesNodesPrincipaux {
 				page.getAttributs().put("namepage", nomDeLaPage);
 				page.getAttributs().put("numeroabsolue", numeroabsolue);
 				
+				//*****************************
+				//** Ajoute un saut de ligne **
+				//*****************************
+				page = meptl.addSaut(pageSujet,page);
+				
 				//*********************
 				//** Ajoute un titre **
 				//*********************
@@ -1130,7 +1239,7 @@ public class analyseLesNodesPrincipaux {
 				//********************************************
 				//** analyse les attributs des nodes <page> **
 				//********************************************
-				page = meptl.analyseLesAttributEtContenuDuNode(pageStudent, pageSujet, page, "ana:page",pageSujet.getNomElt());
+				page = meptl.evalLesAttributEtContenuDuNode(pageStudent, pageSujet, page, "ana:page",pageSujet.getNomElt());
 				
 				//************************************
 				//** analyse tous les nodes enfants **

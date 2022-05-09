@@ -143,7 +143,7 @@ public class meptl {
 		//***********************************************************************************
 		//** PREPARATION du node Sujet  pour analyse -use file.xml ou -use file.xml -sujet **
 		//***********************************************************************************
-		if(commandes.analyse) {
+		if(commandes.analyse||commandes.ecritNodeAnalyse) {
 			nodeSujet = chargementsujet(commandes.nameSujet, true);
 			
 			if(nodeSujet==null) {
@@ -281,17 +281,23 @@ public class meptl {
 			//**********************************
 			//** Analyse des fichiers student **
 			//**********************************
-			if(commandes.analyse) {
-				node init = InitialisationAvantAnalyse(nodeSujet);
+			if(commandes.analyse||commandes.ecritNodeAnalyse) {
+				node init =verificationFichierAnalyse.InitialisationAvantAnalyse(nodeSujet);
 				if(!Boolean.valueOf(init.getAttributs().get("erreur"))) {
-//					a.ecritureNodeEnXML(nodStudent, "fichier student",patch,false,""); //écriture du node analyse de l'étudiant
+//					a.ecritureNodeEnXML(nodStudent, "fichier student",patch,false,""); //écriture du node nodStudent de l'étudiant
 					node ana = analyse(nodStudent, nodeSujet, i, a);
-//					a.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false,""); //écriture du node analyse de l'étudiant
+					
+					//**************************************************
+					//** Ecriture des fichiers d'analyse des students **
+					//**************************************************
+					if(commandes.ecritNodeAnalyse) {
+						Run.ecritureNodeEnXML(ana, "nodana"+ana.retourneFirstEnfantsByName("ouverture").getAttributs().get("dossier"),"",false,""); //écriture du node analyse de l'étudiant
+					}
 					
 					//****************************
 					//** Création des feedbacks **
 					//****************************
-					if(!commandes.sansFeeback) {
+					if(!commandes.sansFeeback&&!commandes.ecritNodeAnalyse) {
 						if(!commandes.zipfeedback) {
 							//feedback(ana, verif); //classique directement dans le répertoire
 							feedbacks.feedback(ana,verif, false);
@@ -951,84 +957,7 @@ public class meptl {
 
 	
 	
-	/**
-	 * Vérification du node sujet (premier node <b>fichier</b> et des paramètres.<br>
-	 * <br>
-	 * @param nodSujet
-	 * @return
-	 */
-	private static node InitialisationAvantAnalyse(node nodSujet) {
-		node initSujet = new node();
-		initSujet.setNomElt("init");
-
-		boolean erreur=false;
-		boolean erreurNomPremierNodeFichier=false;
-		boolean erreurManqueAttributEvaluerPremierNodeFichier=false;
-		boolean erreurValeurAttributEvaluerPremierNodeFichier=false;
-		boolean erreurPasNodesEnfantsAuPremierNodeFichier=false;
-		boolean erreurPasAttributMetaSujetAuPremierNodeFichier=false;
-		boolean erreurValeurVideAttributMetaSujetAuPremierNodeFichier=false;
-		boolean erreurValeurAttributProgressionNonConvertibleEnDouble=false;
-		boolean erreurValeurAttributNoteFromNonConvertibleEnDouble=false;
-		
-		if(!nodSujet.getNomElt().equals("fichier")) {
-			erreur=true;
-			erreurNomPremierNodeFichier = true;
-		}
-		if(nodSujet.getAttributs().get("evaluer")==null) {
-			erreur=true;
-			erreurManqueAttributEvaluerPremierNodeFichier = true;
-		}
-		if(!nodSujet.getAttributs().get("evaluer").equals("true")) {
-			erreur=true;
-			erreurValeurAttributEvaluerPremierNodeFichier=true;
-		}
-		if(nodSujet.getNodes().size()==0) {
-			erreur=true;
-			erreurPasNodesEnfantsAuPremierNodeFichier=true;
-		}
-		if(nodSujet.getAttributs().get("metaSujet")==null) {
-			erreur=true;
-			erreurPasAttributMetaSujetAuPremierNodeFichier=true;
-		}
-		if(nodSujet.getAttributs().get("metaSujet")!=null) {
-			if(nodSujet.getAttributs().get("metaSujet").isEmpty()) {
-				erreur=true;
-				erreurValeurVideAttributMetaSujetAuPremierNodeFichier=true;
-			}
-		}
-		if(nodSujet.getAttributs().get("progression")!=null) {
-			String p = nodSujet.getAttributs().get("progression");
-			try {
-				Double.valueOf(p);
-			} catch (Exception e) {
-				erreur=true;
-				erreurValeurAttributProgressionNonConvertibleEnDouble=true;
-			}
-		}
-		if(nodSujet.getAttributs().get("notefrom")!=null) {
-			String p = nodSujet.getAttributs().get("notefrom");
-			try {
-				Double.valueOf(p);
-			} catch (Exception e) {
-				erreur=true;
-				erreurValeurAttributNoteFromNonConvertibleEnDouble=true;
-			}
-		}		
-		
-		initSujet.getAttributs().put("erreur",String.valueOf(erreur));
-		initSujet.getAttributs().put("erreurNomPremierNodeFichier",String.valueOf(erreurNomPremierNodeFichier));
-		initSujet.getAttributs().put("erreurManqueAttributEvaluerPremierNodeFichier",String.valueOf(erreurManqueAttributEvaluerPremierNodeFichier));
-		initSujet.getAttributs().put("erreurValeurAttributEvaluerPremierNodeFichier",String.valueOf(erreurValeurAttributEvaluerPremierNodeFichier));
-		initSujet.getAttributs().put("erreurPasNodesEnfantsAuPremierNodeFichier",String.valueOf(erreurPasNodesEnfantsAuPremierNodeFichier));
-		initSujet.getAttributs().put("erreurPasAttributMetaSujetAuPremierNodeFichier",String.valueOf(erreurPasAttributMetaSujetAuPremierNodeFichier));
-		initSujet.getAttributs().put("erreurValeurVideAttributMetaSujetAuPremierNodeFichier",String.valueOf(erreurValeurVideAttributMetaSujetAuPremierNodeFichier));
-		initSujet.getAttributs().put("erreurValeurAttributProgressionNonConvertibleEnDouble",String.valueOf(erreurValeurAttributProgressionNonConvertibleEnDouble));
-		initSujet.getAttributs().put("erreurValeurAttributNoteFromNonConvertibleEnDouble",String.valueOf(erreurValeurAttributNoteFromNonConvertibleEnDouble));
-		
-		return initSujet;
-	}
-
+	
 	/**
 	 * Début de l'analyse par comparaison du node étudiant avec le node sujet.
 	 * @param nodStudent, le node étudiant.
@@ -1524,7 +1453,7 @@ public class meptl {
 	 * @param nameElt : le nom de l'élément (node) analysé.
 	 * @return le node <b>retour</b> avec tous les nodes enfants <b>nameItem</b> contenant les différentes analyse. 
 	 */
-  	public static node analyseLesAttributEtContenuDuNode(node nodeStudent, node sujet, node retour, String nameItem, String nameElt) {
+  	public static node evalLesAttributEtContenuDuNode(node nodeStudent, node sujet, node retour, String nameItem, String nameElt) {
 		Enumeration<String> key = sujet.getAttributs().keys();
 		while(key.hasMoreElements()) {
 			String k = key.nextElement();
@@ -1564,9 +1493,9 @@ public class meptl {
 				
 				if(k.equals("evalNameInitialCreator") && sujet.getNomElt().equals("meta:initial-creator")) {
 					if(nodeStudent!=null) {
-						retour = analyseNameInitialCreator(retour,nodeStudent, nodeStudent.getContenu().get(0), sujet.getAttributs().get("evalNameInitialCreator"),"Créateur");
+						retour = evalNameInitialCreator(retour,nodeStudent, nodeStudent.getContenu().get(0), sujet.getAttributs().get("evalNameInitialCreator"),"Créateur");
 					}else {
-						retour = analyseNameInitialCreator(retour,null, "Créateur inconnu", sujet.getAttributs().get("evalNameInitialCreator"),"Créateur");
+						retour = evalNameInitialCreator(retour,null, "Créateur inconnu", sujet.getAttributs().get("evalNameInitialCreator"),"Créateur");
 					}
 				}
 				
@@ -1660,7 +1589,7 @@ public class meptl {
 	 * @param nameElt : le nom de l'élément (node) analysé.
 	 * @return le node <b>retour</b> avec tous les nodes enfants <b>nameItem</b> contenant les différentes analyse. 
   	 */
-	public static node analyseLesAttributAnalyseStyle(node nodeStyleParagraphStudent, node nodeStyleParagraphSujet, node retour, String nameItem, String nameElt) {
+	public static node evalLesAttributAnalyseStyle(node nodeStyleParagraphStudent, node nodeStyleParagraphSujet, node retour, String nameItem, String nameElt) {
 
 		Enumeration<String> key = nodeStyleParagraphSujet.getAttributs().keys();
 		while(key.hasMoreElements()) {
@@ -1868,7 +1797,7 @@ public class meptl {
 	/**
 	 * Ajoute dans le node nodanalyse.</br>
 	 * Le node saut et son attribut titre</br>
-	 * Et place un titre1, ou titre2, ou titre3</br>
+	 * Et place un titre, ou titre1, ou titre2, ou titre3</br>
 	 * <br>
 	 * @param nod
 	 * @return
@@ -1878,6 +1807,13 @@ public class meptl {
 			node N = new node();
 			N.setNomElt("saut");
 			N.getAttributs().put("titre", nodSujet.getAttributs().get("titre"));
+			N.setClose(true);
+			nodanalyse.getNodes().add(N);
+		}
+		if(nodSujet.getAttributs().get("titre1")!=null) {
+			node N = new node();
+			N.setNomElt("saut");
+			N.getAttributs().put("titre1", nodSujet.getAttributs().get("titre1"));
 			N.setClose(true);
 			nodanalyse.getNodes().add(N);
 		}
@@ -1896,6 +1832,26 @@ public class meptl {
 			nodanalyse.getNodes().add(N);
 		}
 			
+		return nodanalyse;	
+	}
+	
+	/**
+	 * Ajoute un saut de ligne.</br>
+	 * @param nodSujet
+	 * @param nodanalyse
+	 * @return
+	 */
+	public static node addSaut(node nodSujet, node nodanalyse) {
+		if(nodSujet.getAttributs().get("saut")!=null) {
+			if(nodSujet.getAttributs().get("saut").equalsIgnoreCase("true")) {
+				node N = new node();
+				N.setNomElt("saut");
+				//N.getAttributs().put("titre", "");
+				N.setClose(true);
+				nodanalyse.getNodes().add(N);
+			}
+		}
+		
 		return nodanalyse;	
 	}
 	
@@ -2696,7 +2652,7 @@ public class meptl {
 	 * @param nameElt
 	 * @return
 	 */
-	private static node analyseNameInitialCreator(node retour, node nodStudent, String nameCreator, String point, String nameElt) {
+	private static node evalNameInitialCreator(node retour, node nodStudent, String nameCreator, String point, String nameElt) {
 		node item = null;
 		if(nodStudent!=null) {
 			item = retourneNoteAvecResultatsAnalyse(nameCreator,"name", nodStudent.getAttributs().get("initial-creator"),nameCreator + "↑‽" +point, nameElt );
