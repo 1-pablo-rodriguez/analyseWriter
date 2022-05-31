@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg2"
+   width="48"
+   height="48"
+   viewBox="0 0 48 48"
+   sodipodi:docname="exit.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   inkscape:export-filename="C:\Users\pabr6\git\analyseWriter\MEPTL\icons\exit.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs6" />
+  <sodipodi:namedview
+     id="namedview4"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:zoom="7.7604167"
+     inkscape:cx="9.9221476"
+     inkscape:cy="11.983893"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g2698">
+    <sodipodi:guide
+       position="15.221444,36.823994"
+       orientation="1,0"
+       id="guide2780" />
+  </sodipodi:namedview>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g8">
+    <g
+       id="g2698"
+       transform="matrix(2.2242512,0,0,2.2242512,-2.3614406,-0.54630895)"
+       style="stroke-width:0.449589">
+      <rect
+         style="fill:#4d4d4d;stroke-width:0.134877;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke;stop-color:#000000"
+         id="rect886"
+         width="12.143694"
+         height="17.48241"
+         x="10.020643"
+         y="1.6505069"
+         ry="0"
+         rx="0" />
+      <path
+         style="fill:#ff0e0e;fill-opacity:1;stroke:#920000;stroke-width:0.449589px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         d="M 14.154744,11.101102 7.9050802,5.2702298 7.8728655,8.5239211 1.7198453,8.4272768 l 0.06443,5.1543622 h 6.1208053 l -2e-7,3.170568 z"
+         id="path1147"
+         sodipodi:nodetypes="cccccccc" />
+      <rect
+         style="fill:#999999;stroke-width:0.139238;stroke-linecap:round;stroke-linejoin:round;paint-order:fill markers stroke;stop-color:#000000"
+         id="rect986"
+         width="9.135273"
+         height="17.48241"
+         x="14.485444"
+         y="9.8163137"
+         ry="0"
+         rx="0"
+         transform="matrix(0.93834311,-0.34570538,0,1,0,0)" />
+    </g>
+  </g>
+</svg>
