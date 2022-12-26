@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>C:\Users\pabr6\git\analyseWriter\MEPTL\analyseWriter.jar</jar>
+  <outfile>C:\Users\pabr6\git\analyseWriter\MEPTL\analyseWriter.exe</outfile>
+  <errTitle>Erreur</errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>C:\Users\pabr6\git\analyseWriter\MEPTL\icons\analyseWriter.ico</icon>
+  <classPath>
+    <mainClass>fenetres.mainApp</mainClass>
+  </classPath>
+  <jre>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>16</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+  <versionInfo>
+    <fileVersion>4.4.0.0</fileVersion>
+    <txtFileVersion>analyseWriter</txtFileVersion>
+    <fileDescription>évaluer les mise en forme des fichiers au format ODF.</fileDescription>
+    <copyright>GNU GLP 3.0</copyright>
+    <productVersion>4.3.2.0</productVersion>
+    <txtProductVersion>analyseWriter</txtProductVersion>
+    <productName>analyseWriter</productName>
+    <companyName>pablo rodriguez</companyName>
+    <internalName>pablo rodriguez</internalName>
+    <originalFilename>analyseWriter.exe</originalFilename>
+    <trademarks>pablo rodriguez</trademarks>
+    <language>FRENCH</language>
+  </versionInfo>
+</launch4jConfig>

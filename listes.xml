@@ -1,0 +1,24 @@
+<!-- listes des nodes et attributs dans analyseWriter -->
+<liste>
+	<nodesAnalyseWriter>
+
+	</nodesAnalyseWriter>
+	<attributsAnalyseWriter>
+		<evaluer pourEvaluation="false" point="false" default="false"/>
+		<addmenu pourEvaluation="false" point="false" default="false"/>
+		<poids pourEvaluation="true" point="true" default="0.0"/>
+		<saut pourEvaluation="false" point="false" default="false"/>
+		<titre pourEvaluation="false" point="false" default=""/>
+		<titre1 pourEvaluation="false" point="false" default=""/>
+		<titre2 pourEvaluation="false" point="false" default=""/>
+		<titre3 pourEvaluation="false" point="false" default=""/>
+		<marquenode pourEvaluation="true" point="true" default="0"/>
+		<information pourEvaluation="false" point="false" default="false"/>
+		<analyseStyle pourEvaluation="true" point="false" default="false"/>
+		<evalNameLegacyStyle pourEvaluation="true" point="true" default="0"/>
+		
+	</attributsAnalyseWriter>
+	<nodesWriter>
+
+	</nodesWriter>
+</liste>
